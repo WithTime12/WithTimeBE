@@ -23,11 +23,12 @@ import org.withtime.be.withtimebe.global.security.filter.JsonLoginFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private static final String API_PREFIX = "/api/v1";
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
 
     private String[] allowUrl = {
-            "/auth/**"
+            API_PREFIX + "/auth/**"
     };
 
     @Bean
@@ -35,7 +36,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(allowUrl).permitAll()
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jsonLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)

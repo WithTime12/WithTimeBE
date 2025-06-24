@@ -17,7 +17,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void signUp(AuthRequest.SignUpRequest request) {
-        Member member = AuthConverter.toLocalMember(request.getUsername(), passwordEncoder.encode(request.getPassword()));
-        memberRepository.save(member);
+        if (availableSignUp(request)) {
+            Member member = AuthConverter.toLocalMember(request.getUsername(), passwordEncoder.encode(request.getPassword()));
+            memberRepository.save(member);
+        }
+    }
+
+    private boolean availableSignUp(AuthRequest.SignUpRequest request) {
+        // TODO: 회원가입 조건
+        return true;
     }
 }

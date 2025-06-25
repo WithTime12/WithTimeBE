@@ -33,20 +33,20 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getToken(request);
-        if (token == null) {
-            filterChain.doFilter(request, response);
-        }
-        try {
-            Long userId = jwtUtil.getUserId(token);
-            Member member = memberQueryService.findById(userId);
-            CustomUserDetails customUserDetails = new CustomUserDetails(member);
+        if (token != null) {
+            try {
+                Long userId = jwtUtil.getUserId(token);
+                Member member = memberQueryService.findById(userId);
+                CustomUserDetails customUserDetails = new CustomUserDetails(member);
 
-            Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(customUserDetails, "", customUserDetails.getAuthorities());
-            this.successfulAuthentication(request, response, authentication);
-            filterChain.doFilter(request, response);
-        } catch (Exception e) {
-            handleException(e);
+                Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(customUserDetails, "", customUserDetails.getAuthorities());
+                this.successfulAuthentication(request, response, authentication);
+                filterChain.doFilter(request, response);
+            } catch (Exception e) {
+                handleException(e);
+            }
         }
+        filterChain.doFilter(request, response);
     }
 
     private String getToken(HttpServletRequest request) {

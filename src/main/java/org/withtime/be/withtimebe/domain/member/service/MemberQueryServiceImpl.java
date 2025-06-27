@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.member.repository.MemberRepository;
+import org.withtime.be.withtimebe.global.error.code.MemberErrorCode;
+import org.withtime.be.withtimebe.global.error.exception.MemberException;
 
 @Service
 @RequiredArgsConstructor
@@ -13,7 +15,6 @@ public class MemberQueryServiceImpl implements MemberQueryService {
 
     @Override
     public Member findById(Long id) {
-        // TODO: 에러 처리
-        return memberRepository.findById(id).orElseThrow();
+        return memberRepository.findById(id).orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
     }
 }

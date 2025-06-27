@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -29,7 +30,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         AuthResponse.LoginResponse loginResponse = tokenService.createLoginToken((CustomUserDetails) authentication.getPrincipal());
-        // TODO: 응답 통일
-        objectMapper.writeValue(response.getOutputStream(), loginResponse);
+        objectMapper.writeValue(response.getOutputStream(), DefaultResponse.ok(loginResponse));
     }
 }

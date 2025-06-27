@@ -1,0 +1,26 @@
+package org.withtime.be.withtimebe.global.error.code;
+
+import lombok.AllArgsConstructor;
+import org.namul.api.payload.code.BaseErrorCode;
+import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
+import org.springframework.http.HttpStatus;
+
+@AllArgsConstructor
+public enum TokenErrorCode implements BaseErrorCode {
+
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN401_1", "토큰의 기한이 만료되었습니다."),
+    ;
+
+    private final HttpStatus httpStatus;
+    private final String code;
+    private final String message;
+
+    @Override
+    public DefaultResponseErrorReasonDTO getReason() {
+        return DefaultResponseErrorReasonDTO.builder()
+                .httpStatus(this.httpStatus)
+                .code(this.code)
+                .message(this.message)
+                .build();
+    }
+}

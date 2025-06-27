@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
+import org.namul.api.payload.writer.FailureResponseWriter;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +27,7 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.withtime.be.withtimebe.domain.auth.dto.request.AuthRequest;
+import org.withtime.be.withtimebe.global.error.code.AuthErrorCode;
 
 import java.io.IOException;
 import java.util.Map;
@@ -38,6 +41,7 @@ public class JsonLoginFilter extends OncePerRequestFilter {
     private static final String PASSWORD_PARAMETER = "password";
     private final AuthenticationManager authenticationManager;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
+    private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
     private final SecurityContextRepository securityContextRepository;
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
@@ -52,10 +56,12 @@ public class JsonLoginFilter extends OncePerRequestFilter {
                 }
                 this.successfulAuthentication(request, response, authentication);
             } catch (Exception e) {
-                // TODO: Exception Handle
+                handleException(response, e);
             }
         }
-        filterChain.doFilter(request, response);
+        else {
+            filterChain.doFilter(request, response);
+        }
     }
 
     public Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException {
@@ -91,4 +97,11 @@ public class JsonLoginFilter extends OncePerRequestFilter {
         return om.readValue(content, AuthRequest.LoginRequest.class);
     }
 
+    private void handleException(HttpServletResponse response, Exception e) throws IOException {
+        ObjectMapper om = new ObjectMapper();
+        DefaultResponseErrorReasonDTO reasonDTO = AuthErrorCode.FAIL_AUTH_LOGIN.getReason();
+        response.setStatus(reasonDTO.getHttpStatus().value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        om.writeValue(response.getOutputStream(), failureResponseWriter.onFailure(reasonDTO, e.getMessage()));
+    }
 }

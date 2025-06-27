@@ -1,10 +1,16 @@
 package org.withtime.be.withtimebe.global.security.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.namul.api.payload.code.DefaultResponseErrorCode;
+import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
+import org.namul.api.payload.error.exception.ServerApplicationException;
+import org.namul.api.payload.writer.FailureResponseWriter;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -27,6 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final MemberQueryService memberQueryService;
+    private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
     private final SecurityContextRepository securityContextRepository;
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
 
@@ -42,8 +49,10 @@ public class JwtFilter extends OncePerRequestFilter {
                 Authentication authentication = UsernamePasswordAuthenticationToken.authenticated(customUserDetails, "", customUserDetails.getAuthorities());
                 this.successfulAuthentication(request, response, authentication);
                 filterChain.doFilter(request, response);
+            } catch (ServerApplicationException e) {
+                handleServerApplicationException(response, e);
             } catch (Exception e) {
-                handleException(e);
+                handleException(response, e);
             }
         }
         else {
@@ -66,7 +75,19 @@ public class JwtFilter extends OncePerRequestFilter {
         securityContextHolderStrategy.setContext(securityContext);
     }
 
-    private void handleException(Exception e) {
-        // TODO: Handle Exception
+    private void handleServerApplicationException(HttpServletResponse response, ServerApplicationException e) throws IOException {
+        ObjectMapper om = new ObjectMapper();
+        DefaultResponseErrorReasonDTO reasonDTO = (DefaultResponseErrorReasonDTO) e.getCode().getReason();
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(reasonDTO.getHttpStatus().value());
+        om.writeValue(response.getOutputStream(), failureResponseWriter.onFailure(reasonDTO, null));
+    }
+
+    private void handleException(HttpServletResponse response,  Exception e) throws IOException {
+        ObjectMapper om = new ObjectMapper();
+        DefaultResponseErrorReasonDTO reasonDTO = DefaultResponseErrorCode._UNAUTHORIZED.getReason();
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(reasonDTO.getHttpStatus().value());
+        om.writeValue(response.getOutputStream(), failureResponseWriter.onFailure(reasonDTO, e.getMessage()));
     }
 }

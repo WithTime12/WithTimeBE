@@ -1,6 +1,5 @@
 package org.withtime.be.withtimebe.global.security.filter;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -26,11 +25,10 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.withtime.be.withtimebe.domain.auth.dto.request.AuthRequest;
+import org.withtime.be.withtimebe.domain.auth.dto.request.AuthRequestDTO;
 import org.withtime.be.withtimebe.global.error.code.AuthErrorCode;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Getter
 @RequiredArgsConstructor
@@ -66,9 +64,9 @@ public class JsonLoginFilter extends OncePerRequestFilter {
 
     public Authentication attemptAuthentication(HttpServletRequest request) throws AuthenticationException {
         try {
-             AuthRequest.LoginRequest requestBody = getBodyInRequest(request);
+             AuthRequestDTO.Login requestBody = getBodyInRequest(request);
 
-            UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(requestBody.getUsername(), requestBody.getPassword());
+            UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(requestBody.username(), requestBody.password());
             return this.getAuthenticationManager().authenticate(authRequest);
 
         } catch (IOException e) {
@@ -91,10 +89,10 @@ public class JsonLoginFilter extends OncePerRequestFilter {
         return DEFAULT_REQUEST_MATCHER.matches(request) && contentType != null && contentType.equals(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    private AuthRequest.LoginRequest getBodyInRequest(HttpServletRequest request) throws IOException{
+    private AuthRequestDTO.Login getBodyInRequest(HttpServletRequest request) throws IOException{
         String content = new String((new HttpServletRequestWrapper(request)).getInputStream().readAllBytes());
         ObjectMapper om = new ObjectMapper();
-        return om.readValue(content, AuthRequest.LoginRequest.class);
+        return om.readValue(content, AuthRequestDTO.Login.class);
     }
 
     private void handleException(HttpServletResponse response, Exception e) throws IOException {

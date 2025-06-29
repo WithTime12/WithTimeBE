@@ -1,13 +1,13 @@
 package org.withtime.be.withtimebe.domain.auth.converter;
 
-import org.withtime.be.withtimebe.domain.auth.dto.response.AuthResponse;
+import org.withtime.be.withtimebe.domain.auth.dto.response.AuthResponseDTO;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.member.entity.enums.ProviderType;
 
 public class AuthConverter {
 
-    public static AuthResponse.LoginResponse toLoginResponse(String accessToken, String refreshToken) {
-        return AuthResponse.LoginResponse.builder()
+    public static AuthResponseDTO.Login toLoginResponse(String accessToken, String refreshToken) {
+        return AuthResponseDTO.Login.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

@@ -1,23 +1,26 @@
 package org.withtime.be.withtimebe.domain.auth.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.withtime.be.withtimebe.domain.auth.dto.request.AuthRequest;
-import org.withtime.be.withtimebe.domain.auth.service.AuthService;
+import org.namul.api.payload.response.DefaultResponse;
+import org.springframework.web.bind.annotation.*;
+import org.withtime.be.withtimebe.domain.auth.dto.request.AuthRequestDTO;
+import org.withtime.be.withtimebe.domain.auth.service.command.AuthCommandService;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-    private final AuthService authService;
+    private final AuthCommandService authCommandService;
 
     @PostMapping("/sign-up")
-    public String signUp(@RequestBody AuthRequest.SignUpRequest request) {
-        authService.signUp(request);
-        return "회원가입 성공";
+    public DefaultResponse<String> signUp(@RequestBody AuthRequestDTO.SignUp request) {
+        authCommandService.signUp(request);
+        return DefaultResponse.noContent();
+    }
+
+    @GetMapping
+    public void d() {
+        throw new IllegalArgumentException("비상");
     }
 }

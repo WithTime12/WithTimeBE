@@ -4,6 +4,8 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import org.withtime.be.withtimebe.global.data.JwtConfigData;
+import org.withtime.be.withtimebe.global.error.code.TokenErrorCode;
+import org.withtime.be.withtimebe.global.error.exception.TokenException;
 import org.withtime.be.withtimebe.global.security.domain.CustomUserDetails;
 
 import javax.crypto.SecretKey;
@@ -36,6 +38,8 @@ public class JwtUtil {
     public Long getUserId(String token) {
         try {
             return getClaims(token).getPayload().get("id", Long.class);
+        } catch (ExpiredJwtException e) {
+            throw new TokenException(TokenErrorCode.TOKEN_EXPIRED);
         } catch (JwtException e) {
             return null;
         }

@@ -5,13 +5,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.withtime.be.withtimebe.domain.auth.dto.response.AuthResponse;
-import org.withtime.be.withtimebe.domain.auth.service.TokenService;
+import org.withtime.be.withtimebe.domain.auth.dto.response.AuthResponseDTO;
+import org.withtime.be.withtimebe.domain.auth.service.command.TokenCommandService;
 import org.withtime.be.withtimebe.global.security.domain.CustomUserDetails;
 
 import java.io.IOException;
@@ -20,7 +21,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final TokenService tokenService;
+    private final TokenCommandService tokenCommandService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -28,8 +29,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        AuthResponse.LoginResponse loginResponse = tokenService.createLoginToken((CustomUserDetails) authentication.getPrincipal());
-        // TODO: 응답 통일
-        objectMapper.writeValue(response.getOutputStream(), loginResponse);
+        AuthResponseDTO.Login loginResponse = tokenCommandService.createLoginToken((CustomUserDetails) authentication.getPrincipal());
+        objectMapper.writeValue(response.getOutputStream(), DefaultResponse.ok(loginResponse));
     }
 }

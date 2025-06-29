@@ -2,6 +2,8 @@ package org.withtime.be.withtimebe.global.security;
 
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
+import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
+import org.namul.api.payload.writer.FailureResponseWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,7 +12,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
@@ -18,6 +22,8 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
 import org.withtime.be.withtimebe.global.security.filter.JsonLoginFilter;
 import org.withtime.be.withtimebe.global.security.filter.JwtFilter;
+import org.withtime.be.withtimebe.global.security.handler.CustomAccessDeniedHandler;
+import org.withtime.be.withtimebe.global.security.handler.CustomAuthenticationEntryPoint;
 import org.withtime.be.withtimebe.global.util.JwtUtil;
 
 @Configuration
@@ -29,6 +35,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final MemberQueryService memberQueryService;
     private final JwtUtil jwtUtil;
+    private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
 
     private String[] allowUrl = {
             API_PREFIX + "/auth/**"
@@ -46,6 +53,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(accessDeniedHandler())
+                        .authenticationEntryPoint(authenticationEntryPoint())
+                )
         ;
         return http.build();
     }
@@ -63,12 +74,22 @@ public class SecurityConfig {
 
     @Bean
     Filter jsonLoginFilter(AuthenticationManager authenticationManager) {
-        return new JsonLoginFilter(authenticationManager, authenticationSuccessHandler, requestSecurityContextRepository());
+        return new JsonLoginFilter(authenticationManager, authenticationSuccessHandler,failureResponseWriter, requestSecurityContextRepository());
     }
 
     @Bean
     Filter jwtFilter() {
-        return new JwtFilter(jwtUtil, memberQueryService, requestSecurityContextRepository());
+        return new JwtFilter(jwtUtil, memberQueryService, failureResponseWriter, requestSecurityContextRepository());
+    }
+
+    @Bean
+    AuthenticationEntryPoint authenticationEntryPoint() {
+        return new CustomAuthenticationEntryPoint(failureResponseWriter);
+    }
+
+    @Bean
+    AccessDeniedHandler accessDeniedHandler() {
+        return new CustomAccessDeniedHandler(failureResponseWriter);
     }
 
     @Bean

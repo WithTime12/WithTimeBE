@@ -23,12 +23,11 @@ public class HealthCheckController {
 //                        - AUTH_016: 널이어서는 안 됩니다.
 //                        - AUTH_017: 올바른 형식의 이메일 주소여야 합니다.
 //                        - AUTH_018: 길이가 1에서 30 사이여야 합니다.
-//                    """,
-//                    content = @Content(schema = @Schema(implementation = BaseResponse.class))
+//                    """
 //            )
 //    })
 
-    @Operation(summary = "헬스 체킹 API by 김준환", description = "서버 상태 확인하는 API")
+    @Operation(summary = "헬스 체킹 API by 제이미", description = "서버 상태 확인하는 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공입니다.")
     })

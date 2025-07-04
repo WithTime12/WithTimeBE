@@ -14,7 +14,7 @@ public class HealthCheckController {
 
 //    @Operation(summary = "회원가입 API", description = "새로운 사용자를 추가합니다")
 //    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "회원가입 성공", useReturnTypeSchema = true),
+//            @ApiResponse(responseCode = "200", description = "회원가입 성공"),
 //            @ApiResponse(
 //                    responseCode = "400",
 //                    description = """

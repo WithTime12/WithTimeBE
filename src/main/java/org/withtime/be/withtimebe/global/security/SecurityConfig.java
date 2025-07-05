@@ -38,7 +38,10 @@ public class SecurityConfig {
     private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
 
     private String[] allowUrl = {
-            API_PREFIX + "/auth/**"
+            API_PREFIX + "/auth/**",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/v3/api-docs/**"
     };
 
     @Bean

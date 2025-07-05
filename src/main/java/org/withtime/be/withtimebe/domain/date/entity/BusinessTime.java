@@ -2,6 +2,7 @@ package org.withtime.be.withtimebe.domain.date.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.withtime.be.withtimebe.domain.date.entity.enums.Day;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 import java.time.LocalTime;
@@ -37,4 +38,7 @@ public class BusinessTime extends BaseEntity {
 
     @Column(name = "last_order_time")
     private LocalTime lastOrderTime;
+
+    @Enumerated(EnumType.STRING)
+    private Day day;
 }

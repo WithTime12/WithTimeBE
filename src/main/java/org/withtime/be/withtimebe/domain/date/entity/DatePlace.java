@@ -20,7 +20,7 @@ public class DatePlace extends BaseEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "image")
+    @Column(name = "image", length = 500)
     private String image;
 
     @Column(name = "tel")

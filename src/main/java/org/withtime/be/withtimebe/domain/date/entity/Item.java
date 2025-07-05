@@ -27,6 +27,6 @@ public class Item extends BaseEntity {
     @Column(name = "price")
     private String price;
 
-    @Column(name = "image")
+    @Column(name = "image", length = 500)
     private String image;
 }

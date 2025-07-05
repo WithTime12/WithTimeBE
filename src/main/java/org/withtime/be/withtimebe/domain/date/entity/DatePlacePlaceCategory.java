@@ -15,7 +15,7 @@ public class DatePlacePlaceCategory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "place_category_date_place_id")
+    @Column(name = "date_place_place_category_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

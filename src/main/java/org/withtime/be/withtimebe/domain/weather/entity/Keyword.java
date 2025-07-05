@@ -9,6 +9,7 @@ import org.withtime.be.withtimebe.global.common.BaseEntity;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "keyword")
 public class Keyword extends BaseEntity {
 
     @Id

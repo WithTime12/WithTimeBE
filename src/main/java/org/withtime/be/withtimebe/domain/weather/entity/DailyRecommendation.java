@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "daily_recommendation")
 public class DailyRecommendation extends BaseEntity {
 
     @Id

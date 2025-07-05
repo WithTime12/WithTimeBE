@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "region")
 public class Region extends BaseEntity {
 
     @Id

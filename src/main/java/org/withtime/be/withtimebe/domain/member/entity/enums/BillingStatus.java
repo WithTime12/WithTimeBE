@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.member.entity;
+package org.withtime.be.withtimebe.domain.member.entity.enums;
 
 public enum BillingStatus {
     COMPLETED,   // 결제 완료

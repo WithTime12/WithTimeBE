@@ -9,6 +9,7 @@ import org.withtime.be.withtimebe.domain.member.entity.Member;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Table(name = "date_course")
 public class DateCourse {
 
     @Id

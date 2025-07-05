@@ -2,6 +2,7 @@ package org.withtime.be.withtimebe.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.withtime.be.withtimebe.domain.member.entity.enums.BillingStatus;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 import java.time.LocalDateTime;

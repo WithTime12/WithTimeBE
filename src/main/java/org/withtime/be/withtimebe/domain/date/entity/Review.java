@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.review.entity;
+package org.withtime.be.withtimebe.domain.date.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

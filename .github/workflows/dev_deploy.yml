@@ -8,7 +8,7 @@ on:
       - develop
 
 env:
-  DOCKER_IMAGE_NAME: developjamey/with_time_image
+  DOCKER_IMAGE_NAME: developerjamey/with_time_image
   EC2_HOST: ${{ secrets.EC2_URL }}
   EC2_SSH_USER: ubuntu
   PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}

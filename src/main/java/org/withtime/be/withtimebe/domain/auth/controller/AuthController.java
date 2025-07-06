@@ -19,8 +19,8 @@ public class AuthController {
         return DefaultResponse.noContent();
     }
 
-    @GetMapping
-    public void d() {
-        throw new IllegalArgumentException("비상");
+    @PostMapping("/login")
+    public void login(@RequestBody AuthRequestDTO.Login request) {
+        // 필터에서 처리
     }
 }

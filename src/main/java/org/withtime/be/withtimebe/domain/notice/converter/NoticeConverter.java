@@ -100,4 +100,14 @@ public class NoticeConverter {
 			.createdAt(notice.getCreatedAt())
 			.build();
 	}
+
+	public static Notice toNoticeEntity(NoticeRequestDTO.CreateNotice request, Member member) {
+
+		return Notice.builder()
+			.member(member)
+			.title(request.title())
+			.content(request.content())
+			.isPinned(request.isPinned())
+			.build();
+	}
 }

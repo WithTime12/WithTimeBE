@@ -35,8 +35,6 @@ import java.io.IOException;
 public class JsonLoginFilter extends OncePerRequestFilter {
 
     private static final RequestMatcher DEFAULT_REQUEST_MATCHER = PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/api/v1/auth/login");
-    private static final String USERNAME_PARAMETER = "username";
-    private static final String PASSWORD_PARAMETER = "password";
     private final AuthenticationManager authenticationManager;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
@@ -66,7 +64,7 @@ public class JsonLoginFilter extends OncePerRequestFilter {
         try {
              AuthRequestDTO.Login requestBody = getBodyInRequest(request);
 
-            UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(requestBody.username(), requestBody.password());
+            UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(requestBody.email(), requestBody.password());
             return this.getAuthenticationManager().authenticate(authRequest);
 
         } catch (IOException e) {

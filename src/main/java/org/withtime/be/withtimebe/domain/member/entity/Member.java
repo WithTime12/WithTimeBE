@@ -49,10 +49,6 @@ public class Member extends BaseEntity {
     @Column(name = "nickname")
     private String nickname;
 
-    @Column(name = "provider_type")
-    @Enumerated(EnumType.STRING)
-    private ProviderType providerType;
-
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;

@@ -8,4 +8,5 @@ public interface NoticeCommandService {
 	Notice createNotice(NoticeRequestDTO.CreateNotice request, Member member);
 	Notice updateNotice(NoticeRequestDTO.UpdateNotice request);
 	void softDeleteNotice(Long noticeId);
+	Notice recoverDeletedNotice(Long noticeId);
 }

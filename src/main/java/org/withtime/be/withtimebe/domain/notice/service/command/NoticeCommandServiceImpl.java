@@ -44,4 +44,14 @@ public class NoticeCommandServiceImpl implements NoticeCommandService{
 
 		notice.updateDeletedAt(LocalDateTime.now());
 	}
+
+	@Override
+	public Notice recoverDeletedNotice(Long noticeId) {
+		Notice notice = noticeRepository.findNoticeById(noticeId)
+			.orElseThrow(() -> new NoticeException(NoticeErrorCode.NOTICE_NOT_FOUND));
+
+		notice.updateDeletedAt(null);
+
+		return notice;
+	}
 }

@@ -37,4 +37,15 @@ public record NoticeRequestDTO() {
 		@NotNull(message = "상단 고정 여부를 결정해주세요")
 		Boolean isPinned
 	) {}
+
+	public record UpdateNotice (
+		@NotNull(message = "공지사항의 식별자 값을 입력해주세요")
+		Long noticeId,
+		@NotBlank(message = "제목을 입력해주세요")
+		String title,
+		@NotBlank(message = "내용을 입력해주세요")
+		String content,
+		@NotNull(message = "상단 고정 여부를 결정해주세요")
+		Boolean isPinned
+	) {}
 }

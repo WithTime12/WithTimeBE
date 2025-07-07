@@ -6,4 +6,5 @@ import org.withtime.be.withtimebe.domain.notice.entity.Notice;
 
 public interface NoticeCommandService {
 	Notice createNotice(NoticeRequestDTO.CreateNotice request, Member member);
+	Notice updateNotice(NoticeRequestDTO.UpdateNotice request);
 }

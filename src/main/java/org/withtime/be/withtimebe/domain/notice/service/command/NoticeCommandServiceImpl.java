@@ -26,4 +26,14 @@ public class NoticeCommandServiceImpl implements NoticeCommandService{
 		Notice notice = NoticeConverter.toNoticeEntity(request, member);
 		return noticeRepository.save(notice);
 	}
+
+	@Override
+	public Notice updateNotice(NoticeRequestDTO.UpdateNotice request) {
+		Notice notice = noticeRepository.findNoticeById(request.noticeId())
+			.orElseThrow(() -> new NoticeException(NoticeErrorCode.NOTICE_NOT_FOUND));
+
+		notice.updateFields(request);
+
+		return notice;
+	}
 }

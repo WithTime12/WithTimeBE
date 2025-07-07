@@ -47,4 +47,23 @@ public class NoticeCommandController {
 		NoticeResponseDTO.Notice response = NoticeConverter.toNotice(result);
 		return DefaultResponse.created(response);
 	}
+
+	@Operation(summary = "공지사항 수정 API Only Admin by 피우", description = "공지사항 수정 API입니다. 어드민만 사용 가능합니다.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "성공입니다."),
+		@ApiResponse(responseCode = "403",
+			description = """
+				- COMMON403 : "Admin 권한이 없음을 의미합니다."
+			"""),
+		@ApiResponse(responseCode = "404",
+			description = """
+				- NOTICE404_2 : "해당하는 공지사항을 찾을 수 없습니다."
+			""")
+	})
+	@PutMapping("/{noticeId}")
+	public DefaultResponse<NoticeResponseDTO.Notice> updateNotice(@RequestBody @Valid NoticeRequestDTO.UpdateNotice request) {
+		Notice result = noticeCommandService.updateNotice(request);
+		NoticeResponseDTO.Notice response = NoticeConverter.toNotice(result);
+		return DefaultResponse.ok(response);
+	}
 }

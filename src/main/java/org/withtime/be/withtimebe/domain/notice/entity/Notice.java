@@ -3,6 +3,7 @@ package org.withtime.be.withtimebe.domain.notice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
+import org.withtime.be.withtimebe.domain.notice.dto.request.NoticeRequestDTO;
 import org.withtime.be.withtimebe.domain.notice.entity.enums.NoticeCategory;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
@@ -40,4 +41,10 @@ public class Notice extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void updateFields(NoticeRequestDTO.UpdateNotice updateNotice) {
+        this.title = updateNotice.title();
+        this.content = updateNotice.content();
+        this.isPinned = updateNotice.isPinned();
+    }
 }

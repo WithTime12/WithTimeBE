@@ -39,5 +39,16 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 		Pageable pageable
 	);
 
+	@Query("""
+		SELECT n FROM Notice n
+		WHERE n.noticeCategory = :noticeCategory
+			AND n.deletedAt IS NOT NULL
+		ORDER BY n.isPinned DESC, n.deletedAt ASC 
+	""")
+	Page<Notice> findTrashNoticeListByNoticeCategory(
+		@Param("noticeCategory") NoticeCategory noticeCategory,
+		Pageable pageable
+	);
+
 	Optional<Notice> findNoticeById(Long noticeId);
 }

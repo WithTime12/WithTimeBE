@@ -35,6 +35,13 @@ public class NoticeQueryServiceImpl implements NoticeQueryService {
 	}
 
 	@Override
+	public Page<Notice> findTrashNoticeList(NoticeRequestDTO.FindNoticeList request) {
+		return noticeRepository.findTrashNoticeListByNoticeCategory(
+			request.noticeCategory(), request.pageable()
+		);
+	}
+
+	@Override
 	public Notice findNoticeDetail(NoticeRequestDTO.FindNoticeDetail request) {
 
 		Notice notice = noticeRepository.findNoticeById(request.noticeId())

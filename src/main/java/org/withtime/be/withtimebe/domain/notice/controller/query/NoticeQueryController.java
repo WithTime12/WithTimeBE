@@ -101,4 +101,30 @@ public class NoticeQueryController {
 		NoticeResponseDTO.NoticeDetail response = NoticeConverter.toNoticeDetail(result, member);
 		return DefaultResponse.ok(response);
 	}
+
+	@Operation(summary = "삭제된 공지사항 전체 조회 API Only Admin by 피우", description = "삭제된 공지사항 상세 조회 API입니다. 어드민만 사용 가능합니다.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "성공입니다."),
+		@ApiResponse(responseCode = "403",
+			description = """
+				- COMMON403 : "Admin 권한이 없음을 의미합니다."
+			"""),
+		@ApiResponse(
+			responseCode = "404",
+			description = """
+				- NOTICE404_1 : "해당하는 공지사항 유형을 찾을 수 없습니다."
+			""")
+	})
+	@Parameter(name = "noticeCategory", description = "SYSTEM / SERVICE")
+	@SwaggerPageable
+	@GetMapping("/admin/notices/trash")
+	public DefaultResponse<NoticeResponseDTO.NoticeList> findTrashNoticeList(
+		@PageableDefault(page = 0, size = 10) Pageable pageable,
+		@RequestParam String noticeCategory
+	) {
+		NoticeRequestDTO.FindNoticeList request = NoticeConverter.toFindNoticeList(pageable, noticeCategory);
+		Page<Notice> result = noticeQueryService.findTrashNoticeList(request);
+		NoticeResponseDTO.NoticeList response = NoticeConverter.toNoticeList(result);
+		return DefaultResponse.ok(response);
+	}
 }

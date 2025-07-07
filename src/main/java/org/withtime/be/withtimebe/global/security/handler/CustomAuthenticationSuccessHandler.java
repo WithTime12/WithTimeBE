@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.withtime.be.withtimebe.domain.auth.dto.response.AuthResponseDTO;
 import org.withtime.be.withtimebe.domain.auth.service.command.TokenCommandService;
 import org.withtime.be.withtimebe.domain.auth.service.command.TokenQueryService;
+import org.withtime.be.withtimebe.domain.auth.service.command.TokenStorageCommandService;
 import org.withtime.be.withtimebe.global.security.constants.AuthenticationConstants;
 import org.withtime.be.withtimebe.global.security.domain.CustomUserDetails;
 import org.withtime.be.withtimebe.global.util.CookieUtil;
@@ -24,14 +25,17 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
+    private final TokenStorageCommandService tokenStorageCommandService;
     private final TokenCommandService tokenCommandService;
     private final TokenQueryService tokenQueryService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        AuthResponseDTO.Login loginResponse = tokenCommandService.createLoginToken((CustomUserDetails) authentication.getPrincipal());
+        CustomUserDetails customUserDetails =(CustomUserDetails) authentication.getPrincipal();
+        AuthResponseDTO.Login loginResponse = tokenCommandService.createLoginToken(customUserDetails);
         CookieUtil.addCookie(request, response, AuthenticationConstants.ACCESS_TOKEN_NAME, loginResponse.accessToken(), (int) tokenQueryService.getAccessTokenExpiration().toSeconds());
         CookieUtil.addCookie(request, response, AuthenticationConstants.REFRESH_TOKEN_NAME, loginResponse.refreshToken(), (int) tokenQueryService.getRefreshTokenExpiration().toSeconds());
+        tokenStorageCommandService.addRefreshToken(customUserDetails.getId(), loginResponse.refreshToken());
 
         ObjectMapper objectMapper = new ObjectMapper();
         response.setStatus(HttpStatus.OK.value());

@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
 import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
 import org.withtime.be.withtimebe.global.security.filter.JsonLoginFilter;
 import org.withtime.be.withtimebe.global.security.filter.JwtFilter;
@@ -31,6 +32,7 @@ import org.withtime.be.withtimebe.global.util.JwtUtil;
 public class SecurityConfig {
 
     private static final String API_PREFIX = "/api/v1";
+    private final TokenStorageQueryService tokenStorageQueryService;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final MemberQueryService memberQueryService;
@@ -82,7 +84,7 @@ public class SecurityConfig {
 
     @Bean
     Filter jwtFilter() {
-        return new JwtFilter(jwtUtil, memberQueryService, failureResponseWriter, requestSecurityContextRepository());
+        return new JwtFilter(jwtUtil, memberQueryService, tokenStorageQueryService, failureResponseWriter, requestSecurityContextRepository());
     }
 
     @Bean

@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
 import org.withtime.be.withtimebe.global.security.constants.AuthenticationConstants;
@@ -32,6 +33,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final MemberQueryService memberQueryService;
+    private final TokenStorageQueryService tokenStorageQueryService;
     private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
     private final SecurityContextRepository securityContextRepository;
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
@@ -39,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = getToken(request);
-        if (token != null) {
+        if (token != null && !tokenStorageQueryService.isBlackList(token)) {
             try {
                 Long userId = jwtUtil.getUserId(token);
                 Member member = memberQueryService.findById(userId);

@@ -2,6 +2,7 @@ package org.withtime.be.withtimebe.global.util;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 import org.withtime.be.withtimebe.global.data.JwtConfigData;
 import org.withtime.be.withtimebe.global.error.code.TokenErrorCode;
@@ -18,7 +19,9 @@ import java.util.Date;
 public class JwtUtil {
 
     private final SecretKey secretKey;
+    @Getter
     private final Duration accessExpiration;
+    @Getter
     private final Duration refreshExpiration;
 
     public JwtUtil(JwtConfigData jwtConfigData) {

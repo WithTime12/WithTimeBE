@@ -20,16 +20,15 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
+import org.withtime.be.withtimebe.global.security.constants.AuthenticationConstants;
 import org.withtime.be.withtimebe.global.security.domain.CustomUserDetails;
+import org.withtime.be.withtimebe.global.util.CookieUtil;
 import org.withtime.be.withtimebe.global.util.JwtUtil;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-
-    private static final String AUTHORIZATION_KEY = "Authorization";
-    private static final String TOKEN_PREFIX = "Bearer ";
 
     private final JwtUtil jwtUtil;
     private final MemberQueryService memberQueryService;
@@ -61,11 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     private String getToken(HttpServletRequest request) {
-        String header = request.getHeader(AUTHORIZATION_KEY);
-        if (header != null && header.startsWith(TOKEN_PREFIX)) {
-            return header.substring(TOKEN_PREFIX.length());
-        }
-        return null;
+        return CookieUtil.getCookie(request, AuthenticationConstants.ACCESS_TOKEN_NAME);
     }
 
     private void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) {

@@ -1,5 +1,6 @@
 package org.withtime.be.withtimebe.domain.auth.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,14 @@ public class AuthController {
     private final AuthCommandService authCommandService;
 
     @PostMapping("/sign-up")
-    public DefaultResponse<String> signUp(@RequestBody AuthRequestDTO.SignUp request) {
+    public DefaultResponse<String> signUp(@Valid @RequestBody AuthRequestDTO.SignUp request) {
         authCommandService.signUp(request);
         return DefaultResponse.noContent();
     }
 
     @PostMapping("/login")
-    public void login(@RequestBody AuthRequestDTO.Login request) {
+    public DefaultResponse<String> login(@RequestBody AuthRequestDTO.Login request) {
         // 필터에서 처리
+        return null;
     }
 }

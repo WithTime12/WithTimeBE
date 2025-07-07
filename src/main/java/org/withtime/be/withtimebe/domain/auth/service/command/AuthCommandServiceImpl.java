@@ -18,13 +18,12 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     @Override
     public void signUp(AuthRequestDTO.SignUp request) {
         if (availableSignUp(request)) {
-            Member member = AuthConverter.toLocalMember(request.username(), passwordEncoder.encode(request.password()));
+            Member member = AuthConverter.toLocalMember(request.email(), request.username(), passwordEncoder.encode(request.password()), request.phoneNumber(), request.gender(), request.birth());
             memberRepository.save(member);
         }
     }
 
     private boolean availableSignUp(AuthRequestDTO.SignUp request) {
-        // TODO: 회원가입 조건
-        return true;
+        return !memberRepository.existsByEmail(request.email());
     }
 }

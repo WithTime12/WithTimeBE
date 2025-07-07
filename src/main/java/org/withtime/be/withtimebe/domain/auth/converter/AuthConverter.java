@@ -2,7 +2,11 @@ package org.withtime.be.withtimebe.domain.auth.converter;
 
 import org.withtime.be.withtimebe.domain.auth.dto.response.AuthResponseDTO;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
-import org.withtime.be.withtimebe.domain.member.entity.enums.ProviderType;
+import org.withtime.be.withtimebe.domain.member.entity.enums.Gender;
+import org.withtime.be.withtimebe.domain.member.entity.enums.Role;
+import org.withtime.be.withtimebe.domain.member.entity.enums.UserRank;
+
+import java.time.LocalDate;
 
 public class AuthConverter {
 
@@ -13,11 +17,18 @@ public class AuthConverter {
                 .build();
     }
 
-    public static Member toLocalMember(String username, String encodedPassword) {
+    public static Member toLocalMember(String email, String username, String encodedPassword, String phoneNumber, Gender gender, LocalDate birth) {
         return Member.builder()
+                .email(email)
                 .username(username)
                 .password(encodedPassword)
-                .providerType(ProviderType.LOCAL)
+                .phoneNumber(phoneNumber)
+                .gender(gender)
+                .birth(birth)
+                .userRank(UserRank.COMMON)
+                .isAutoPayment(false)
+                .isNotice(false)
+                .role(Role.USER)
                 .build();
     }
 }

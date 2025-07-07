@@ -47,4 +47,8 @@ public class Notice extends BaseEntity {
         this.content = updateNotice.content();
         this.isPinned = updateNotice.isPinned();
     }
+
+    public void updateDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
 }

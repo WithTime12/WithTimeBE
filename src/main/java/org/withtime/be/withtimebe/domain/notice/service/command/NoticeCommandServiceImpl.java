@@ -36,4 +36,12 @@ public class NoticeCommandServiceImpl implements NoticeCommandService{
 
 		return notice;
 	}
+
+	@Override
+	public void softDeleteNotice(Long noticeId) {
+		Notice notice = noticeRepository.findNoticeById(noticeId)
+			.orElseThrow(() -> new NoticeException(NoticeErrorCode.NOTICE_NOT_FOUND));
+
+		notice.updateDeletedAt(LocalDateTime.now());
+	}
 }

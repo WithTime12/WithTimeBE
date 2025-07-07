@@ -27,7 +27,6 @@ public class AuthConverter {
                 .birth(birth)
                 .userRank(UserRank.COMMON)
                 .isAutoPayment(false)
-                .isNotice(false)
                 .role(Role.USER)
                 .build();
     }

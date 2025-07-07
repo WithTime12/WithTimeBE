@@ -40,9 +40,6 @@ public class Member extends BaseEntity {
     @Column(name = "is_auto_payment", nullable = false)
     private Boolean isAutoPayment;
 
-    @Column(name = "is_notice", nullable = false)
-    private Boolean isNotice;
-
     @Column(name = "password")
     private String password;
 

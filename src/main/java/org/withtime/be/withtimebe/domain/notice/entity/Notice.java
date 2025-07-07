@@ -27,6 +27,7 @@ public class Notice extends BaseEntity {
     @Column(name = "content")
     private String content;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "notice_category")
     private NoticeCategory noticeCategory;
 

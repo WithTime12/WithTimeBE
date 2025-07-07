@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.auth.service.command;
+package org.withtime.be.withtimebe.domain.auth.service.query;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -8,7 +8,7 @@ import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
-public class JwtTokenQueryService implements TokenQueryService{
+public class JwtTokenQueryService implements TokenQueryService {
 
     private final JwtUtil jwtUtil;
 

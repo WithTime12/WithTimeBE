@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.auth.service.command;
+package org.withtime.be.withtimebe.domain.auth.service.query;
 
 import java.time.Duration;
 

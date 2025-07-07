@@ -3,6 +3,7 @@ package org.withtime.be.withtimebe.domain.auth.service.command;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.withtime.be.withtimebe.domain.auth.constants.TokenStorageConstants;
+import org.withtime.be.withtimebe.domain.auth.service.query.TokenQueryService;
 import org.withtime.be.withtimebe.global.util.RedisUtil;
 
 

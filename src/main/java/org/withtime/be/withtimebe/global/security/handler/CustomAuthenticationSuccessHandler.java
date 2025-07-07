@@ -13,7 +13,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 import org.withtime.be.withtimebe.domain.auth.dto.response.AuthResponseDTO;
 import org.withtime.be.withtimebe.domain.auth.service.command.TokenCommandService;
-import org.withtime.be.withtimebe.domain.auth.service.command.TokenQueryService;
+import org.withtime.be.withtimebe.domain.auth.service.query.TokenQueryService;
 import org.withtime.be.withtimebe.domain.auth.service.command.TokenStorageCommandService;
 import org.withtime.be.withtimebe.global.security.constants.AuthenticationConstants;
 import org.withtime.be.withtimebe.global.security.domain.CustomUserDetails;

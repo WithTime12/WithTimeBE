@@ -23,4 +23,14 @@ public record NoticeResponseDTO() {
 		Boolean isPinned,	// 고정 여부
 		LocalDateTime createdAt	// 생성 날짜
 	) {}
+
+	@Builder
+	public record NoticeDetail(
+		Long noticeId,    // 게시글 식별자 값
+		String title,    // 게시글 제목
+		String content,    // 게시글 내용
+		Boolean isPinned,    // 고정 여부
+		Boolean hasAdminAuth,    // 어드민 여부
+		LocalDateTime createdAt    // 생성 날짜
+	) {}
 }

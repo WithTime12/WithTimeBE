@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.withtime.be.withtimebe.domain.member.entity.Member;
+import org.withtime.be.withtimebe.domain.member.entity.enums.Role;
 import org.withtime.be.withtimebe.domain.notice.dto.request.NoticeRequestDTO;
 import org.withtime.be.withtimebe.domain.notice.dto.response.NoticeResponseDTO;
 import org.withtime.be.withtimebe.domain.notice.entity.Notice;
@@ -48,6 +50,15 @@ public class NoticeConverter {
 			.build();
 	}
 
+	// Request : 상세 조회 요청 (Controller -> Service) DTO
+	public static NoticeRequestDTO.FindNoticeDetail toFindNoticeDetail(Long noticeId, Member member) {
+
+		return NoticeRequestDTO.FindNoticeDetail.builder()
+			.noticeId(noticeId)
+			.member(member)
+			.build();
+	}
+
 	// Response DTO : NoticeResponseDTO.NoticeList
 	public static NoticeResponseDTO.NoticeList toNoticeList(Page<Notice> noticePage) {
 
@@ -71,6 +82,21 @@ public class NoticeConverter {
 			.noticeId(notice.getId())
 			.title(notice.getTitle())
 			.isPinned(notice.getIsPinned())
+			.createdAt(notice.getCreatedAt())
+			.build();
+	}
+
+	// Response : NoticeDetail(DTO)로 변환
+	public static NoticeResponseDTO.NoticeDetail toNoticeDetail(Notice notice, Member member) {
+
+		boolean hasAdminAuth = member != null && member.getRole().equals(Role.ADMIN);
+
+		return NoticeResponseDTO.NoticeDetail.builder()
+			.noticeId(notice.getId())
+			.title(notice.getTitle())
+			.content(notice.getContent())
+			.isPinned(notice.getIsPinned())
+			.hasAdminAuth(hasAdminAuth)
 			.createdAt(notice.getCreatedAt())
 			.build();
 	}

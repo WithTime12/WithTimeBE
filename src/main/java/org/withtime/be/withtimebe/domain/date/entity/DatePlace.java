@@ -2,6 +2,8 @@ package org.withtime.be.withtimebe.domain.date.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import org.withtime.be.withtimebe.domain.date.entity.enums.PlaceType;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 @Entity
@@ -43,4 +45,8 @@ public class DatePlace extends BaseEntity {
 
     @Column(name = "lot_number_address")
     private String lotNumberAddress;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "place_type")
+    private PlaceType placeType;
 }

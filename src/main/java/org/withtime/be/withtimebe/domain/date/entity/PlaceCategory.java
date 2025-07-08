@@ -21,4 +21,13 @@ public class PlaceCategory extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "category_type", nullable = false)
     private PlaceCategoryType categoryType;
+
+    @Column(name = "code", nullable = false)
+    private String code;
+
+    @Column(name = "label", nullable = false)
+    private String label;
+
+    @Column(name = "description", nullable = false)
+    private String description;
 }

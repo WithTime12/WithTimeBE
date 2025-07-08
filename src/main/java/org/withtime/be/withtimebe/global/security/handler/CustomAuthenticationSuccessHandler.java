@@ -33,14 +33,25 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         CustomUserDetails customUserDetails =(CustomUserDetails) authentication.getPrincipal();
         AuthResponseDTO.Login loginResponse = tokenCommandService.createLoginToken(customUserDetails);
-        CookieUtil.addCookie(request, response, AuthenticationConstants.ACCESS_TOKEN_NAME, loginResponse.accessToken(), (int) tokenQueryService.getAccessTokenExpiration().toSeconds());
-        CookieUtil.addCookie(request, response, AuthenticationConstants.REFRESH_TOKEN_NAME, loginResponse.refreshToken(), (int) tokenQueryService.getRefreshTokenExpiration().toSeconds());
-        tokenStorageCommandService.addRefreshToken(customUserDetails.getId(), loginResponse.refreshToken());
+        addToken(request, response, loginResponse, customUserDetails);
 
         ObjectMapper objectMapper = new ObjectMapper();
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         objectMapper.writeValue(response.getOutputStream(), DefaultResponse.noContent());
+    }
+
+    private void addToken(HttpServletRequest request, HttpServletResponse response, AuthResponseDTO.Login loginResponse, CustomUserDetails customUserDetails) {
+        // 쿠키에 이미 토큰이 있는 경우 블랙리스트 처리
+        for (String token : new String[] {CookieUtil.getCookie(request, AuthenticationConstants.ACCESS_TOKEN_NAME), CookieUtil.getCookie(request, AuthenticationConstants.REFRESH_TOKEN_NAME)}) {
+            if (token != null) {
+                tokenStorageCommandService.addBlackList(token);
+            }
+        }
+
+        CookieUtil.addCookie(request, response, AuthenticationConstants.ACCESS_TOKEN_NAME, loginResponse.accessToken(), (int) tokenQueryService.getAccessTokenExpiration().toSeconds());
+        CookieUtil.addCookie(request, response, AuthenticationConstants.REFRESH_TOKEN_NAME, loginResponse.refreshToken(), (int) tokenQueryService.getRefreshTokenExpiration().toSeconds());
+        tokenStorageCommandService.addRefreshToken(customUserDetails.getId(), loginResponse.refreshToken());
     }
 }

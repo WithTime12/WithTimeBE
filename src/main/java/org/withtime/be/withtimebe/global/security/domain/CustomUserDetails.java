@@ -18,7 +18,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getUsername();
+        return member.getEmail();
     }
 
     @Override
@@ -29,10 +29,6 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    public String getProviderType() {
-        return member.getProviderType().name();
     }
 
     public Long getId() {

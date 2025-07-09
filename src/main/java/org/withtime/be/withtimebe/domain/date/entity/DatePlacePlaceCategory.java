@@ -2,7 +2,7 @@ package org.withtime.be.withtimebe.domain.date.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.withtime.be.withtimebe.domain.date.entity.enums.PlaceCategoryPriority;
+
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 @Entity
@@ -25,8 +25,4 @@ public class DatePlacePlaceCategory extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_category_id", nullable = false)
     private PlaceCategory placeCategory;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "place_category_priority", nullable = false)
-    private PlaceCategoryPriority placeCategoryPriority;
 }

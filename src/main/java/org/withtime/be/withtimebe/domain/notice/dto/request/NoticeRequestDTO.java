@@ -39,8 +39,6 @@ public record NoticeRequestDTO() {
 	) {}
 
 	public record UpdateNotice (
-		@NotNull(message = "공지사항의 식별자 값을 입력해주세요")
-		Long noticeId,
 		@NotBlank(message = "제목을 입력해주세요")
 		String title,
 		@NotBlank(message = "내용을 입력해주세요")

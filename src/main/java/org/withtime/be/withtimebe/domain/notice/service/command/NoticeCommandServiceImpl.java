@@ -28,8 +28,8 @@ public class NoticeCommandServiceImpl implements NoticeCommandService{
 	}
 
 	@Override
-	public Notice updateNotice(NoticeRequestDTO.UpdateNotice request) {
-		Notice notice = noticeRepository.findNoticeById(request.noticeId())
+	public Notice updateNotice(NoticeRequestDTO.UpdateNotice request, Long noticeId) {
+		Notice notice = noticeRepository.findNoticeById(noticeId)
 			.orElseThrow(() -> new NoticeException(NoticeErrorCode.NOTICE_NOT_FOUND));
 
 		notice.updateFields(request);

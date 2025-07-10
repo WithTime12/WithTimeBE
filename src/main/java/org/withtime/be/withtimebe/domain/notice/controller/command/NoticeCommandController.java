@@ -61,8 +61,11 @@ public class NoticeCommandController {
 			""")
 	})
 	@PutMapping("/{noticeId}")
-	public DefaultResponse<NoticeResponseDTO.Notice> updateNotice(@RequestBody @Valid NoticeRequestDTO.UpdateNotice request) {
-		Notice result = noticeCommandService.updateNotice(request);
+	public DefaultResponse<NoticeResponseDTO.Notice> updateNotice(
+		@PathVariable Long noticeId,
+		@RequestBody @Valid NoticeRequestDTO.UpdateNotice request
+	) {
+		Notice result = noticeCommandService.updateNotice(request, noticeId);
 		NoticeResponseDTO.Notice response = NoticeConverter.toNotice(result);
 		return DefaultResponse.ok(response);
 	}

@@ -8,6 +8,7 @@ import org.withtime.be.withtimebe.domain.faq.dto.request.FaqRequestDTO;
 import org.withtime.be.withtimebe.domain.faq.dto.response.FaqResponseDTO;
 import org.withtime.be.withtimebe.domain.faq.entity.Faq;
 import org.withtime.be.withtimebe.domain.faq.entity.enums.FaqCategory;
+import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.error.code.FaqErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.FaqException;
 
@@ -71,6 +72,16 @@ public class FaqConverter {
 			.faqId(faq.getId())
 			.title(faq.getTitle())
 			.content(faq.getContent())
+			.build();
+	}
+
+	public static Faq toFaqEntity(FaqRequestDTO.CreateFaq request, Member member) {
+
+		return Faq.builder()
+			.member(member)
+			.title(request.title())
+			.content(request.content())
+			.faqCategory(request.faqCategory())
 			.build();
 	}
 }

@@ -1,5 +1,7 @@
 package org.withtime.be.withtimebe.domain.faq.dto.request;
 
+import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.*;
+
 import org.springframework.data.domain.Pageable;
 import org.withtime.be.withtimebe.domain.faq.entity.enums.FaqCategory;
 
@@ -31,4 +33,14 @@ public class FaqRequestDTO {
 		@NotNull(message = "질문글 유형을 입력해주세요")
 		FaqCategory faqCategory
 	) {}
+
+	public record UpdateFaq (
+		@NotNull(message = "질문글의 식별자 값을 입력해주세요")
+		Long faqId,
+		@NotBlank(message = "제목을 입력해주세요")
+		String title,
+		@NotBlank(message = "내용을 입력해주세요")
+		String content
+	) {}
+
 }

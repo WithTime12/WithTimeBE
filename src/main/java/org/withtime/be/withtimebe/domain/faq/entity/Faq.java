@@ -2,6 +2,7 @@ package org.withtime.be.withtimebe.domain.faq.entity;
 
 import java.time.LocalDateTime;
 
+import org.withtime.be.withtimebe.domain.faq.dto.request.FaqRequestDTO;
 import org.withtime.be.withtimebe.domain.faq.entity.enums.FaqCategory;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
@@ -52,4 +53,9 @@ public class Faq extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
+
+	public void updateFields(FaqRequestDTO.UpdateFaq request) {
+		this.title = request.title();
+		this.content = request.content();
+	}
 }

@@ -7,6 +7,8 @@ import org.withtime.be.withtimebe.domain.faq.dto.request.FaqRequestDTO;
 import org.withtime.be.withtimebe.domain.faq.entity.Faq;
 import org.withtime.be.withtimebe.domain.faq.repository.FaqRepository;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
+import org.withtime.be.withtimebe.global.error.code.FaqErrorCode;
+import org.withtime.be.withtimebe.global.error.exception.FaqException;
 
 import lombok.AllArgsConstructor;
 
@@ -21,5 +23,15 @@ public class FaqCommandServiceImpl implements FaqCommandService {
 	public Faq createFaq(FaqRequestDTO.CreateFaq request, Member member) {
 		Faq faq = FaqConverter.toFaqEntity(request, member);
 		return faqRepository.save(faq);
+	}
+
+	@Override
+	public Faq updateFaq(FaqRequestDTO.UpdateFaq request) {
+		Faq faq = faqRepository.findById(request.faqId())
+			.orElseThrow(() -> new FaqException(FaqErrorCode.FAQ_NOT_FOUND));
+
+		faq.updateFields(request);
+
+		return faq;
 	}
 }

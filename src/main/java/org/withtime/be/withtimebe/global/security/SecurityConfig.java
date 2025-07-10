@@ -44,6 +44,7 @@ public class SecurityConfig {
 
     private String[] allowUrl = {
             API_PREFIX + "/auth/**",
+            API_PREFIX + "/notices/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**"
@@ -54,6 +55,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(allowUrl).permitAll()
+                        .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jsonLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)

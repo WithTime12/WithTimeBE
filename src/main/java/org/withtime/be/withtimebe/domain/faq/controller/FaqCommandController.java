@@ -68,5 +68,22 @@ public class FaqCommandController {
 		FaqResponseDTO.Faq response = FaqConverter.toFaq(result);
 		return DefaultResponse.ok(response);
 	}
-	
+
+	@Operation(summary = "자주 묻는 질문 삭제 API Only Admin by 피우", description = "자주 묻는 질문 삭제 API입니다. 어드민만 사용 가능합니다.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "성공입니다."),
+		@ApiResponse(responseCode = "403",
+			description = """
+				- COMMON403 : "Admin 권한이 없음을 의미합니다."
+			"""),
+		@ApiResponse(responseCode = "404",
+			description = """
+				- FAQ404_2 : "해당하는 질문글을 찾을 수 없습니다."
+			""")
+	})
+	@DeleteMapping("/faqs/{faqId}")
+	public DefaultResponse<String> deleteFaq(@PathVariable("faqId") Long faqId) {
+		faqCommandService.deleteFaq(faqId);
+		return DefaultResponse.noContent();
+	}
 }

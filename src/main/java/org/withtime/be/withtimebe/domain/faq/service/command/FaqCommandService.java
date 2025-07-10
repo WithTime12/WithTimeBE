@@ -9,4 +9,6 @@ public interface FaqCommandService {
 	Faq createFaq(FaqRequestDTO.CreateFaq request, Member member);
 
 	Faq updateFaq(FaqRequestDTO.UpdateFaq request, Long faqId);
+
+	void deleteFaq(Long faqId);
 }

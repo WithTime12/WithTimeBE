@@ -34,4 +34,11 @@ public class FaqCommandServiceImpl implements FaqCommandService {
 
 		return faq;
 	}
+
+	@Override
+	public void deleteFaq(Long faqId) {
+		Faq faq = faqRepository.findById(faqId)
+			.orElseThrow(() -> new FaqException(FaqErrorCode.FAQ_NOT_FOUND));
+		faqRepository.delete(faq);
+	}
 }

@@ -35,8 +35,6 @@ public class FaqRequestDTO {
 	) {}
 
 	public record UpdateFaq (
-		@NotNull(message = "질문글의 식별자 값을 입력해주세요")
-		Long faqId,
 		@NotBlank(message = "제목을 입력해주세요")
 		String title,
 		@NotBlank(message = "내용을 입력해주세요")

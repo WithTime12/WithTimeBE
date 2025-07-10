@@ -26,8 +26,8 @@ public class FaqCommandServiceImpl implements FaqCommandService {
 	}
 
 	@Override
-	public Faq updateFaq(FaqRequestDTO.UpdateFaq request) {
-		Faq faq = faqRepository.findById(request.faqId())
+	public Faq updateFaq(FaqRequestDTO.UpdateFaq request, Long faqId) {
+		Faq faq = faqRepository.findById(faqId)
 			.orElseThrow(() -> new FaqException(FaqErrorCode.FAQ_NOT_FOUND));
 
 		faq.updateFields(request);

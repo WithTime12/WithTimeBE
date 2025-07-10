@@ -1,6 +1,8 @@
 package org.withtime.be.withtimebe.domain.faq.controller;
 
 import org.namul.api.payload.response.DefaultResponse;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,8 +60,11 @@ public class FaqCommandController {
 			""")
 	})
 	@PutMapping("/faqs/{faqId}")
-	public DefaultResponse<FaqResponseDTO.Faq> createFaq(@RequestBody @Valid FaqRequestDTO.UpdateFaq request) {
-		Faq result = faqCommandService.updateFaq(request);
+	public DefaultResponse<FaqResponseDTO.Faq> updateFaq(
+		@PathVariable("faqId") Long faqId,
+		@RequestBody @Valid FaqRequestDTO.UpdateFaq request
+	) {
+		Faq result = faqCommandService.updateFaq(request, faqId);
 		FaqResponseDTO.Faq response = FaqConverter.toFaq(result);
 		return DefaultResponse.ok(response);
 	}

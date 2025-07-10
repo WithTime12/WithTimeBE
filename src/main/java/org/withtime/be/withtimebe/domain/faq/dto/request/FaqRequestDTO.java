@@ -1,7 +1,5 @@
 package org.withtime.be.withtimebe.domain.faq.dto.request;
 
-import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyle.*;
-
 import org.springframework.data.domain.Pageable;
 import org.withtime.be.withtimebe.domain.faq.entity.enums.FaqCategory;
 

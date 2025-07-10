@@ -19,6 +19,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
 import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
 import org.withtime.be.withtimebe.global.security.filter.JsonLoginFilter;
@@ -62,6 +65,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint(authenticationEntryPoint())
                 )
+                .cors( cors -> cors.configurationSource(corsConfigurationSource()))
         ;
         return http.build();
     }
@@ -100,5 +104,18 @@ public class SecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOriginPattern("http://localhost:5173"); // 실배포 주소 나중에 추가
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

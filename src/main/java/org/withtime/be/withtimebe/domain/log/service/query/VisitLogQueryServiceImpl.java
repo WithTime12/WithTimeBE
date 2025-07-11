@@ -27,4 +27,9 @@ public class VisitLogQueryServiceImpl implements VisitLogQueryService {
 
 		return visitLogRepository.findByDateBetween(dateBefore, dateAfter);
 	}
+
+	@Override
+	public List<VisitLog> findHourlyVisitLogList(LocalDate date) {
+		return visitLogRepository.findByDate(date);
+	}
 }

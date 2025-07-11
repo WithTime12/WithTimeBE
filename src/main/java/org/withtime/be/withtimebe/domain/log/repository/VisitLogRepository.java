@@ -8,4 +8,5 @@ import org.withtime.be.withtimebe.domain.log.entity.VisitLog;
 
 public interface VisitLogRepository extends JpaRepository<VisitLog, Long> {
 	List<VisitLog> findByDateBetween(LocalDate dateAfter, LocalDate dateBefore);
+	List<VisitLog> findByDate(LocalDate date);
 }

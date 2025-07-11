@@ -25,9 +25,14 @@ public class EmailCommandServiceImpl implements EmailCommandService {
         String email = request.email();
         String code = randomSixDigitGenerator.generateRandom();
 
-        mailVerificationCodeSender.sendMail(email, code);
-
         emailVerificationCodeStorageCommandService.saveVerificationCode(email, code);
+        try {
+            mailVerificationCodeSender.sendMail(email, code);
+        } catch (Exception e) {
+            emailVerificationCodeStorageCommandService.deleteVerificationCode(email);
+            throw e;
+        }
+
     }
 
     @Override

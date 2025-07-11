@@ -6,12 +6,12 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 @Component
-public class RandomSixDigitGenerator implements RandomGenerator<Integer> {
+public class RandomSixDigitGenerator implements RandomGenerator<String> {
 
     private static final Random RANDOM = new SecureRandom();
 
     @Override
-    public Integer generateRandom() {
-        return RANDOM.nextInt(1000000);
+    public String generateRandom() {
+        return String.format("%06d", RANDOM.nextInt(1000000));
     }
 }

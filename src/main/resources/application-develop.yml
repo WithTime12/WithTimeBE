@@ -16,7 +16,7 @@ spring:
       host: ${REDIS_HOST}
       port: 6379
   mail:
-    host: smtp.gmail.com
+    host: ${MAIL_SENDER_HOST}
     port: 587
     username: ${MAIL_SENDER_USERNAME}
     password: ${MAIL_SENDER_PASSWORD}

@@ -2,6 +2,7 @@ package org.withtime.be.withtimebe.domain.auth.service.command;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.auth.dto.request.EmailRequestDTO;
 import org.withtime.be.withtimebe.domain.auth.generator.RandomGenerator;
 import org.withtime.be.withtimebe.domain.auth.service.query.EmailVerificationCodeStorageQueryService;
@@ -11,9 +12,10 @@ import org.withtime.be.withtimebe.global.error.exception.EmailException;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class EmailCommandServiceImpl implements EmailCommandService {
 
-    private final RandomGenerator<Integer> randomSixDigitGenerator;
+    private final RandomGenerator<String> randomSixDigitGenerator;
     private final MailVerificationCodeSender mailVerificationCodeSender;
     private final EmailVerificationCodeStorageCommandService emailVerificationCodeStorageCommandService;
     private final EmailVerificationCodeStorageQueryService emailVerificationCodeStorageQueryService;
@@ -21,7 +23,7 @@ public class EmailCommandServiceImpl implements EmailCommandService {
     @Override
     public void sendEmail(EmailRequestDTO.Send request) {
         String email = request.email();
-        String code = String.valueOf(randomSixDigitGenerator.generateRandom());
+        String code = randomSixDigitGenerator.generateRandom();
 
         mailVerificationCodeSender.sendMail(email, code);
 

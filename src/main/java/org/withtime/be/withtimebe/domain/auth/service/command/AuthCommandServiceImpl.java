@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.auth.converter.AuthConverter;
 import org.withtime.be.withtimebe.domain.auth.dto.request.AuthRequestDTO;
 import org.withtime.be.withtimebe.domain.auth.service.query.EmailVerificationCodeStorageQueryService;
@@ -26,6 +27,7 @@ import org.withtime.be.withtimebe.global.util.CookieUtil;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthCommandServiceImpl implements AuthCommandService {
 
     private final PasswordEncoder passwordEncoder;

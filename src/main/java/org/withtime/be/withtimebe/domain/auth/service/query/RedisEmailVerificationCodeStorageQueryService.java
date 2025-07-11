@@ -13,7 +13,7 @@ public class RedisEmailVerificationCodeStorageQueryService implements EmailVerif
 
     @Override
     public boolean checkVerificationCode(String email, String verificationCode) {
-        return redisUtil.get(EmailVerificationStorageConstants.VERIFICATION_CODE_PREFIX, String.class).equals(verificationCode);
+        return verificationCode.equals(redisUtil.get(EmailVerificationStorageConstants.VERIFICATION_CODE_PREFIX + email, String.class));
     }
 
     @Override

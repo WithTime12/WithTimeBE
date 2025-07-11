@@ -13,12 +13,12 @@ public class RedisEmailVerificationCodeStorageCommandService implements EmailVer
 
     @Override
     public void saveVerificationCode(String email, String verificationCode) {
-        redisUtil.set(EmailVerificationStorageConstants.VERIFICATION_CODE_PREFIX+ email, verificationCode, EmailVerificationStorageConstants.VERIFICATION_CODE_DURATION);
+        redisUtil.set(EmailVerificationStorageConstants.VERIFICATION_CODE_PREFIX + email, verificationCode, EmailVerificationStorageConstants.VERIFICATION_CODE_DURATION);
     }
 
     @Override
     public void saveVerifiedEmail(String email) {
-        redisUtil.set(EmailVerificationStorageConstants.EMAIL_VERIFICATION_PREFIX, true, EmailVerificationStorageConstants.EMAIL_VERIFICATION_DURATION);
+        redisUtil.set(EmailVerificationStorageConstants.EMAIL_VERIFICATION_PREFIX + email, true, EmailVerificationStorageConstants.EMAIL_VERIFICATION_DURATION);
     }
 
     @Override

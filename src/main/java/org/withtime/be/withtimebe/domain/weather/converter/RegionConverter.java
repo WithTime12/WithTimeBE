@@ -63,4 +63,16 @@ public class RegionConverter {
                 .name(regionCode.getName())
                 .build();
     }
+
+    public static Region toEntityWithNewCode(RegionReqDTO.CreateRegionWithNewCode request,
+                                             BigDecimal gridX, BigDecimal gridY, RegionCode regionCode) {
+        return Region.builder()
+                .name(request.name())
+                .latitude(request.latitude())
+                .longitude(request.longitude())
+                .gridX(gridX)
+                .gridY(gridY)
+                .regionCode(regionCode)
+                .build();
+    }
 }

@@ -35,4 +35,25 @@ public class RegionReqDTO {
             Long regionCodeId
     ) {
     }
+
+    public record CreateRegionWithNewCode(
+            @NotBlank(message = "지역명은 필수 입력값입니다.")
+            String name,
+
+            @NotNull(message = "위도는 필수 입력값입니다.")
+            BigDecimal latitude,
+
+            @NotNull(message = "경도는 필수 입력값입니다.")
+            BigDecimal longitude,
+
+            @NotBlank(message = "중기 육상 예보 지역코드는 필수 입력값입니다.")
+            String landRegCode,
+
+            @NotBlank(message = "중기 기온 예보 지역코드는 필수 입력값입니다.")
+            String tempRegCode,
+
+            @NotBlank(message = "지역코드명은 필수 입력값입니다.")
+            String regionCodeName
+    ) {
+    }
 }

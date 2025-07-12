@@ -8,4 +8,6 @@ public interface RegionCommandService {
     RegionResDTO.CreateRegionCode createRegionCode(RegionReqDTO.CreateRegionCode request);
 
     RegionResDTO.CreateRegion createRegion(RegionReqDTO.CreateRegion request);
+
+    RegionResDTO.CreateRegion createRegionWithNewCode(RegionReqDTO.CreateRegionWithNewCode request);
 }

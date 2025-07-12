@@ -71,6 +71,34 @@ public class RegionCommandServiceImpl implements RegionCommandService {
         return RegionConverter.toCreateRegion(savedRegion);
     }
 
+    @Override
+    public RegionResDTO.CreateRegion createRegionWithNewCode(RegionReqDTO.CreateRegionWithNewCode request) {
+        log.info("지역+지역코드 등록 요청: {}", request.name());
+
+        // 1. 중복 체크
+        validateDuplicateRegion(request.name(), request.latitude(), request.longitude());
+        validateDuplicateRegionCode(request.landRegCode(), request.tempRegCode());
+
+        // 2. 격자 좌표 변환
+        CoordinateResult coordinateResult = convertToGridCoordinates(request.latitude(), request.longitude());
+
+        // 3. 지역코드 먼저 생성
+        RegionCode regionCode = RegionCode.builder()
+                .landRegCode(request.landRegCode())
+                .tempRegCode(request.tempRegCode())
+                .name(request.regionCodeName())
+                .build();
+        RegionCode savedRegionCode = regionCodeRepository.save(regionCode);
+
+        // 4. 지역 저장
+        Region region = RegionConverter.toEntityWithNewCode(
+                request, coordinateResult.gridX(), coordinateResult.gridY(), savedRegionCode);
+        Region savedRegion = regionRepository.save(region);
+
+        log.info("지역+지역코드 등록 완료: {} (ID: {})", savedRegion.getName(), savedRegion.getId());
+        return RegionConverter.toCreateRegion(savedRegion);
+    }
+
     private void validateDuplicateRegionCode(String landRegCode, String tempRegCode) {
         if (regionCodeRepository.existsByLandRegCode(landRegCode)) {
             throw new WeatherException(WeatherErrorCode.REGION_ALREADY_EXISTS);

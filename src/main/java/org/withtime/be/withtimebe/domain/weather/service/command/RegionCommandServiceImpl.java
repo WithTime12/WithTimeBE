@@ -99,6 +99,24 @@ public class RegionCommandServiceImpl implements RegionCommandService {
         return RegionConverter.toCreateRegion(savedRegion);
     }
 
+    @Override
+    public RegionResDTO.DeleteRegionCode deleteRegionCode(Long regionCodeId) {
+        RegionCode regionCode = regionCodeRepository.findById(regionCodeId)
+                .orElseThrow(() -> new WeatherException(WeatherErrorCode.REGION_NOT_FOUND));
+
+        // 사용 중인 지역이 있는지 확인
+        long regionCount = regionCodeRepository.countRegionsByRegionCodeId(regionCodeId);
+        if (regionCount > 0) {
+            throw new WeatherException(WeatherErrorCode.REGION_ALREADY_EXISTS);
+        }
+
+        regionCodeRepository.delete(regionCode);
+        return RegionConverter.toDeleteRegionCode(regionCode);
+    }
+
+
+    // ==== 내부 유틸리티 메서드들 ====
+
     private void validateDuplicateRegionCode(String landRegCode, String tempRegCode) {
         if (regionCodeRepository.existsByLandRegCode(landRegCode)) {
             throw new WeatherException(WeatherErrorCode.REGION_ALREADY_EXISTS);

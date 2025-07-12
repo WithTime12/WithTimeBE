@@ -88,4 +88,12 @@ public class RegionResDTO {
             int resultCount
     ) {
     }
+
+    @Builder
+    public record DeleteRegionCode(
+            Long regionCodeId,
+            String name,
+            String message
+    ) {
+    }
 }

@@ -140,4 +140,12 @@ public class RegionConverter {
                 .resultCount(regions.size())
                 .build();
     }
+
+    public static RegionResDTO.DeleteRegionCode toDeleteRegionCode(RegionCode regionCode) {
+        return RegionResDTO.DeleteRegionCode.builder()
+                .regionCodeId(regionCode.getId())
+                .name(regionCode.getName())
+                .message("지역코드가 성공적으로 삭제되었습니다.")
+                .build();
+    }
 }

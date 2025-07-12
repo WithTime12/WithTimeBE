@@ -191,4 +191,39 @@ public class RegionController {
         return DefaultResponse.ok(response);
     }
 
+    @DeleteMapping("/codes/{regionCodeId}")
+    @Operation(summary = "지역코드 삭제 by 김지명", description = "지역코드를 삭제합니다(해당 코드를 사용하는 지역이 없어야 함. 관리자용).")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "삭제 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER400_0: 이미 존재하는 지역입니다.
+                            - WEATHER400_5: 올바르지 않은 지역코드입니다.
+                            """),
+            @ApiResponse(responseCode = "403",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER403_0: 접근 권한이 없습니다.
+                            - WEATHER403_1: 관리자만 접근할 수 있습니다.
+                            """),
+            @ApiResponse(responseCode = "404",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER404_0: 지역을 찾을 수 없습니다.
+                            """),
+            @ApiResponse(responseCode = "500",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER500_22: 데이터 정리 중 오류가 발생했습니다.
+                            """)
+    })
+    public DefaultResponse<RegionResDTO.DeleteRegionCode> deleteRegionCode(
+            @Parameter(description = "지역코드 ID", required = true)
+            @PathVariable Long regionCodeId) {
+        log.info("지역코드 삭제 API 호출: regionCodeId={}", regionCodeId);
+
+        RegionResDTO.DeleteRegionCode response = regionCommandService.deleteRegionCode(regionCodeId);
+        return DefaultResponse.ok(response);
+    }
 }

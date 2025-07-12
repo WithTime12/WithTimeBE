@@ -10,4 +10,6 @@ public interface RegionCommandService {
     RegionResDTO.CreateRegion createRegion(RegionReqDTO.CreateRegion request);
 
     RegionResDTO.CreateRegion createRegionWithNewCode(RegionReqDTO.CreateRegionWithNewCode request);
+
+    RegionResDTO.DeleteRegionCode deleteRegionCode(Long regionCodeId);
 }

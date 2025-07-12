@@ -32,7 +32,7 @@ public class WeatherWebClientConfig {
     /**
      * 기상청 API 전용 WebClient 설정
      */
-    @Bean
+    @Bean("weatherWebClient")
     public WebClient weatherWebClient() {
         // HTTP 클라이언트 타임아웃 설정
         HttpClient httpClient = HttpClient.create()

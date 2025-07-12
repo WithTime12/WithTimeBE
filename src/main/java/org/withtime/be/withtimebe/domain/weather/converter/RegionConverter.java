@@ -8,6 +8,7 @@ import org.withtime.be.withtimebe.domain.weather.entity.Region;
 import org.withtime.be.withtimebe.domain.weather.entity.RegionCode;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RegionConverter {
@@ -73,6 +74,33 @@ public class RegionConverter {
                 .gridX(gridX)
                 .gridY(gridY)
                 .regionCode(regionCode)
+                .build();
+    }
+
+    public static RegionResDTO.RegionCodeDetail toRegionCodeDetail(RegionCode regionCode, int regionCount) {
+        return RegionResDTO.RegionCodeDetail.builder()
+                .regionCodeId(regionCode.getId())
+                .landRegCode(regionCode.getLandRegCode())
+                .tempRegCode(regionCode.getTempRegCode())
+                .name(regionCode.getName())
+                .regionCount(regionCount)
+                .createdAt(regionCode.getCreatedAt())
+                .updatedAt(regionCode.getUpdatedAt())
+                .build();
+    }
+
+    public static RegionResDTO.RegionCodeList toRegionCodeList(List<Object[]> regionCodesWithCount) {
+        List<RegionResDTO.RegionCodeDetail> regionCodeDetails = regionCodesWithCount.stream()
+                .map(result -> {
+                    RegionCode regionCode = (RegionCode) result[0];
+                    Long regionCount = (Long) result[1];
+                    return toRegionCodeDetail(regionCode, regionCount.intValue());
+                })
+                .toList();
+
+        return RegionResDTO.RegionCodeList.builder()
+                .regionCodes(regionCodeDetails)
+                .totalCount(regionCodeDetails.size())
                 .build();
     }
 }

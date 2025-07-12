@@ -9,13 +9,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.withtime.be.withtimebe.domain.weather.dto.request.RegionReqDTO;
 import org.withtime.be.withtimebe.domain.weather.dto.response.RegionResDTO;
 import org.withtime.be.withtimebe.domain.weather.service.command.RegionCommandService;
+import org.withtime.be.withtimebe.domain.weather.service.query.RegionQueryService;
 
 @Slf4j
 @RestController
@@ -25,6 +23,7 @@ import org.withtime.be.withtimebe.domain.weather.service.command.RegionCommandSe
 public class RegionController {
 
     private final RegionCommandService regionCommandService;
+    private final RegionQueryService regionQueryService;
 
     @PostMapping("/codes")
     @Operation(summary = "지역코드 등록 by 김지명", description = "새로운 지역코드를 등록합니다(관리자용).")
@@ -126,5 +125,29 @@ public class RegionController {
         RegionResDTO.CreateRegion response = regionCommandService.createRegionWithNewCode(request);
         return DefaultResponse.ok(response);
     }
+
+    @GetMapping("/codes")
+    @Operation(summary = "지역코드 목록 조회 API by 김지명", description = "등록된 모든 지역코드 목록을 조회합니다(관리자용).")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "403",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER403_0: 접근 권한이 없습니다.
+                            - WEATHER403_1: 관리자만 접근할 수 있습니다.
+                            """),
+            @ApiResponse(responseCode = "500",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER500_10: 날씨 데이터 처리 중 오류가 발생했습니다.
+                            """)
+    })
+    public DefaultResponse<RegionResDTO.RegionCodeList> getAllRegionCodes() {
+        log.info("지역코드 목록 조회 API 호출");
+
+        RegionResDTO.RegionCodeList response = regionQueryService.getAllRegionCodes();
+        return DefaultResponse.ok(response);
+    }
+
 
 }

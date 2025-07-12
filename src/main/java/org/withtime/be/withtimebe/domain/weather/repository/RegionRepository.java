@@ -17,4 +17,9 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
             "ABS(r.longitude - :longitude) < 0.001")
     List<Region> findByNearCoordinates(@Param("latitude") BigDecimal latitude,
                                        @Param("longitude") BigDecimal longitude);
+
+    @Query("SELECT r FROM Region r " +
+            "JOIN FETCH r.regionCode " +
+            "ORDER BY r.name ASC")
+    List<Region> findAllActiveRegions();
 }

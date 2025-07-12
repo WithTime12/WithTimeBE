@@ -103,4 +103,29 @@ public class RegionConverter {
                 .totalCount(regionCodeDetails.size())
                 .build();
     }
+
+    public static RegionResDTO.RegionInfo toRegionInfo(Region region) {
+        return RegionResDTO.RegionInfo.builder()
+                .regionId(region.getId())
+                .name(region.getName())
+                .latitude(region.getLatitude())
+                .longitude(region.getLongitude())
+                .gridX(region.getGridX())
+                .gridY(region.getGridY())
+                .regionCode(toRegionCodeInfo(region.getRegionCode()))
+                .createdAt(region.getCreatedAt())
+                .updatedAt(region.getUpdatedAt())
+                .build();
+    }
+
+    public static RegionResDTO.RegionList toRegionList(List<Region> regions) {
+        List<RegionResDTO.RegionInfo> regionInfos = regions.stream()
+                .map(RegionConverter::toRegionInfo)
+                .toList();
+
+        return RegionResDTO.RegionList.builder()
+                .regions(regionInfos)
+                .totalCount(regions.size())
+                .build();
+    }
 }

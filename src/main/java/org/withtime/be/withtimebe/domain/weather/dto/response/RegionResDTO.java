@@ -59,4 +59,25 @@ public class RegionResDTO {
             int totalCount
     ) {
     }
+
+    @Builder
+    public record RegionInfo(
+            Long regionId,
+            String name,
+            BigDecimal latitude,
+            BigDecimal longitude,
+            BigDecimal gridX,
+            BigDecimal gridY,
+            RegionCodeInfo regionCode,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
+    }
+
+    @Builder
+    public record RegionList(
+            List<RegionInfo> regions,
+            int totalCount
+    ) {
+    }
 }

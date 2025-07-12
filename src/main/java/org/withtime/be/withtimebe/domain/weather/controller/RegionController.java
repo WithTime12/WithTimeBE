@@ -149,5 +149,26 @@ public class RegionController {
         return DefaultResponse.ok(response);
     }
 
+    @GetMapping
+    @Operation(summary = "지역 목록 조회 by 김지명", description = "등록된 모든 지역 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "403",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER403_0: 접근 권한이 없습니다.
+                            """),
+            @ApiResponse(responseCode = "500",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER500_10: 날씨 데이터 처리 중 오류가 발생했습니다.
+                            """)
+    })
+    public DefaultResponse<RegionResDTO.RegionList> getAllRegions() {
+        log.info("지역 목록 조회 API 호출");
+
+        RegionResDTO.RegionList response = regionQueryService.getAllRegions();
+        return DefaultResponse.ok(response);
+    }
 
 }

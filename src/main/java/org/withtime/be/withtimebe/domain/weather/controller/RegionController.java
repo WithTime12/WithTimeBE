@@ -1,6 +1,7 @@
 package org.withtime.be.withtimebe.domain.weather.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -168,6 +169,36 @@ public class RegionController {
         log.info("지역 목록 조회 API 호출");
 
         RegionResDTO.RegionList response = regionQueryService.getAllRegions();
+        return DefaultResponse.ok(response);
+    }
+
+    @GetMapping("/{regionId}")
+    @Operation(summary = "지역 상세 조회 by 김지명", description = "특정 지역의 상세 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "403",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER403_0: 접근 권한이 없습니다.
+                            """),
+            @ApiResponse(responseCode = "404",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER404_0: 지역을 찾을 수 없습니다.
+                            """),
+            @ApiResponse(responseCode = "500",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER500_10: 날씨 데이터 처리 중 오류가 발생했습니다.
+                            """)
+    })
+    public DefaultResponse<RegionResDTO.RegionInfo> getRegion(
+            @Parameter(description = "지역 ID", required = true)
+            @PathVariable Long regionId) {
+
+        log.info("지역 상세 조회 API 호출: regionId={}", regionId);
+
+        RegionResDTO.RegionInfo response = regionQueryService.getRegionById(regionId);
         return DefaultResponse.ok(response);
     }
 

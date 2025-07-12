@@ -7,4 +7,6 @@ public interface RegionQueryService {
     RegionResDTO.RegionCodeList getAllRegionCodes();
 
     RegionResDTO.RegionList getAllRegions();
+
+    RegionResDTO.RegionInfo getRegionById(Long regionId);
 }

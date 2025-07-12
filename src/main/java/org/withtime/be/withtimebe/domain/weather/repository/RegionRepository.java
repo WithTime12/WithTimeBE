@@ -7,6 +7,7 @@ import org.withtime.be.withtimebe.domain.weather.entity.Region;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface RegionRepository extends JpaRepository<Region, Long> {
 
@@ -22,4 +23,9 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
             "JOIN FETCH r.regionCode " +
             "ORDER BY r.name ASC")
     List<Region> findAllActiveRegions();
+
+    @Query("SELECT r FROM Region r " +
+            "JOIN FETCH r.regionCode " +
+            "WHERE r.id = :id")
+    Optional<Region> findByIdWithRegionCode(@Param("id") Long id);
 }

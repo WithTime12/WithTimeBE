@@ -8,6 +8,8 @@ import org.withtime.be.withtimebe.domain.weather.dto.response.RegionResDTO;
 import org.withtime.be.withtimebe.domain.weather.entity.Region;
 import org.withtime.be.withtimebe.domain.weather.repository.RegionCodeRepository;
 import org.withtime.be.withtimebe.domain.weather.repository.RegionRepository;
+import org.withtime.be.withtimebe.global.error.code.WeatherErrorCode;
+import org.withtime.be.withtimebe.global.error.exception.WeatherException;
 
 import java.util.List;
 
@@ -31,4 +33,10 @@ public class RegionQueryServiceImpl implements RegionQueryService{
         return RegionConverter.toRegionList(regions);
     }
 
+    @Override
+    public RegionResDTO.RegionInfo getRegionById(Long regionId) {
+        Region region = regionRepository.findByIdWithRegionCode(regionId)
+                .orElseThrow(() -> new WeatherException(WeatherErrorCode.REGION_NOT_FOUND));
+        return RegionConverter.toRegionInfo(region);
+    }
 }

@@ -148,4 +148,12 @@ public class RegionConverter {
                 .message("지역코드가 성공적으로 삭제되었습니다.")
                 .build();
     }
+
+    public static RegionResDTO.DeleteRegion toDeleteRegion(Region region) {
+        return RegionResDTO.DeleteRegion.builder()
+                .regionId(region.getId())
+                .name(region.getName())
+                .message("지역이 성공적으로 삭제되었습니다.")
+                .build();
+    }
 }

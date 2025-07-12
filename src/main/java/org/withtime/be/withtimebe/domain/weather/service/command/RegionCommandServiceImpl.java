@@ -114,6 +114,19 @@ public class RegionCommandServiceImpl implements RegionCommandService {
         return RegionConverter.toDeleteRegionCode(regionCode);
     }
 
+    @Override
+    public RegionResDTO.DeleteRegion deleteRegion(Long regionId) {
+        Region region = regionRepository.findByIdWithRegionCode(regionId)
+                .orElseThrow(() -> new WeatherException(WeatherErrorCode.REGION_NOT_FOUND));
+
+        // 연관된 날씨 데이터가 있는지 확인 (실제로는 CASCADE로 삭제됨)
+        log.warn("지역 삭제: {} (ID: {}) - 연관된 모든 날씨 데이터도 함께 삭제됩니다.",
+                region.getName(), region.getId());
+
+        regionRepository.delete(region);
+
+        return RegionConverter.toDeleteRegion(region);
+    }
 
     // ==== 내부 유틸리티 메서드들 ====
 

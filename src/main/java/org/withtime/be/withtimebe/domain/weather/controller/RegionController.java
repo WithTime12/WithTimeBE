@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.namul.api.payload.response.DefaultResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.withtime.be.withtimebe.domain.weather.dto.request.RegionReqDTO;
@@ -224,6 +225,44 @@ public class RegionController {
         log.info("지역코드 삭제 API 호출: regionCodeId={}", regionCodeId);
 
         RegionResDTO.DeleteRegionCode response = regionCommandService.deleteRegionCode(regionCodeId);
+        return DefaultResponse.ok(response);
+    }
+
+    @DeleteMapping("/{regionId}")
+    @Operation(summary = "지역 삭제 by 김지명", description = "지역을 삭제합니다. 연관된 모든 날씨 데이터도 함께 삭제됩니다(관리자용).")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "삭제 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER400_0: 이미 존재하는 지역입니다.
+                            - WEATHER400_5: 올바르지 않은 지역코드입니다.
+                            """),
+            @ApiResponse(responseCode = "403",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER403_0: 접근 권한이 없습니다.
+                            - WEATHER403_1: 관리자만 접근할 수 있습니다.
+                            """),
+            @ApiResponse(responseCode = "404",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER404_0: 지역을 찾을 수 없습니다.
+                            """),
+            @ApiResponse(responseCode = "500",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - WEATHER500_22: 데이터 정리 중 오류가 발생했습니다.
+                            """)
+    })
+    public DefaultResponse<RegionResDTO.DeleteRegion> deleteRegion(
+            @Parameter(description = "지역 ID", required = true)
+            @PathVariable Long regionId) {
+
+        log.info("지역 삭제 API 호출: regionId={}", regionId);
+
+        RegionResDTO.DeleteRegion response = regionCommandService.deleteRegion(regionId);
+
         return DefaultResponse.ok(response);
     }
 }

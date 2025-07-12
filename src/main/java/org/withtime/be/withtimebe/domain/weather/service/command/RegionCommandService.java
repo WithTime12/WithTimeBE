@@ -12,4 +12,6 @@ public interface RegionCommandService {
     RegionResDTO.CreateRegion createRegionWithNewCode(RegionReqDTO.CreateRegionWithNewCode request);
 
     RegionResDTO.DeleteRegionCode deleteRegionCode(Long regionCodeId);
+
+    RegionResDTO.DeleteRegion deleteRegion(Long regionId);
 }

@@ -96,4 +96,12 @@ public class RegionResDTO {
             String message
     ) {
     }
+
+    @Builder
+    public record DeleteRegion(
+            Long regionId,
+            String name,
+            String message
+    ) {
+    }
 }

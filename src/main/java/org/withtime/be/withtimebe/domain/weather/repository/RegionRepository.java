@@ -28,4 +28,10 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
             "JOIN FETCH r.regionCode " +
             "WHERE r.id = :id")
     Optional<Region> findByIdWithRegionCode(@Param("id") Long id);
+
+    @Query("SELECT r FROM Region r " +
+            "JOIN FETCH r.regionCode " +
+            "WHERE r.name LIKE %:keyword% " +
+            "ORDER BY r.name ASC")
+    List<Region> searchByNameContaining(@Param("keyword") String keyword);
 }

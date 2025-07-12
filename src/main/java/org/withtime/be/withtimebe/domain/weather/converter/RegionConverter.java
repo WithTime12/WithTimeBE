@@ -128,4 +128,16 @@ public class RegionConverter {
                 .totalCount(regions.size())
                 .build();
     }
+
+    public static RegionResDTO.RegionSearchResult toSearchResult(List<Region> regions, String keyword) {
+        List<RegionResDTO.RegionInfo> regionInfos = regions.stream()
+                .map(RegionConverter::toRegionInfo)
+                .toList();
+
+        return RegionResDTO.RegionSearchResult.builder()
+                .regions(regionInfos)
+                .keyword(keyword)
+                .resultCount(regions.size())
+                .build();
+    }
 }

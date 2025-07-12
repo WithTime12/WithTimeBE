@@ -80,4 +80,12 @@ public class RegionResDTO {
             int totalCount
     ) {
     }
+
+    @Builder
+    public record RegionSearchResult(
+            List<RegionInfo> regions,
+            String keyword,
+            int resultCount
+    ) {
+    }
 }

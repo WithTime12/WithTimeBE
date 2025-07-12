@@ -9,4 +9,6 @@ public interface RegionQueryService {
     RegionResDTO.RegionList getAllRegions();
 
     RegionResDTO.RegionInfo getRegionById(Long regionId);
+
+    RegionResDTO.RegionSearchResult searchRegions(String keyword);
 }

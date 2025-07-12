@@ -41,11 +41,6 @@ public class RegionController {
                             다음과 같은 이유로 실패할 수 있습니다:
                             - WEATHER403_0: 접근 권한이 없습니다.
                             - WEATHER403_1: 관리자만 접근할 수 있습니다.
-                            """),
-            @ApiResponse(responseCode = "500",
-                    description = """
-                            다음과 같은 이유로 실패할 수 있습니다:
-                            - WEATHER500_10: 날씨 데이터 처리 중 오류가 발생했습니다.
                             """)
     })
     @PreAuthorize("hasRole('ADMIN')")
@@ -84,7 +79,6 @@ public class RegionController {
                     description = """
                             다음과 같은 이유로 실패할 수 있습니다:
                             - WEATHER500_1: 격자 좌표 변환 중 오류가 발생했습니다.
-                            - WEATHER500_10: 날씨 데이터 처리 중 오류가 발생했습니다.
                             """)
     })
     public DefaultResponse<RegionResDTO.CreateRegion> createRegion(
@@ -116,7 +110,6 @@ public class RegionController {
                     description = """
                             다음과 같은 이유로 실패할 수 있습니다:
                             - WEATHER500_1: 격자 좌표 변환 중 오류가 발생했습니다.
-                            - WEATHER500_10: 날씨 데이터 처리 중 오류가 발생했습니다.
                             """)
     })
     public DefaultResponse<RegionResDTO.CreateRegion> createRegionWithNewCode(
@@ -136,11 +129,6 @@ public class RegionController {
                             다음과 같은 이유로 실패할 수 있습니다:
                             - WEATHER403_0: 접근 권한이 없습니다.
                             - WEATHER403_1: 관리자만 접근할 수 있습니다.
-                            """),
-            @ApiResponse(responseCode = "500",
-                    description = """
-                            다음과 같은 이유로 실패할 수 있습니다:
-                            - WEATHER500_10: 날씨 데이터 처리 중 오류가 발생했습니다.
                             """)
     })
     public DefaultResponse<RegionResDTO.RegionCodeList> getAllRegionCodes() {
@@ -158,11 +146,6 @@ public class RegionController {
                     description = """
                             다음과 같은 이유로 실패할 수 있습니다:
                             - WEATHER403_0: 접근 권한이 없습니다.
-                            """),
-            @ApiResponse(responseCode = "500",
-                    description = """
-                            다음과 같은 이유로 실패할 수 있습니다:
-                            - WEATHER500_10: 날씨 데이터 처리 중 오류가 발생했습니다.
                             """)
     })
     public DefaultResponse<RegionResDTO.RegionList> getAllRegions() {
@@ -185,11 +168,6 @@ public class RegionController {
                     description = """
                             다음과 같은 이유로 실패할 수 있습니다:
                             - WEATHER404_0: 지역을 찾을 수 없습니다.
-                            """),
-            @ApiResponse(responseCode = "500",
-                    description = """
-                            다음과 같은 이유로 실패할 수 있습니다:
-                            - WEATHER500_10: 날씨 데이터 처리 중 오류가 발생했습니다.
                             """)
     })
     public DefaultResponse<RegionResDTO.RegionInfo> getRegion(
@@ -199,6 +177,17 @@ public class RegionController {
         log.info("지역 상세 조회 API 호출: regionId={}", regionId);
 
         RegionResDTO.RegionInfo response = regionQueryService.getRegionById(regionId);
+        return DefaultResponse.ok(response);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "지역 검색 by 김지명", description = "지역명으로 검색합니다. 부분 일치 검색을 지원합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "검색 성공", useReturnTypeSchema = true)
+    })
+    public DefaultResponse<RegionResDTO.RegionSearchResult> searchRegions(
+            @RequestParam String keyword) {
+        RegionResDTO.RegionSearchResult response = regionQueryService.searchRegions(keyword);
         return DefaultResponse.ok(response);
     }
 

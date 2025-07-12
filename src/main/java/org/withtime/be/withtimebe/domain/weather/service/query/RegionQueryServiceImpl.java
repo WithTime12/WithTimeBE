@@ -39,4 +39,10 @@ public class RegionQueryServiceImpl implements RegionQueryService{
                 .orElseThrow(() -> new WeatherException(WeatherErrorCode.REGION_NOT_FOUND));
         return RegionConverter.toRegionInfo(region);
     }
+
+    @Override
+    public RegionResDTO.RegionSearchResult searchRegions(String keyword) {
+        List<Region> regions = regionRepository.searchByNameContaining(keyword);
+        return RegionConverter.toSearchResult(regions, keyword);
+    }
 }

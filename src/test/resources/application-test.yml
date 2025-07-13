@@ -1,0 +1,32 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:h2:mem:with_time
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+  data:
+    redis:
+      host: dummy_redis
+      port: 6379
+
+jwt:
+  secret: dummy_secret_key123456789101122
+  time:
+    access-token: 3600000
+    refresh-token: 10000000
+
+beginner:
+  api:
+    payload:
+      discord:
+        scope:
+          - Exception
+        web-hook-url: dummy_webhook
+        enable: false

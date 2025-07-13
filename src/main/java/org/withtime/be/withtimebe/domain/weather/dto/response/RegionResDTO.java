@@ -46,7 +46,6 @@ public class RegionResDTO {
             String landRegCode,
             String tempRegCode,
             String name,
-            String description,
             int regionCount,  // 이 지역코드를 사용하는 지역 수
             LocalDateTime createdAt,
             LocalDateTime updatedAt

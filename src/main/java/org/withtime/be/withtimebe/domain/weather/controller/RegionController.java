@@ -9,7 +9,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.namul.api.payload.response.DefaultResponse;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.withtime.be.withtimebe.domain.weather.dto.request.RegionReqDTO;
@@ -28,7 +27,7 @@ public class RegionController {
     private final RegionQueryService regionQueryService;
 
     @PostMapping("/codes")
-    @Operation(summary = "지역코드 등록 by 김지명", description = "새로운 지역코드를 등록합니다(관리자용).")
+    @Operation(summary = "지역코드 등록 API by 지미 [Only Admin]", description = "새로운 지역코드를 등록합니다(관리자용).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "지역코드 등록 성공"),
             @ApiResponse(responseCode = "400",
@@ -54,7 +53,7 @@ public class RegionController {
     }
 
     @PostMapping
-    @Operation(summary = "지역 등록 by 김지명",
+    @Operation(summary = "지역 등록 API by 지미 [Only Admin]",
             description = "기존 지역코드를 사용하여 새로운 지역을 등록합니다. 위경도는 자동으로 격자 좌표로 변환됩니다(관리자용).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "등록 성공", useReturnTypeSchema = true),
@@ -82,6 +81,7 @@ public class RegionController {
                             - WEATHER500_1: 격자 좌표 변환 중 오류가 발생했습니다.
                             """)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.CreateRegion> createRegion(
             @Valid @RequestBody RegionReqDTO.CreateRegion request) {
         log.info("지역 등록 API 호출: {}", request.name());
@@ -91,7 +91,7 @@ public class RegionController {
     }
 
     @PostMapping("/with-new-code")
-    @Operation(summary = "지역+지역코드 동시 등록 by 김지명", description = "새로운 지역코드와 함께 지역을 등록합니다(관리자용).")
+    @Operation(summary = "지역+지역코드 동시 등록 API by 지미 [Only Admin]", description = "새로운 지역코드와 함께 지역을 등록합니다(관리자용).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "등록 성공", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400",
@@ -113,6 +113,7 @@ public class RegionController {
                             - WEATHER500_1: 격자 좌표 변환 중 오류가 발생했습니다.
                             """)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.CreateRegion> createRegionWithNewCode(
             @Valid @RequestBody RegionReqDTO.CreateRegionWithNewCode request) {
         log.info("지역+지역코드 등록 API 호출: {}", request.name());
@@ -122,7 +123,7 @@ public class RegionController {
     }
 
     @GetMapping("/codes")
-    @Operation(summary = "지역코드 목록 조회 API by 김지명", description = "등록된 모든 지역코드 목록을 조회합니다(관리자용).")
+    @Operation(summary = "지역코드 목록 조회 API by 지미 [Only Admin]", description = "등록된 모든 지역코드 목록을 조회합니다(관리자용).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "403",
@@ -132,6 +133,7 @@ public class RegionController {
                             - WEATHER403_1: 관리자만 접근할 수 있습니다.
                             """)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.RegionCodeList> getAllRegionCodes() {
         log.info("지역코드 목록 조회 API 호출");
 
@@ -140,7 +142,7 @@ public class RegionController {
     }
 
     @GetMapping
-    @Operation(summary = "지역 목록 조회 by 김지명", description = "등록된 모든 지역 목록을 조회합니다.")
+    @Operation(summary = "지역 목록 조회 by 지미", description = "등록된 모든 지역 목록을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "403",
@@ -157,7 +159,7 @@ public class RegionController {
     }
 
     @GetMapping("/{regionId}")
-    @Operation(summary = "지역 상세 조회 by 김지명", description = "특정 지역의 상세 정보를 조회합니다.")
+    @Operation(summary = "지역 상세 조회 API by 지미", description = "특정 지역의 상세 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "403",
@@ -182,7 +184,7 @@ public class RegionController {
     }
 
     @GetMapping("/search")
-    @Operation(summary = "지역 검색 by 김지명", description = "지역명으로 검색합니다. 부분 일치 검색을 지원합니다.")
+    @Operation(summary = "지역 검색 API by 지미", description = "지역명으로 검색합니다. 부분 일치 검색을 지원합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "검색 성공", useReturnTypeSchema = true)
     })
@@ -193,7 +195,7 @@ public class RegionController {
     }
 
     @DeleteMapping("/codes/{regionCodeId}")
-    @Operation(summary = "지역코드 삭제 by 김지명", description = "지역코드를 삭제합니다(해당 코드를 사용하는 지역이 없어야 함. 관리자용).")
+    @Operation(summary = "지역코드 삭제 API by 지미 [Only Admin]", description = "지역코드를 삭제합니다(해당 코드를 사용하는 지역이 없어야 함. 관리자용).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "삭제 성공", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400",
@@ -219,6 +221,7 @@ public class RegionController {
                             - WEATHER500_22: 데이터 정리 중 오류가 발생했습니다.
                             """)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.DeleteRegionCode> deleteRegionCode(
             @Parameter(description = "지역코드 ID", required = true)
             @PathVariable Long regionCodeId) {
@@ -229,7 +232,7 @@ public class RegionController {
     }
 
     @DeleteMapping("/{regionId}")
-    @Operation(summary = "지역 삭제 by 김지명", description = "지역을 삭제합니다. 연관된 모든 날씨 데이터도 함께 삭제됩니다(관리자용).")
+    @Operation(summary = "지역 삭제 API by 지미 [Only Admin]", description = "지역을 삭제합니다. 연관된 모든 날씨 데이터도 함께 삭제됩니다(관리자용).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "삭제 성공", useReturnTypeSchema = true),
             @ApiResponse(responseCode = "400",
@@ -255,6 +258,7 @@ public class RegionController {
                             - WEATHER500_22: 데이터 정리 중 오류가 발생했습니다.
                             """)
     })
+    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.DeleteRegion> deleteRegion(
             @Parameter(description = "지역 ID", required = true)
             @PathVariable Long regionId) {

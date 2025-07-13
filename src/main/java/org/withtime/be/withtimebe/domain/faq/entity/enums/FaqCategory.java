@@ -24,9 +24,9 @@ public enum FaqCategory {
 
 	// @RequestBody
 	@JsonCreator
-	public static FaqCategory findFaqCategory(String label) {
+	public static FaqCategory findFaqCategory(String name) {
 		return Arrays.stream(values())
-			.filter(type -> type.getLabel().equals(label))
+			.filter(type -> type.name().equalsIgnoreCase(name))
 			.findAny()
 			.orElseThrow(
 				() -> new FaqException(FaqErrorCode.FAQ_CATEGORY_NOT_FOUND)

@@ -11,7 +11,7 @@ public class FaqCategoryConverter implements Converter<String, FaqCategory> {
 
 	@Override
 	public FaqCategory convert(String source) {
-		if(StringUtils.hasText(source)) throw new FaqException(FaqErrorCode.FAQ_CATEGORY_EMPTY);
+		if(!StringUtils.hasText(source)) throw new FaqException(FaqErrorCode.FAQ_CATEGORY_EMPTY);
 		return FaqCategory.findFaqCategory(source);
 	}
 }

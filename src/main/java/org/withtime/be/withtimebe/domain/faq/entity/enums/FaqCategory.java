@@ -1,5 +1,12 @@
 package org.withtime.be.withtimebe.domain.faq.entity.enums;
 
+import java.util.Arrays;
+
+import org.withtime.be.withtimebe.global.error.code.FaqErrorCode;
+import org.withtime.be.withtimebe.global.error.exception.FaqException;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -14,4 +21,15 @@ public enum FaqCategory {
 	ACCOUNT("계정 및 개인정보");
 
 	private final String label;
+
+	// @RequestBody
+	@JsonCreator
+	public static FaqCategory findFaqCategory(String label) {
+		return Arrays.stream(values())
+			.filter(type -> type.getLabel().equals(label))
+			.findAny()
+			.orElseThrow(
+				() -> new FaqException(FaqErrorCode.FAQ_CATEGORY_NOT_FOUND)
+			);
+	}
 }

@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum FaqErrorCode implements BaseErrorCode {
 
+	FAQ_CATEGORY_EMPTY(HttpStatus.BAD_REQUEST, "FAQ400_1", "질문 유형을 입력해주세요."),
+
 	FAQ_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ404_1", "해당하는 질문 유형을 찾을 수 없습니다."),
 	FAQ_NOT_FOUND(HttpStatus.NOT_FOUND, "FAQ404_2", "해당하는 질문을 찾을 수 없습니다."),
 	;

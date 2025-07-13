@@ -12,6 +12,7 @@ import org.withtime.be.withtimebe.domain.faq.converter.FaqConverter;
 import org.withtime.be.withtimebe.domain.faq.dto.request.FaqRequestDTO;
 import org.withtime.be.withtimebe.domain.faq.dto.response.FaqResponseDTO;
 import org.withtime.be.withtimebe.domain.faq.entity.Faq;
+import org.withtime.be.withtimebe.domain.faq.entity.enums.FaqCategory;
 import org.withtime.be.withtimebe.domain.faq.service.query.FaqQueryService;
 import org.withtime.be.withtimebe.global.annotation.SwaggerPageable;
 
@@ -42,10 +43,9 @@ public class FaqQueryController {
 	@GetMapping("/faqs")
 	public DefaultResponse<FaqResponseDTO.FaqList> findFaqList(
 		@PageableDefault(page = 0, size = 10) Pageable pageable,
-		@RequestParam String faqCategory
+		@RequestParam FaqCategory faqCategory
 	) {
-		FaqRequestDTO.FindFaqList request = FaqConverter.toFindFaqList(pageable, faqCategory);
-		Page<Faq> result = faqQueryService.findFaqList(request);
+		Page<Faq> result = faqQueryService.findFaqList(pageable, faqCategory);
 		FaqResponseDTO.FaqList response = FaqConverter.toFaqList(result);
 		return DefaultResponse.ok(response);
 	}
@@ -65,10 +65,9 @@ public class FaqQueryController {
 	public DefaultResponse<FaqResponseDTO.FaqList> findFaqListByKeyword(
 		@PageableDefault(page = 0, size = 10) Pageable pageable,
 		@RequestParam String keyword,
-		@RequestParam String faqCategory
+		@RequestParam FaqCategory faqCategory
 	) {
-		FaqRequestDTO.FindFaqListByKeyword request = FaqConverter.toFindFaqListByKeyword(pageable, keyword, faqCategory);
-		Page<Faq> result = faqQueryService.findFaqListByKeyword(request);
+		Page<Faq> result = faqQueryService.findFaqListByKeyword(pageable, keyword, faqCategory);
 		FaqResponseDTO.FaqList response = FaqConverter.toFaqList(result);
 		return DefaultResponse.ok(response);
 	}

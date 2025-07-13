@@ -14,41 +14,6 @@ import org.withtime.be.withtimebe.global.error.exception.FaqException;
 
 public class FaqConverter {
 
-	// Request DTO : 전체 조회 (Controller -> Service)
-	public static FaqRequestDTO.FindFaqList toFindFaqList(Pageable pageable, String type) {
-
-		FaqCategory faqCategory;
-
-		try {
-			faqCategory = FaqCategory.valueOf(type);
-		} catch (IllegalArgumentException e) {
-			throw new FaqException(FaqErrorCode.FAQ_CATEGORY_NOT_FOUND);
-		}
-
-		return FaqRequestDTO.FindFaqList.builder()
-			.pageable(pageable)
-			.faqCategory(faqCategory)
-			.build();
-	}
-
-	// Request DTO : 검색어 전체 조회 (Controller -> Service)
-	public static FaqRequestDTO.FindFaqListByKeyword toFindFaqListByKeyword(Pageable pageable, String keyword, String type) {
-
-		FaqCategory faqCategory;
-
-		try {
-			faqCategory = FaqCategory.valueOf(type);
-		} catch (IllegalArgumentException e) {
-			throw new FaqException(FaqErrorCode.FAQ_CATEGORY_NOT_FOUND);
-		}
-
-		return FaqRequestDTO.FindFaqListByKeyword.builder()
-			.pageable(pageable)
-			.keyword(keyword)
-			.faqCategory(faqCategory)
-			.build();
-	}
-
 	// Response DTO : FaqResponseDTO.FaqList
 	public static FaqResponseDTO.FaqList toFaqList(Page<Faq> faqPage) {
 

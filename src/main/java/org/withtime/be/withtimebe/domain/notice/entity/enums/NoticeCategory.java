@@ -13,9 +13,9 @@ public enum NoticeCategory {
 
     // @RequestBody
     @JsonCreator
-    public static NoticeCategory findNoticeCategory(String label) {
+    public static NoticeCategory findNoticeCategory(String name) {
         return Arrays.stream(values())
-            .filter(type -> type.name().equalsIgnoreCase(label))
+            .filter(type -> type.name().equalsIgnoreCase(name))
             .findAny()
             .orElseThrow(
                 () -> new NoticeException(NoticeErrorCode.NOTICE_CATEGORY_NOT_FOUND)

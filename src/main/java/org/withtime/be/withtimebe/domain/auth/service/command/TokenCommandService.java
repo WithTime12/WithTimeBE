@@ -5,4 +5,5 @@ import org.withtime.be.withtimebe.global.security.domain.CustomUserDetails;
 
 public interface TokenCommandService {
     AuthResponseDTO.Login createLoginToken(CustomUserDetails customUserDetails);
+    String reissueAccessToken(CustomUserDetails customUserDetails);
 }

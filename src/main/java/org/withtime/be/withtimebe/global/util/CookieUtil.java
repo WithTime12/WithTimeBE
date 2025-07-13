@@ -25,22 +25,17 @@ public class CookieUtil {
 
     public static String getCookie(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(name)) {
-                return cookie.getValue();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(name)) {
+                    return cookie.getValue();
+                }
             }
         }
         return null;
     }
 
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(name)) {
-                cookie.setMaxAge(0);
-                cookie.setValue("");
-                response.addCookie(cookie);
-            }
-        }
+        addCookie(request, response, name, "", 0);
     }
 }

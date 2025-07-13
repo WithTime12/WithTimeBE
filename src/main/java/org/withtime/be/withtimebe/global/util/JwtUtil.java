@@ -53,7 +53,6 @@ public class JwtUtil {
         return Jwts.builder()
                 .subject(detail.getUsername())
                 .claim("id", detail.getId())
-                .claim("providerType", detail.getProviderType())
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plus(expiration)))
                 .signWith(secretKey)

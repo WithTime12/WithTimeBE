@@ -19,6 +19,10 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
 import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
 import org.withtime.be.withtimebe.global.security.filter.JsonLoginFilter;
 import org.withtime.be.withtimebe.global.security.filter.JwtFilter;
@@ -31,6 +35,7 @@ import org.withtime.be.withtimebe.global.util.JwtUtil;
 public class SecurityConfig {
 
     private static final String API_PREFIX = "/api/v1";
+    private final TokenStorageQueryService tokenStorageQueryService;
     private final AuthenticationSuccessHandler authenticationSuccessHandler;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final MemberQueryService memberQueryService;
@@ -39,6 +44,7 @@ public class SecurityConfig {
 
     private String[] allowUrl = {
             API_PREFIX + "/auth/**",
+            API_PREFIX + "/notices/**",
             API_PREFIX + "/faqs/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
@@ -50,6 +56,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(allowUrl).permitAll()
+                        .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jsonLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
@@ -61,6 +68,7 @@ public class SecurityConfig {
                         .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint(authenticationEntryPoint())
                 )
+                .cors( cors -> cors.configurationSource(corsConfigurationSource()))
         ;
         return http.build();
     }
@@ -83,7 +91,7 @@ public class SecurityConfig {
 
     @Bean
     Filter jwtFilter() {
-        return new JwtFilter(jwtUtil, memberQueryService, failureResponseWriter, requestSecurityContextRepository());
+        return new JwtFilter(jwtUtil, memberQueryService, tokenStorageQueryService, failureResponseWriter, requestSecurityContextRepository());
     }
 
     @Bean
@@ -99,5 +107,18 @@ public class SecurityConfig {
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOriginPattern("http://localhost:5173"); // 실배포 주소 나중에 추가
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

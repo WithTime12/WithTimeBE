@@ -20,4 +20,9 @@ public class JwtTokenCommandService implements TokenCommandService {
                 jwtUtil.createRefreshToken(customUserDetails)
         );
     }
+
+    @Override
+    public String reissueAccessToken(CustomUserDetails customUserDetails) {
+        return jwtUtil.createAccessToken(customUserDetails);
+    }
 }

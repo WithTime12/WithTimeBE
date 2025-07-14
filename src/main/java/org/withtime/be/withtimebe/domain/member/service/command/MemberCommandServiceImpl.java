@@ -24,9 +24,9 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 	private final MemberRepository memberRepository;
 
 	@Override
-	public Member updateMembership(MemberRequestDTO.UpdateMembership request) {
+	public Member updateMembership(MemberRequestDTO.UpdateMembership request, Long memberId) {
 
-		Member member = memberRepository.findById(request.memberId())
+		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
 
 		// 가장 최근 멤버십 결제 정보 탐색

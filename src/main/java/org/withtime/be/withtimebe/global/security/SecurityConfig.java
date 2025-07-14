@@ -54,8 +54,8 @@ public class SecurityConfig {
     };
 
     private RequestMatcher[] admin = {
-        requestMatcher(HttpMethod.GET, API_PREFIX + "/members/membership/**"),
-        requestMatcher(HttpMethod.PUT, API_PREFIX + "/members/**")
+        requestMatcher(HttpMethod.GET, API_PREFIX + "/members/membership"),
+        requestMatcher(HttpMethod.PUT, API_PREFIX + "/members/*/membership")
     };
 
     @Bean

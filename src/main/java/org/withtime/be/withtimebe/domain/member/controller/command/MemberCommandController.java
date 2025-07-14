@@ -1,6 +1,7 @@
 package org.withtime.be.withtimebe.domain.member.controller.command;
 
 import org.namul.api.payload.response.DefaultResponse;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ public class MemberCommandController {
 
 	private final MemberCommandService memberCommandService;
 
-	@Operation(summary = "멤버십 관리 API by 피우 [Only Admin]", description = "멤버십 관리 API입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "어드민 멤버십 관리하기 API by 피우 [Only Admin]", description = "어드민 창의 멤버십 수정하기 API입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다."),
 		@ApiResponse(responseCode = "400",
@@ -36,8 +37,11 @@ public class MemberCommandController {
 	})
 	@SwaggerPageable
 	@PutMapping("/{memberId}/membership")
-	public DefaultResponse<MemberResponseDTO.Membership> updateMembership(@RequestBody @Valid MemberRequestDTO.UpdateMembership request) {
-		Member result = memberCommandService.updateMembership(request);
+	public DefaultResponse<MemberResponseDTO.Membership> updateMembership(
+		@PathVariable Long memberId,
+		@RequestBody @Valid MemberRequestDTO.UpdateMembership request
+	) {
+		Member result = memberCommandService.updateMembership(request, memberId);
 		MemberResponseDTO.Membership response = MemberConverter.toMembership(result);
 		return DefaultResponse.ok(response);
 	}

@@ -5,5 +5,5 @@ import org.withtime.be.withtimebe.domain.member.entity.Member;
 
 public interface MemberCommandService {
 
-	Member updateMembership(MemberRequestDTO.UpdateMembership request);
+	Member updateMembership(MemberRequestDTO.UpdateMembership request, Long memberId);
 }

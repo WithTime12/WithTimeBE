@@ -21,12 +21,12 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/admin/visit-logs")
+@RequestMapping("/api/v1/visit-logs")
 public class VisitLogQueryController {
 
 	private final VisitLogQueryService visitLogQueryService;
 
-	@Operation(summary = "최근 일주일 간 일별 방문자 수 조회 API Only Admin by 피우", description = "일주일 간 일별 방문자 수 조회 API입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "최근 일주일 간 일별 방문자 수 조회 API by 피우 [Only Admin]", description = "일주일 간 일별 방문자 수 조회 API입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다.")
 	})
@@ -37,11 +37,11 @@ public class VisitLogQueryController {
 		return DefaultResponse.ok(response);
 	}
 
-	@Operation(summary = "하루동안 시간대 별 방문자 수 추이 조회 API Only Admin by 피우", description = "하루동안 시간대 별 방문자 수 추이 조회 API 입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "하루동안 시간대 별 방문자 수 추이 조회 API by 피우 [Only Admin]", description = "하루동안 시간대 별 방문자 수 추이 조회 API 입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다.")
 	})
-	@Parameter(name = "date", description = "입력 예시) 2025-01-01")
+	@Parameter(name = "date", description = "예) 2025-01-01")
 	@GetMapping("/hourly")
 	public DefaultResponse<VisitLogResponseDTO.HourlyVisitLogList> findHourlyVisitLog(
 		@RequestParam("date") LocalDate date

@@ -22,7 +22,8 @@ public record AuthRequestDTO() {
             String password,
             Gender gender,
             String phoneNumber,
-            LocalDate birth
+            LocalDate birth,
+            Long socialId
     ) {
 
     }

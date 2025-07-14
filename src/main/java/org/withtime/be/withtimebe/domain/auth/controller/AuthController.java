@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.web.bind.annotation.*;
 import org.withtime.be.withtimebe.domain.auth.dto.request.AuthRequestDTO;
+import org.withtime.be.withtimebe.domain.auth.dto.request.EmailRequestDTO;
 import org.withtime.be.withtimebe.domain.auth.service.command.AuthCommandService;
+import org.withtime.be.withtimebe.domain.auth.service.command.EmailCommandService;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ import org.withtime.be.withtimebe.domain.auth.service.command.AuthCommandService
 public class AuthController {
 
     private final AuthCommandService authCommandService;
+    private final EmailCommandService emailCommandService;
 
     @Operation(summary = "회원가입 API by 요시", description = "최초 회원가입 시 필요한 정보를 포함하여 회원가입 진행")
     @ApiResponses({
@@ -84,6 +87,34 @@ public class AuthController {
     @PostMapping("/logout")
     public DefaultResponse<String> logout(HttpServletRequest request, HttpServletResponse response) {
         authCommandService.logout(request, response);
+        return DefaultResponse.noContent();
+    }
+
+    @Operation(summary = "이메일 인증 번호 전송 API by 요시", description = "이메일로 인증 번호를 전송하는 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "이메일 전송 성공, 인증 코드는 3분 동안 유효"),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "EMAIL500_1: 이메일 전송 실패"
+            )
+    })
+    @PostMapping("/email-verifications")
+    public DefaultResponse<String> sendVerificationCodeToEmail(@Valid @RequestBody EmailRequestDTO.Send request) {
+        emailCommandService.sendEmail(request);
+        return DefaultResponse.noContent();
+    }
+
+    @Operation(summary = "이메일 인증 번호 확인 API by 요시" ,description = "이메일 인증 번호 확인 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "이메일 인증 성공, 성공 시 1시간 동안 유효"),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "EMAIL401_1: 이메일 인증 실패"
+            )
+    })
+    @PostMapping("/check-email-verifications")
+    public DefaultResponse<String> checkVerificationCode(@Valid @RequestBody EmailRequestDTO.Check request) {
+        emailCommandService.checkEmail(request);
         return DefaultResponse.noContent();
     }
 }

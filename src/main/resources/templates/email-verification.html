@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>이메일 인증</title>
+    <style>
+        .main-container {width: 100%; margin: 0; padding: 2rem; align-items: center;  justify-content: center; background-color: #F2F2F2; box-sizing: border-box;}
+        .email-verification-header {padding: 1rem; background-color: #7FE4C1;}
+        .email-verification-header h2 {color: white; text-align: center}
+        .email-verification-body {padding: 2rem ; background-color: white}
+    </style>
+</head>
+<body>
+<div class="main-container">
+    <div class="email-verification-header">
+        <h2>위티 With Time</h2>
+    </div>
+    <div class="email-verification-body">
+        <p>아래의 인증 코드를 입력해 주세요:</p>
+        <h1 style="color: #7FE4C1;">[[${code}]]</h1>
+        <p style="font-size: 10px">인증 코드는 3분 뒤 유효하지 않습니다</p>
+        <div class="email-verification-footer">
+            <p>감사합니다.<br/>WithTime 팀</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

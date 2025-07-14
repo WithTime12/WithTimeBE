@@ -5,6 +5,7 @@ import lombok.*;
 import org.withtime.be.withtimebe.domain.member.entity.enums.BillingStatus;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,4 +40,7 @@ public class Payments extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @Column(name = "membership_expire_date")
+    private LocalDateTime membershipExpireDate;
 }

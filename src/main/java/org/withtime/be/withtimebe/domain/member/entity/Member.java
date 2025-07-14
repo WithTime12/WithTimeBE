@@ -2,6 +2,8 @@ package org.withtime.be.withtimebe.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import org.hibernate.annotations.BatchSize;
 import org.withtime.be.withtimebe.domain.member.entity.enums.Gender;
 import org.withtime.be.withtimebe.domain.member.entity.enums.ProviderType;
 import org.withtime.be.withtimebe.domain.member.entity.enums.Role;
@@ -10,6 +12,8 @@ import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -59,4 +63,9 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @BatchSize(size = 10)
+    @Builder.Default
+    private List<Payments> paymentList = new ArrayList<>();
 }

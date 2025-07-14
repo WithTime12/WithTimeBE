@@ -1,6 +1,7 @@
 package org.withtime.be.withtimebe.domain.faq.controller;
 
 import org.namul.api.payload.response.DefaultResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,12 +25,12 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/faqs")
 public class FaqCommandController {
 
 	private final FaqCommandService faqCommandService;
 
-	@Operation(summary = "자주 묻는 질문 생성 API Only Admin by 피우", description = "자주 묻는 질문 생성 API입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "자주 묻는 질문 생성 API by 피우 [Only Admin]", description = "자주 묻는 질문 생성 API입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다."),
 		@ApiResponse(responseCode = "403",
@@ -37,7 +38,8 @@ public class FaqCommandController {
 				- COMMON403 : "Admin 권한이 없음을 의미합니다."
 			""")
 	})
-	@PostMapping("/faqs")
+	@PreAuthorize("hasRole('ADMIN')")
+	@PostMapping
 	public DefaultResponse<FaqResponseDTO.Faq> createFaq(
 		@RequestBody @Valid FaqRequestDTO.CreateFaq request,
 		@AuthenticatedMember Member member
@@ -47,7 +49,7 @@ public class FaqCommandController {
 		return DefaultResponse.created(response);
 	}
 
-	@Operation(summary = "자주 묻는 질문 수정 API Only Admin by 피우", description = "자주 묻는 질문 수정 API입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "자주 묻는 질문 수정 API by 피우 [Only Admin]", description = "자주 묻는 질문 수정 API입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다."),
 		@ApiResponse(responseCode = "403",
@@ -59,7 +61,8 @@ public class FaqCommandController {
 				- FAQ404_2 : "해당하는 질문글을 찾을 수 없습니다."
 			""")
 	})
-	@PutMapping("/faqs/{faqId}")
+	@PreAuthorize("hasRole('ADMIN')")
+	@PutMapping("/{faqId}")
 	public DefaultResponse<FaqResponseDTO.Faq> updateFaq(
 		@PathVariable("faqId") Long faqId,
 		@RequestBody @Valid FaqRequestDTO.UpdateFaq request
@@ -69,7 +72,7 @@ public class FaqCommandController {
 		return DefaultResponse.ok(response);
 	}
 
-	@Operation(summary = "자주 묻는 질문 삭제 API Only Admin by 피우", description = "자주 묻는 질문 삭제 API입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "자주 묻는 질문 삭제 API by 피우 [Only Admin]", description = "자주 묻는 질문 삭제 API입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다."),
 		@ApiResponse(responseCode = "403",
@@ -81,7 +84,8 @@ public class FaqCommandController {
 				- FAQ404_2 : "해당하는 질문글을 찾을 수 없습니다."
 			""")
 	})
-	@DeleteMapping("/faqs/{faqId}")
+	@PreAuthorize("hasRole('ADMIN')")
+	@DeleteMapping("/{faqId}")
 	public DefaultResponse<String> deleteFaq(@PathVariable("faqId") Long faqId) {
 		faqCommandService.deleteFaq(faqId);
 		return DefaultResponse.noContent();

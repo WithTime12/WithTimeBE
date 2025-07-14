@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/faqs")
 public class FaqQueryController {
 
 	private final FaqQueryService faqQueryService;
@@ -40,7 +40,7 @@ public class FaqQueryController {
 	})
 	@Parameter(name = "faqCategory", description = "USAGE / ALGORITHM / FEATURE / SCHEDULE / ERROR / ACCOUNT")
 	@SwaggerPageable
-	@GetMapping("/faqs")
+	@GetMapping
 	public DefaultResponse<FaqResponseDTO.FaqList> findFaqList(
 		@PageableDefault(page = 0, size = 10) Pageable pageable,
 		@RequestParam FaqCategory faqCategory
@@ -61,7 +61,7 @@ public class FaqQueryController {
 	})
 	@Parameter(name = "faqCategory", description = "USAGE / ALGORITHM / FEATURE / SCHEDULE / ERROR / ACCOUNT")
 	@SwaggerPageable
-	@GetMapping("/faqs/search")
+	@GetMapping("/search")
 	public DefaultResponse<FaqResponseDTO.FaqList> findFaqListByKeyword(
 		@PageableDefault(page = 0, size = 10) Pageable pageable,
 		@RequestParam String keyword,

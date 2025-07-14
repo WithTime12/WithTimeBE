@@ -20,7 +20,7 @@ import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
-import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
+import org.withtime.be.withtimebe.domain.member.service.query.MemberQueryService;
 import org.withtime.be.withtimebe.global.security.constants.AuthenticationConstants;
 import org.withtime.be.withtimebe.global.security.domain.CustomUserDetails;
 import org.withtime.be.withtimebe.global.util.CookieUtil;

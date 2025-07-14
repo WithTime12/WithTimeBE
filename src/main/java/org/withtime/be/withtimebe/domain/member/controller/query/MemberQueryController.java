@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.withtime.be.withtimebe.domain.member.converter.MemberConverter;
 import org.withtime.be.withtimebe.domain.member.dto.response.MemberResponseDTO;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
-import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
+import org.withtime.be.withtimebe.domain.member.service.query.MemberQueryService;
 import org.withtime.be.withtimebe.global.annotation.SwaggerPageable;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,15 +25,15 @@ public class MemberQueryController {
 
 	private final MemberQueryService memberQueryService;
 
-	@Operation(summary = "멤버십 목록 전체 조회 API by 피우", description = "멤버십 목록 전체 조회 API입니다. (검색어 X)")
+	@Operation(summary = "멤버십 목록 전체 조회 API by 피우 [Only Admin]", description = "멤버십 목록 전체 조회 API입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다.")
 	})
 	@SwaggerPageable
-	@GetMapping
-	public DefaultResponse<MemberResponseDTO.MemberList> findMemberList(@PageableDefault(page = 0, size = 10) Pageable pageable) {
+	@GetMapping("/membership")
+	public DefaultResponse<MemberResponseDTO.MembershipList> findMembershipList(@PageableDefault(page = 0, size = 10) Pageable pageable) {
 		Page<Member> result = memberQueryService.findMemberList(pageable);
-		MemberResponseDTO.MemberList response = MemberConverter.toMemberList(result);
+		MemberResponseDTO.MembershipList response = MemberConverter.toMembershipList(result);
 		return DefaultResponse.ok(response);
 	}
 

@@ -1,11 +1,12 @@
 package org.withtime.be.withtimebe.domain.member.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
 import org.withtime.be.withtimebe.domain.member.entity.enums.BillingStatus;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -43,4 +44,8 @@ public class Payments extends BaseEntity {
 
     @Column(name = "membership_expire_date")
     private LocalDateTime membershipExpireDate;
+
+    public void updateExpireDate(LocalDateTime membershipExpireDate) {
+        this.membershipExpireDate = membershipExpireDate;
+    }
 }

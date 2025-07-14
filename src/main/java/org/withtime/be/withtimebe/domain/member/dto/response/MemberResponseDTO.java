@@ -8,8 +8,8 @@ import lombok.Builder;
 public class MemberResponseDTO {
 
 	@Builder
-	public record MemberList(
-		List<MemberResponseDTO.Member> memberList,
+	public record MembershipList(
+		List<MemberResponseDTO.Membership> membershipList,	// 멤버십 목록
 		Integer totalPages,	// 전체 페이지 개수
 		Integer currentPage,	// 현재 페이지 번호
 		Integer currentSize,	// 현재 페이지의 크기
@@ -17,8 +17,8 @@ public class MemberResponseDTO {
 	) {}
 
 	@Builder
-	public record Member(
-		Long memberId,    // 게시글 식별자 값
+	public record Membership(
+		Long memberId,    // 회원 식별자 값
 		String name,	// 사용자 닉네임
 		Boolean hasMembership,	// 멤버십 유무
 		Long membershipDuration,	// 멤버십 유지기간

@@ -6,6 +6,7 @@ import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
 import org.namul.api.payload.writer.FailureResponseWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,11 +20,13 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
-import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
+import org.withtime.be.withtimebe.domain.member.service.query.MemberQueryService;
 import org.withtime.be.withtimebe.global.security.filter.JsonLoginFilter;
 import org.withtime.be.withtimebe.global.security.filter.JwtFilter;
 import org.withtime.be.withtimebe.global.security.handler.CustomAccessDeniedHandler;
@@ -50,12 +53,17 @@ public class SecurityConfig {
             "/v3/api-docs/**"
     };
 
+    private RequestMatcher[] admin = {
+        requestMatcher(HttpMethod.GET, API_PREFIX + "/members/membership/**"),
+        requestMatcher(HttpMethod.PUT, API_PREFIX + "/members/**")
+    };
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers(admin).hasRole("ADMIN")
                         .requestMatchers(allowUrl).permitAll()
-                        .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jsonLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
@@ -119,5 +127,9 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private RequestMatcher requestMatcher(HttpMethod method, String url) {
+        return PathPatternRequestMatcher.withDefaults().matcher(method, url);
     }
 }

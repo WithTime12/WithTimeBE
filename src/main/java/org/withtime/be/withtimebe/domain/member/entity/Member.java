@@ -5,7 +5,6 @@ import lombok.*;
 
 import org.hibernate.annotations.BatchSize;
 import org.withtime.be.withtimebe.domain.member.entity.enums.Gender;
-import org.withtime.be.withtimebe.domain.member.entity.enums.ProviderType;
 import org.withtime.be.withtimebe.domain.member.entity.enums.Role;
 import org.withtime.be.withtimebe.domain.member.entity.enums.UserRank;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
@@ -68,4 +67,8 @@ public class Member extends BaseEntity {
     @BatchSize(size = 10)
     @Builder.Default
     private List<Payments> paymentList = new ArrayList<>();
+
+    public void updateUserRank(UserRank userRank) {
+        this.userRank = userRank;
+    }
 }

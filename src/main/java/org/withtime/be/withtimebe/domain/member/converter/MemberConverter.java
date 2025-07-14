@@ -13,15 +13,15 @@ import org.withtime.be.withtimebe.domain.member.entity.enums.UserRank;
 
 public class MemberConverter {
 
-	// Response DTO : MemberResponseDTO.MemberList
-	public static MemberResponseDTO.MemberList toMemberList(Page<Member> memberPage) {
+	// Response DTO : MemberResponseDTO.MembershipList
+	public static MemberResponseDTO.MembershipList toMembershipList(Page<Member> memberPage) {
 
-		List<MemberResponseDTO.Member> memberList = memberPage.stream()
-			.map(MemberConverter::toMember)
+		List<MemberResponseDTO.Membership> memberList = memberPage.stream()
+			.map(MemberConverter::toMembership)
 			.toList();
 
-		return MemberResponseDTO.MemberList.builder()
-			.memberList(memberList)
+		return MemberResponseDTO.MembershipList.builder()
+			.membershipList(memberList)
 			.totalPages(memberPage.getTotalPages())
 			.currentPage(memberPage.getNumber())
 			.currentSize(memberPage.getNumberOfElements())
@@ -29,8 +29,8 @@ public class MemberConverter {
 			.build();
 	}
 
-	// Response DTO : MemberResponseDTO.Member
-	public static MemberResponseDTO.Member toMember(Member member) {
+	// Response DTO : MemberResponseDTO.Membership
+	public static MemberResponseDTO.Membership toMembership(Member member) {
 
 		List<Payments> paymentsList = member.getPaymentList();
 
@@ -50,7 +50,7 @@ public class MemberConverter {
 			})
 			.sum();
 
-		return MemberResponseDTO.Member.builder()
+		return MemberResponseDTO.Membership.builder()
 			.memberId(member.getId())
 			.name(member.getNickname())
 			.hasMembership(hasMembership)

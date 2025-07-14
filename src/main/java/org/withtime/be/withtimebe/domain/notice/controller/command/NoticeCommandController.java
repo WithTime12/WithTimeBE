@@ -39,7 +39,6 @@ public class NoticeCommandController {
 				- COMMON403 : "Admin 권한이 없음을 의미합니다."
 			""")
 	})
-	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public DefaultResponse<NoticeResponseDTO.Notice> createNotice(
 		@RequestBody @Valid NoticeRequestDTO.CreateNotice request,
@@ -62,7 +61,6 @@ public class NoticeCommandController {
 				- NOTICE404_2 : "해당하는 공지사항을 찾을 수 없습니다."
 			""")
 	})
-	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{noticeId}")
 	public DefaultResponse<NoticeResponseDTO.Notice> updateNotice(
 		@PathVariable Long noticeId,
@@ -85,7 +83,6 @@ public class NoticeCommandController {
 				- NOTICE404_2 : "해당하는 공지사항을 찾을 수 없습니다."
 			""")
 	})
-	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{noticeId}")
 	public DefaultResponse<String> softDeleteNotice(@PathVariable Long noticeId) {
 		noticeCommandService.softDeleteNotice(noticeId);
@@ -104,7 +101,6 @@ public class NoticeCommandController {
 				- NOTICE404_2 : "해당하는 공지사항을 찾을 수 없습니다."
 			""")
 	})
-	@PreAuthorize("hasRole('ADMIN')")
 	@PatchMapping("/{noticeId}")
 	public DefaultResponse<NoticeResponseDTO.Notice> recoverDeletedNotice(@PathVariable Long noticeId) {
 		Notice result = noticeCommandService.recoverDeletedNotice(noticeId);

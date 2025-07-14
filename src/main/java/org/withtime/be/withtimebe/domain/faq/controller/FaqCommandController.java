@@ -38,7 +38,6 @@ public class FaqCommandController {
 				- COMMON403 : "Admin 권한이 없음을 의미합니다."
 			""")
 	})
-	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public DefaultResponse<FaqResponseDTO.Faq> createFaq(
 		@RequestBody @Valid FaqRequestDTO.CreateFaq request,
@@ -61,7 +60,6 @@ public class FaqCommandController {
 				- FAQ404_2 : "해당하는 질문글을 찾을 수 없습니다."
 			""")
 	})
-	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/{faqId}")
 	public DefaultResponse<FaqResponseDTO.Faq> updateFaq(
 		@PathVariable("faqId") Long faqId,
@@ -84,7 +82,6 @@ public class FaqCommandController {
 				- FAQ404_2 : "해당하는 질문글을 찾을 수 없습니다."
 			""")
 	})
-	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/{faqId}")
 	public DefaultResponse<String> deleteFaq(@PathVariable("faqId") Long faqId) {
 		faqCommandService.deleteFaq(faqId);

@@ -118,7 +118,6 @@ public class NoticeQueryController {
 	})
 	@Parameter(name = "noticeCategory", description = "SYSTEM / SERVICE")
 	@SwaggerPageable
-	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/trash")
 	public DefaultResponse<NoticeResponseDTO.NoticeList> findTrashNoticeList(
 		@PageableDefault(page = 0, size = 10) Pageable pageable,

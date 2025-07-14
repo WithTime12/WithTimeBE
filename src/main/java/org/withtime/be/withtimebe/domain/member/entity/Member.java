@@ -3,7 +3,6 @@ package org.withtime.be.withtimebe.domain.member.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.withtime.be.withtimebe.domain.member.entity.enums.Gender;
-import org.withtime.be.withtimebe.domain.member.entity.enums.ProviderType;
 import org.withtime.be.withtimebe.domain.member.entity.enums.Role;
 import org.withtime.be.withtimebe.domain.member.entity.enums.UserRank;
 import org.withtime.be.withtimebe.global.common.BaseEntity;

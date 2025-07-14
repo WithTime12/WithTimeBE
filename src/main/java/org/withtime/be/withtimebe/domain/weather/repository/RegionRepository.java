@@ -26,6 +26,12 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
 
     @Query("SELECT r FROM Region r " +
             "JOIN FETCH r.regionCode " +
+            "WHERE r.id IN :ids " +
+            "ORDER BY r.name ASC")
+    List<Region> findByIdsWithRegionCode(@Param("ids") List<Long> ids);
+
+    @Query("SELECT r FROM Region r " +
+            "JOIN FETCH r.regionCode " +
             "WHERE r.id = :id")
     Optional<Region> findByIdWithRegionCode(@Param("id") Long id);
 

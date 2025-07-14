@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.auth.converter.OAuth2Converter;
 import org.withtime.be.withtimebe.domain.auth.dto.response.OAuth2ResponseDTO;
 import org.withtime.be.withtimebe.domain.auth.factory.OAuth2UserLoader;
@@ -11,6 +12,7 @@ import org.withtime.be.withtimebe.domain.auth.factory.OAuth2UserLoaderFactory;
 import org.withtime.be.withtimebe.domain.member.converter.SocialConverter;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.member.entity.Social;
+import org.withtime.be.withtimebe.domain.member.repository.MemberRepository;
 import org.withtime.be.withtimebe.domain.member.repository.SocialRepository;
 import org.withtime.be.withtimebe.global.error.code.OAuthErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.OAuthException;
@@ -21,10 +23,12 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class OAuth2CommandServiceImpl implements OAuth2CommandService {
 
     private final OAuth2UserLoaderFactory oAuth2UserLoaderFactory;
     private final SocialRepository socialRepository;
+    private final MemberRepository memberRepository;
     private final TokenManager tokenManager;
 
     @Override
@@ -39,25 +43,23 @@ public class OAuth2CommandServiceImpl implements OAuth2CommandService {
 
     private OAuth2ResponseDTO.Login successfulOAuth2(HttpServletRequest request, HttpServletResponse response, OAuth2ResponseDTO.GetUserInfo userInfo) {
         Optional<Social> socialOptional = socialRepository.findByProviderIdAndSocialType(userInfo.providerId(), userInfo.socialType());
-        // 소셜로 첫 로그인
-        if (socialOptional.isEmpty()) {
-            Social social = socialRepository.save(SocialConverter.toSocial(userInfo));
-            return OAuth2Converter.toLogin(userInfo.email(), true, social.getId());
-        }
-        // 소셜로 로그인 한 적은 있지만 사용자와 연결 X 즉, 최초 로그인 X
-        else if (socialOptional.get().getMember() == null) {
-            Social social = socialOptional.get();
-            return OAuth2Converter.toLogin(userInfo.email(), true, social.getId());
-        }
-        // 소셜로 로그인 한 적도 있고 사용자와도 연결된 경우
-        else {
-            Social social = socialOptional.get();
-            processToken(request, response, social.getMember());
+        Optional<Member> memberOptional = memberRepository.findByEmail(userInfo.email());
+
+        // 해당 이메일로 회원가입이 된 경우
+        if (memberOptional.isPresent()) {
+            // 소셜이 있으면 가져오고 아니면 새로 만들기
+            Social social = socialOptional.orElseGet(() -> socialRepository.save(SocialConverter.toSocial(userInfo, memberOptional.get())));
+            processLogin(request, response, memberOptional.get());
             return OAuth2Converter.toLogin(userInfo.email(), false, social.getId());
+        }
+        // 회원가입이 안 된 경우
+        else {
+            Social social = socialOptional.orElseGet(() -> socialRepository.save(SocialConverter.toSocial(userInfo)));
+            return OAuth2Converter.toLogin(userInfo.email(), true, social.getId());
         }
     }
 
-    private void processToken(HttpServletRequest request, HttpServletResponse response, Member member) {
+    private void processLogin(HttpServletRequest request, HttpServletResponse response, Member member) {
         CustomUserDetails customUserDetails = new CustomUserDetails(member);
         tokenManager.addToken(request, response, customUserDetails);
     }

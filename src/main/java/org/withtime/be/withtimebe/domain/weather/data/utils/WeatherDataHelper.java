@@ -44,7 +44,7 @@ public class WeatherDataHelper {
 
         for (RawShortTermWeather data : weatherDataList) {
             Optional<RawShortTermWeather> existingOpt = repository
-                    .findByRegionIdAndBaseDateAndBaseTimeAndFcstDateAndFcstTime(
+                    .findByRegionIdAndBaseDateAndBaseTimeAndForecastDateAndForecastTime(
                             data.getRegion().getId(),
                             data.getBaseDate(),
                             data.getBaseTime(),
@@ -77,7 +77,7 @@ public class WeatherDataHelper {
 
         for (RawMediumTermWeather data : weatherDataList) {
             Optional<RawMediumTermWeather> existingOpt = repository
-                    .findByRegionIdAndTmfcAndTmef(
+                    .findByRegionIdAndBaseDateAndForecastDate(
                             data.getRegion().getId(),
                             data.getBaseDate(),
                             data.getForecastDate()

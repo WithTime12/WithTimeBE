@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface RawShortTermWeatherRepository extends JpaRepository<RawShortTermWeather, Long> {
 
-    Optional<RawShortTermWeather> findByRegionIdAndBaseDateAndBaseTimeAndFcstDateAndFcstTime(
-            Long regionId, LocalDate baseDate, String baseTime, LocalDate fcstDate, String fcstTime);
+    Optional<RawShortTermWeather> findByRegionIdAndBaseDateAndBaseTimeAndForecastDateAndForecastTime(
+            Long regionId, LocalDate baseDate, String baseTime, LocalDate forecastDate, String forecastTime
+    );
 }

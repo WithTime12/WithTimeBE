@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface RawMediumTermWeatherRepository extends JpaRepository<RawMediumTermWeather, Long> {
 
-    Optional<RawMediumTermWeather> findByRegionIdAndTmfcAndTmef(
-            Long regionId, LocalDate tmfc, LocalDate tmef);
+    Optional<RawMediumTermWeather> findByRegionIdAndBaseDateAndForecastDate(
+            Long regionId, LocalDate baseDate, LocalDate forecastDate);
 }

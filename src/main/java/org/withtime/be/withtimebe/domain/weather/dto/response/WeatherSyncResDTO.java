@@ -67,4 +67,34 @@ public class WeatherSyncResDTO {
     ) {
     }
 
+    /**
+     * 수동 트리거 결과 DTO
+     */
+    @Builder
+    public record ManualTriggerResult(
+            String jobType,
+            boolean triggered,
+            String executionId,
+            LocalDateTime triggerTime,
+            String status,   // STARTED | FAILED
+            String message
+    ) {
+    }
+
+    /**
+     * 전체 동기화 결과 DTO (모든 작업 포함)
+     */
+    @Builder
+    public record CompleteSyncResult(
+            ShortTermSyncResult shortTermResult,        // 단기 예보 결과
+            MediumTermSyncResult mediumTermResult,      // 중기 예보 결과
+            LocalDateTime overallStartTime,             // 전체 시작 시간
+            LocalDateTime overallEndTime,               // 전체 종료 시간
+            long overallDurationMs,                     // 전체 소요 시간 (밀리초)
+            boolean allSuccessful,                      // 모든 작업 성공 여부
+            List<String> summaryMessages,               // 요약 메시지들
+            String overallStatus                        // 전체 상태
+    ) {
+    }
+
 }

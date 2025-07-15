@@ -31,6 +31,8 @@ public class OAuth2CommandServiceImpl implements OAuth2CommandService {
     private final MemberRepository memberRepository;
     private final TokenManager tokenManager;
 
+    private final EmailVerificationCodeStorageCommandService emailVerificationCodeStorageCommandService;
+
     @Override
     public OAuth2ResponseDTO.Login login(HttpServletRequest request, HttpServletResponse response, String provider, String code) {
         OAuth2UserLoader userLoader = oAuth2UserLoaderFactory.getUserLoader(provider);
@@ -55,6 +57,7 @@ public class OAuth2CommandServiceImpl implements OAuth2CommandService {
         // 회원가입이 안 된 경우
         else {
             Social social = socialOptional.orElseGet(() -> socialRepository.save(SocialConverter.toSocial(userInfo)));
+            emailVerificationCodeStorageCommandService.saveVerifiedEmail(userInfo.email());
             return OAuth2Converter.toLogin(userInfo.email(), true, social.getId());
         }
     }

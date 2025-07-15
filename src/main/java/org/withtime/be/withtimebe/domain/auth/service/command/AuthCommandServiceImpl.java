@@ -5,16 +5,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.auth.converter.AuthConverter;
 import org.withtime.be.withtimebe.domain.auth.dto.request.AuthRequestDTO;
+import org.withtime.be.withtimebe.domain.auth.service.query.EmailVerificationCodeStorageQueryService;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenQueryService;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.member.repository.MemberRepository;
 import org.withtime.be.withtimebe.global.error.code.AuthErrorCode;
+import org.withtime.be.withtimebe.global.error.code.EmailErrorCode;
 import org.withtime.be.withtimebe.global.error.code.MemberErrorCode;
 import org.withtime.be.withtimebe.global.error.code.TokenErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.AuthException;
+import org.withtime.be.withtimebe.global.error.exception.EmailException;
 import org.withtime.be.withtimebe.global.error.exception.MemberException;
 import org.withtime.be.withtimebe.global.error.exception.TokenException;
 import org.withtime.be.withtimebe.global.security.constants.AuthenticationConstants;
@@ -23,6 +27,7 @@ import org.withtime.be.withtimebe.global.util.CookieUtil;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AuthCommandServiceImpl implements AuthCommandService {
 
     private final PasswordEncoder passwordEncoder;
@@ -31,6 +36,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private final TokenStorageCommandService tokenStorageCommandService;
     private final TokenQueryService tokenQueryService;
     private final TokenStorageQueryService tokenStorageQueryService;
+    private final EmailVerificationCodeStorageQueryService emailVerificationCodeStorageQueryService;
 
     @Override
     public void signUp(AuthRequestDTO.SignUp request) {
@@ -86,6 +92,9 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private void validateSignUp(AuthRequestDTO.SignUp request) throws AuthException {
         if (memberRepository.existsByEmail(request.email())) {
             throw new AuthException(AuthErrorCode.ALREADY_EXIST_EMAIL);
+        }
+        if (!emailVerificationCodeStorageQueryService.isVerified(request.email())) {
+            throw new EmailException(EmailErrorCode.UNVERIFIED_EMAIL);
         }
     }
 

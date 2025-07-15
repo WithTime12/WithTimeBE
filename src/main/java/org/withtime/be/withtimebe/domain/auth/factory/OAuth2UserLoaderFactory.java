@@ -13,7 +13,13 @@ public class OAuth2UserLoaderFactory {
 
     public OAuth2UserLoaderFactory(List<OAuth2UserLoader> oAuth2UserLoaders) {
         oAuth2UserLoaders.forEach(
-                oAuth2UserLoader -> oAuth2UserLoaderMap.put(oAuth2UserLoader.getSocialType().toLowerCase(), oAuth2UserLoader)
+                oAuth2UserLoader -> {
+                    String socialType = oAuth2UserLoader.getSocialType().toLowerCase();
+                    if (oAuth2UserLoaderMap.get(socialType) != null) {
+                        throw new IllegalStateException("OAuth2UserLoader social type 중복: " + socialType);
+                    }
+                    oAuth2UserLoaderMap.put(socialType, oAuth2UserLoader);
+                }
         );
     }
 

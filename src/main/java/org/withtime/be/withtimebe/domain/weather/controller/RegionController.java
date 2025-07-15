@@ -43,7 +43,6 @@ public class RegionController {
                             - WEATHER403_1: 관리자만 접근할 수 있습니다.
                             """)
     })
-    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.CreateRegionCode> createRegionCode(
             @Valid @RequestBody RegionReqDTO.CreateRegionCode request) {
         log.info("지역코드 등록 API 호출: {}", request.name());
@@ -81,7 +80,6 @@ public class RegionController {
                             - WEATHER500_1: 격자 좌표 변환 중 오류가 발생했습니다.
                             """)
     })
-    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.CreateRegion> createRegion(
             @Valid @RequestBody RegionReqDTO.CreateRegion request) {
         log.info("지역 등록 API 호출: {}", request.name());
@@ -90,7 +88,7 @@ public class RegionController {
         return DefaultResponse.ok(response);
     }
 
-    @PostMapping("/with-new-code")
+    @PostMapping("/bundle")
     @Operation(summary = "지역+지역코드 동시 등록 API by 지미 [Only Admin]", description = "새로운 지역코드와 함께 지역을 등록합니다(관리자용).")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "등록 성공", useReturnTypeSchema = true),
@@ -113,7 +111,6 @@ public class RegionController {
                             - WEATHER500_1: 격자 좌표 변환 중 오류가 발생했습니다.
                             """)
     })
-    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.CreateRegion> createRegionWithNewCode(
             @Valid @RequestBody RegionReqDTO.CreateRegionWithNewCode request) {
         log.info("지역+지역코드 등록 API 호출: {}", request.name());
@@ -133,7 +130,6 @@ public class RegionController {
                             - WEATHER403_1: 관리자만 접근할 수 있습니다.
                             """)
     })
-    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.RegionCodeList> getAllRegionCodes() {
         log.info("지역코드 목록 조회 API 호출");
 
@@ -221,7 +217,6 @@ public class RegionController {
                             - WEATHER500_22: 데이터 정리 중 오류가 발생했습니다.
                             """)
     })
-    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.DeleteRegionCode> deleteRegionCode(
             @Parameter(description = "지역코드 ID", required = true)
             @PathVariable Long regionCodeId) {
@@ -258,7 +253,6 @@ public class RegionController {
                             - WEATHER500_22: 데이터 정리 중 오류가 발생했습니다.
                             """)
     })
-    @PreAuthorize("hasRole('ADMIN')")
     public DefaultResponse<RegionResDTO.DeleteRegion> deleteRegion(
             @Parameter(description = "지역 ID", required = true)
             @PathVariable Long regionId) {

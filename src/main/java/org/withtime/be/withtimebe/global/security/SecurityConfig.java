@@ -57,15 +57,24 @@ public class SecurityConfig {
     };
 
     private RequestMatcher[] admin = {
-        requestMatcher(HttpMethod.GET, API_PREFIX + "/notices/trash"),
-        requestMatcher(HttpMethod.POST, API_PREFIX + "/notices/**"),
-        requestMatcher(HttpMethod.PUT, API_PREFIX + "/notices/**"),
-        requestMatcher(HttpMethod.PATCH, API_PREFIX + "/notices/**"),
-        requestMatcher(HttpMethod.DELETE, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/notices/trash"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.PUT, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.PATCH, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/notices/**"),
 
-        requestMatcher(HttpMethod.POST, API_PREFIX + "/faqs/**"),
-        requestMatcher(HttpMethod.PUT, API_PREFIX + "/faqs/**"),
-        requestMatcher(HttpMethod.DELETE, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.PUT, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/faqs/**"),
+
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions/codes"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions/bundle"),
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/regions/codes"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/regions/codes/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/regions/**"),
+
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/weather/trigger"),
     };
 
     @Bean

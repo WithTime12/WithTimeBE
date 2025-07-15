@@ -60,4 +60,33 @@ public class WeatherSyncConverter {
                 .message(message)
                 .build();
     }
+
+    public static WeatherSyncResDTO.MediumTermSyncResult toMediumTermSyncResult(
+            int totalRegions, int successfulRegions, int failedRegions,
+            int totalDataPoints, int newDataPoints, int updatedDataPoints,
+            LocalDate tmfc, LocalDateTime startTime, LocalDateTime endTime,
+            List<WeatherSyncResDTO.RegionSyncResult> regionResults,
+            List<String> errorMessages) {
+
+        long durationMs = java.time.Duration.between(startTime, endTime).toMillis();
+        String message = String.format(
+                "중기예보 동기화 완료: 성공 %d/%d 지역, 신규 %d개, 업데이트 %d개 데이터 처리",
+                successfulRegions, totalRegions, newDataPoints, updatedDataPoints);
+
+        return WeatherSyncResDTO.MediumTermSyncResult.builder()
+                .totalRegions(totalRegions)
+                .successfulRegions(successfulRegions)
+                .failedRegions(failedRegions)
+                .totalDataPoints(totalDataPoints)
+                .newDataPoints(newDataPoints)
+                .updatedDataPoints(updatedDataPoints)
+                .tmfc(tmfc)
+                .processingStartTime(startTime)
+                .processingEndTime(endTime)
+                .processingDurationMs(durationMs)
+                .regionResults(regionResults)
+                .errorMessages(errorMessages)
+                .message(message)
+                .build();
+    }
 }

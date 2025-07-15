@@ -17,13 +17,19 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class WeatherApiClientImpl implements WeatherApiClient {
 
-    private final WebClient webClient;
+    private final WebClient weatherWebClient;
 
     @Value("${weather.api.key}")
     private String apiKey;
 
     @Value("${weather.api.short-term-forecast-url}")
     private String shortTermForecastUrl;
+
+    @Value("${weather.api.medium-term-land-url}")
+    private String mediumTermLandUrl;
+
+    @Value("${weather.api.medium-term-temp-url}")
+    private String mediumTermTempUrl;
 
     @Override
     public String callShortTermWeatherApi(Region region, LocalDate baseDate, String baseTime) {
@@ -34,7 +40,7 @@ public class WeatherApiClientImpl implements WeatherApiClient {
             log.debug("단기예보 API 호출: regionId={}, gridX={}, gridY={}, baseDate={}, baseTime={}",
                     region.getId(), gridX, gridY, baseDate, baseTime);
 
-            String response = webClient.get()
+            String response = weatherWebClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path(shortTermForecastUrl)
                             .queryParam("authKey", apiKey)
@@ -63,4 +69,75 @@ public class WeatherApiClientImpl implements WeatherApiClient {
             throw new WeatherException(WeatherErrorCode.SHORT_TERM_FORECAST_ERROR);
         }
     }
+
+    public String callMediumTermLandWeatherApi(Region region, LocalDate tmfc) {
+        try {
+            String landRegCode = region.getRegionCode() != null ?
+                    region.getRegionCode().getLandRegCode() : null;
+
+            if (landRegCode == null) {
+                throw new WeatherException(WeatherErrorCode.INVALID_REGION_CODE);
+            }
+
+            log.debug("중기 육상예보 API 호출: regionId={}, landRegCode={}", region.getId(), landRegCode);
+
+            String response = weatherWebClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(mediumTermLandUrl)
+                            .queryParam("authKey", apiKey)
+                            .queryParam("reg", landRegCode)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            if (response == null || response.trim().isEmpty()) {
+                throw new WeatherException(WeatherErrorCode.MEDIUM_TERM_FORECAST_ERROR);
+            }
+
+            log.debug("중기 육상예보 API 응답 수신 완료: regionId={}, 응답길이={}", region.getId(), response.length());
+            return response;
+
+        } catch (Exception e) {
+            log.error("중기 육상 예보 API 호출 실패: regionId={}, landRegCode={}",
+                    region.getId(), region.getRegionCode().getLandRegCode(), e);
+            throw new WeatherException(WeatherErrorCode.MEDIUM_TERM_FORECAST_ERROR);
+        }
+    }
+
+    public String callMediumTermTempWeatherApi(Region region, LocalDate tmfc) {
+        try {
+            String tempRegCode = region.getRegionCode() != null ?
+                    region.getRegionCode().getTempRegCode() : null;
+
+            if (tempRegCode == null) {
+                throw new WeatherException(WeatherErrorCode.INVALID_REGION_CODE);
+            }
+
+            log.debug("중기 기온예보 API 호출: regionId={}, tempRegCode={}", region.getId(), tempRegCode);
+
+            String response = weatherWebClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(mediumTermTempUrl)
+                            .queryParam("authKey", apiKey)
+                            .queryParam("reg", tempRegCode)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            if (response == null || response.trim().isEmpty()) {
+                throw new WeatherException(WeatherErrorCode.MEDIUM_TERM_FORECAST_ERROR);
+            }
+
+            log.debug("중기 기온예보 API 응답 수신 완료: regionId={}, 응답길이={}", region.getId(), response.length());
+            return response;
+
+        } catch (Exception e) {
+            log.error("중기 기온 예보 API 호출 실패: regionId={}, tempRegCode={}",
+                    region.getId(), region.getRegionCode().getTempRegCode(), e);
+            throw new WeatherException(WeatherErrorCode.MEDIUM_TERM_FORECAST_ERROR);
+        }
+    }
+
 }

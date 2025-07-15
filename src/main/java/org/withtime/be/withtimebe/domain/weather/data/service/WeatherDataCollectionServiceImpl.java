@@ -5,10 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.weather.converter.WeatherSyncConverter;
+import org.withtime.be.withtimebe.domain.weather.data.utils.WeatherDataHelper;
 import org.withtime.be.withtimebe.domain.weather.data.utils.WeatherDataParser;
 import org.withtime.be.withtimebe.domain.weather.dto.response.WeatherSyncResDTO;
+import org.withtime.be.withtimebe.domain.weather.entity.RawMediumTermWeather;
 import org.withtime.be.withtimebe.domain.weather.entity.RawShortTermWeather;
 import org.withtime.be.withtimebe.domain.weather.entity.Region;
+import org.withtime.be.withtimebe.domain.weather.repository.RawMediumTermWeatherRepository;
 import org.withtime.be.withtimebe.domain.weather.repository.RawShortTermWeatherRepository;
 import org.withtime.be.withtimebe.domain.weather.repository.RegionRepository;
 
@@ -17,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -26,8 +30,12 @@ public class WeatherDataCollectionServiceImpl implements WeatherDataCollectionSe
     private final WeatherApiClient weatherApiClient;
     private final WeatherDataParser weatherDataParser;
     private final RegionRepository regionRepository;
-    private final RawShortTermWeatherRepository shortTermWeatherRepository;
+    private final RawShortTermWeatherRepository rawShortTermWeatherRepository;
+    private final RawMediumTermWeatherRepository rawMediumTermWeatherRepository;
 
+    /**
+     * 단기 예보 데이터 수집 및 저장
+     */
     @Override
     @Transactional
     public WeatherSyncResDTO.ShortTermSyncResult collectShortTermWeatherData(
@@ -36,7 +44,7 @@ public class WeatherDataCollectionServiceImpl implements WeatherDataCollectionSe
         LocalDateTime startTime = LocalDateTime.now();
         log.info("단기 예보 수집 시작: regionIds={}, baseDate={}, baseTime={}", regionIds, baseDate, baseTime);
 
-        List<Region> targetRegions = getTargetRegions(regionIds);
+        List<Region> targetRegions = WeatherDataHelper.getTargetRegions(regionIds, regionRepository);
         List<WeatherSyncResDTO.RegionSyncResult> regionResults = new ArrayList<>();
         List<String> errorMessages = new ArrayList<>();
 
@@ -51,7 +59,8 @@ public class WeatherDataCollectionServiceImpl implements WeatherDataCollectionSe
 
                 String response = weatherApiClient.callShortTermWeatherApi(region, baseDate, baseTime);
                 List<RawShortTermWeather> weatherDataList = weatherDataParser.parseShortTermWeatherResponse(response, region);
-                UpsertResult upsertResult = upsertShortTermWeatherData(weatherDataList, forceUpdate);
+                WeatherDataHelper.UpsertResult upsertResult = WeatherDataHelper.upsertShortTermWeatherData(
+                        weatherDataList, forceUpdate, rawShortTermWeatherRepository);
 
                 totalDataPoints += upsertResult.totalProcessed();
                 newRecords += upsertResult.newRecords();
@@ -89,44 +98,74 @@ public class WeatherDataCollectionServiceImpl implements WeatherDataCollectionSe
                 baseDate, baseTime, startTime, endTime, regionResults, errorMessages);
     }
 
+    /**
+     * 중기 예보 데이터 수집 및 저장
+     */
+    @Override
+    @Transactional
+    public WeatherSyncResDTO.MediumTermSyncResult collectMediumTermWeatherData(
+            List<Long> regionIds, LocalDate tmfc, boolean forceUpdate) {
 
-    // ==== 내부 유틸리티 메서드들 ====
+        LocalDateTime startTime = LocalDateTime.now();
+        log.info("중기 예보 수집 시작: regionIds={}, tmfc={}", regionIds, tmfc);
 
-    private List<Region> getTargetRegions(List<Long> regionIds) {
-        return (regionIds == null || regionIds.isEmpty())
-                ? regionRepository.findAllActiveRegions()
-                : regionRepository.findByIdsWithRegionCode(regionIds);
-    }
+        List<Region> targetRegions = WeatherDataHelper.getTargetRegions(regionIds, regionRepository);
+        List<WeatherSyncResDTO.RegionSyncResult> regionResults = new ArrayList<>();
+        List<String> errorMessages = new ArrayList<>();
 
-    private UpsertResult upsertShortTermWeatherData(List<RawShortTermWeather> weatherDataList, boolean forceUpdate) {
-        int totalProcessed = 0, newRecords = 0, updatedRecords = 0;
+        int totalDataPoints = 0, newDataPoints = 0, updatedDataPoints = 0;
+        int successfulRegions = 0, failedRegions = 0;
 
-        for (RawShortTermWeather weatherData : weatherDataList) {
-            Optional<RawShortTermWeather> existingOpt = shortTermWeatherRepository
-                    .findByRegionIdAndBaseDateAndBaseTimeAndFcstDateAndFcstTime(
-                            weatherData.getRegion().getId(),
-                            weatherData.getBaseDate(),
-                            weatherData.getBaseTime(),
-                            weatherData.getForecastDate(),
-                            weatherData.getForecastTime()
-                    );
+        for (Region region : targetRegions) {
+            long regionStartTime = System.currentTimeMillis();
 
-            if (existingOpt.isEmpty()) {
-                shortTermWeatherRepository.save(weatherData);
-                newRecords++;
-            } else if (forceUpdate) {
-                existingOpt.get().updateWeatherData(
-                        weatherData.getTemperature(), weatherData.getSky(), weatherData.getPrecipitationProbability(),
-                        weatherData.getPrecipitationType(), weatherData.getPrecipitationAmount()
-                );
-                updatedRecords++;
+            try {
+                log.debug("지역 {} 중기 예보 수집 시작", region.getName());
+
+                String landResponse = CompletableFuture.supplyAsync(() ->
+                        weatherApiClient.callMediumTermLandWeatherApi(region, tmfc)).get();
+                String tempResponse = CompletableFuture.supplyAsync(() ->
+                        weatherApiClient.callMediumTermTempWeatherApi(region, tmfc)).get();
+
+                List<RawMediumTermWeather> weatherDataList = weatherDataParser.parseMediumTermWeatherResponse(
+                        landResponse, tempResponse, region);
+                WeatherDataHelper.UpsertResult upsertResult = WeatherDataHelper.upsertMediumTermWeatherData(
+                        weatherDataList, forceUpdate, rawMediumTermWeatherRepository);
+
+                totalDataPoints += upsertResult.totalProcessed();
+                newDataPoints += upsertResult.newRecords();
+                updatedDataPoints += upsertResult.updatedRecords();
+                successfulRegions++;
+
+                regionResults.add(WeatherSyncConverter.toRegionSyncResult(
+                        region.getId(), region.getName(), true,
+                        upsertResult.totalProcessed(), upsertResult.newRecords(), upsertResult.updatedRecords(),
+                        null, System.currentTimeMillis() - regionStartTime));
+
+                log.debug("지역 {} 중기 예보 수집 완료: 신규 {}, 업데이트 {}",
+                        region.getName(), upsertResult.newRecords(), upsertResult.updatedRecords());
+
+            } catch (Exception e) {
+                failedRegions++;
+                String errorMessage = String.format("지역 %s 처리 실패: %s", region.getName(), e.getMessage());
+                errorMessages.add(errorMessage);
+
+                regionResults.add(WeatherSyncConverter.toRegionSyncResult(
+                        region.getId(), region.getName(), false, 0, 0, 0,
+                        errorMessage, System.currentTimeMillis() - regionStartTime));
+
+                log.error("지역 {} 중기 예보 수집 실패", region.getName(), e);
             }
-            totalProcessed++;
         }
 
-        return new UpsertResult(totalProcessed, newRecords, updatedRecords);
-    }
+        LocalDateTime endTime = LocalDateTime.now();
+        log.info("중기 예보 수집 완료: 성공 {}/{} 지역, 신규 {}, 업데이트 {} 데이터",
+                successfulRegions, targetRegions.size(), newDataPoints, updatedDataPoints);
 
-    private record UpsertResult(int totalProcessed, int newRecords, int updatedRecords) {}
+        return WeatherSyncConverter.toMediumTermSyncResult(
+                targetRegions.size(), successfulRegions, failedRegions,
+                totalDataPoints, newDataPoints, updatedDataPoints,
+                tmfc, startTime, endTime, regionResults, errorMessages);
+    }
 }
 

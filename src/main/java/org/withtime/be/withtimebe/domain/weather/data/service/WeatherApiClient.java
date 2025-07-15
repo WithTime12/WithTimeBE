@@ -8,4 +8,7 @@ public interface WeatherApiClient {
 
     String callShortTermWeatherApi(Region region, LocalDate baseDate, String baseTime);
 
+    String callMediumTermLandWeatherApi(Region region, LocalDate tmfc);
+
+    String callMediumTermTempWeatherApi(Region region, LocalDate tmfc);
 }

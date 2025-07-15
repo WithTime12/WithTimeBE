@@ -10,4 +10,6 @@ public interface WeatherDataCollectionService {
     WeatherSyncResDTO.ShortTermSyncResult collectShortTermWeatherData(
             List<Long> regionIds, LocalDate baseDate, String baseTime, boolean forceUpdate);
 
+    WeatherSyncResDTO.MediumTermSyncResult collectMediumTermWeatherData(
+            List<Long> regionIds, LocalDate tmfc, boolean forceUpdate);
 }

@@ -1,9 +1,9 @@
-package org.withtime.be.withtimebe.domain.date.entity;
+package org.withtime.be.withtimebe.domain.dateplace.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-import org.withtime.be.withtimebe.domain.date.entity.enums.PlaceType;
+import org.withtime.be.withtimebe.domain.dateplace.entity.enums.PlaceType;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 @Entity

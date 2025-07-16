@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.date.entity.enums;
+package org.withtime.be.withtimebe.domain.dateplace.entity.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

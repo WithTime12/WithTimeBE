@@ -21,7 +21,6 @@ public class DatePlaceResponseDTO {
 		String name,	// 장소 이름
 		String tel,		// 전화 번호
 		Integer averagePrice,	// 평균 가격
-		String loadNameAddress,	// 도로명 주소
 		String lotNumberAddress,	// 지번 주소
 		String placeType,	// 장소 유형
 		List<PlaceCategory> placeCategoryList	// 카테고리 목록

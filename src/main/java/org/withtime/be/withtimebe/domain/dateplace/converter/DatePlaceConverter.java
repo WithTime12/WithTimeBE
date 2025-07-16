@@ -3,7 +3,6 @@ package org.withtime.be.withtimebe.domain.dateplace.converter;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
-import org.withtime.be.withtimebe.domain.date.entity.DatePlacePlaceCategory;
 import org.withtime.be.withtimebe.domain.date.entity.PlaceCategory;
 import org.withtime.be.withtimebe.domain.dateplace.dto.response.DatePlaceResponseDTO;
 import org.withtime.be.withtimebe.domain.dateplace.entity.DatePlace;
@@ -36,7 +35,6 @@ public class DatePlaceConverter {
 			.name(datePlace.getName())
 			.tel(datePlace.getTel())
 			.averagePrice(datePlace.getAveragePrice())
-			.loadNameAddress(datePlace.getRoadNameAddress())
 			.lotNumberAddress(datePlace.getLotNumberAddress())
 			.placeType(datePlace.getPlaceType().getLabel())
 			.placeCategoryList(placeCategoryList)

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Set;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,13 +16,14 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "scheduler.visit-logs.enabled", havingValue = "true")
 public class VisitCountScheduler {
 
 	private final RedisTemplate<String, String> redisTemplate;
 	private final VisitLogRepository visitLogRepository;
 
-	// 매 정각마다 실행
-	@Scheduled(cron = "0 0 * * * *")
+	// 매 정각마다 Redis 방문자 로그를 DB에 저장하는 스케쥴러
+	@Scheduled(cron = "${scheduler.visit-logs.visit-logs-cron}")
 	@Transactional
 	public void saveHourlyVisitCounts() {
 
@@ -51,10 +53,10 @@ public class VisitCountScheduler {
 			.count(count)
 			.build();
 
-		// JPA Save
+		// JPA Save 우선
 		visitLogRepository.save(visitLog);
 
-		// Delete from Redis
+		// Redis Delete
 		redisTemplate.delete(redisKey);
 	}
 }

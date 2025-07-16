@@ -30,6 +30,7 @@ public class VisitCountInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+		// IP 기반 방문자 기록
 		String clientIp = getClientIp(request);
 		LocalDate today = LocalDate.now();
 		Integer hour = LocalTime.now().getHour();

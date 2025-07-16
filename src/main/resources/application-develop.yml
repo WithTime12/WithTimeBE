@@ -30,3 +30,8 @@ beginner:
           - Exception
         web-hook-url: ${DISCORD_WEBHOOK_URL}
         enable: true
+
+scheduler:
+  visit-logs:
+    enabled: true  # 방문자 기록 스케쥴러 활성화 여부
+    visit-logs-cron: "0 0 * * * *"  # 매 정각

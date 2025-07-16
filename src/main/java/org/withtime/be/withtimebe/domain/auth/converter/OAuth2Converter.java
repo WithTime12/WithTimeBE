@@ -22,4 +22,11 @@ public class OAuth2Converter {
                 .build();
     }
 
+    public static OAuth2ResponseDTO.GetUserInfo toGetUserInfo(NaverOAuth2ResponseDTO.UserInfo.UserInfoData naver) {
+        return OAuth2ResponseDTO.GetUserInfo.builder()
+                .email(naver.email())
+                .providerId(naver.id())
+                .socialType(SocialType.NAVER)
+                .build();
+    }
 }

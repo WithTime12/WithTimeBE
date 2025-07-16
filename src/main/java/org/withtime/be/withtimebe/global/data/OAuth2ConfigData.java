@@ -20,6 +20,7 @@ public class OAuth2ConfigData {
     @Setter
     public static class Registration {
         private String clientId;
+        private String clientSecret;
         private String redirectUri;
         private String authorizationGrantType;
         private String clientAuthenticationMethod;

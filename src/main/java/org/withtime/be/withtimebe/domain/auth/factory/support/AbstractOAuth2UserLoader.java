@@ -33,6 +33,10 @@ public abstract class AbstractOAuth2UserLoader implements OAuth2UserLoader {
         return this.oAuth2ConfigData.getRegistration().get(this.getSocialType()).getClientId();
     }
 
+    protected String getClientSecret() {
+        return this.oAuth2ConfigData.getRegistration().get(this.getSocialType()).getClientSecret();
+    }
+
     protected String getRedirectUri() {
         return this.oAuth2ConfigData.getRegistration().get(this.getSocialType()).getRedirectUri();
     }

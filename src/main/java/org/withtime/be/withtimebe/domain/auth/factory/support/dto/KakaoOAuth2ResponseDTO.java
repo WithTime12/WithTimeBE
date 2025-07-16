@@ -2,51 +2,51 @@ package org.withtime.be.withtimebe.domain.auth.factory.support.dto;
 
 import lombok.Getter;
 
-public class KakaoOAuth2ResponseDTO {
+public record KakaoOAuth2ResponseDTO () {
 
-    @Getter
-    public static class Token {
-        String token_type;
-        String access_token;
-        String refresh_token;
-        Long expires_in;
-        Long refresh_token_expires_in;
-        String scope;
+    public record Token (
+        String token_type,
+        String access_token,
+        String refresh_token,
+        Long expires_in,
+        Long refresh_token_expires_in,
+        String scope
+    ) {
     }
 
-    @Getter
-    public static class KakaoProfile {
-        private Long id;
-        private String connected_at;
-        private Properties properties;
-        private KakaoAccount kakao_account;
+    public record KakaoProfile (
+        Long id,
+        String connected_at,
+        Properties properties,
+        KakaoAccount kakao_account
+    ) {
 
-        @Getter
-        public static class Properties {
-            private String nickname;
-            private String profile_image;
-            private String thumbnail_image;
+        public record Properties (
+            String nickname,
+            String profile_image,
+            String thumbnail_image
+        ) {
         }
 
-        @Getter
-        public static class KakaoAccount {
-            private String email;
-            private Boolean is_email_verified;
-            private Boolean email_needs_agreement;
-            private Boolean has_email;
-            private Boolean profile_nickname_needs_agreement;
-            private Boolean profile_image_needs_agreement;
-            private Boolean email_needs_argument;
-            private Boolean is_email_valid;
-            private Profile profile;
+        public record KakaoAccount (
+            String email,
+            Boolean is_email_verified,
+            Boolean email_needs_agreement,
+            Boolean has_email,
+            Boolean profile_nickname_needs_agreement,
+            Boolean profile_image_needs_agreement,
+            Boolean email_needs_argument,
+            Boolean is_email_valid,
+            Profile profile
+        ) {
 
-            @Getter
-            public static class Profile {
-                private String nickname;
-                private String thumbnail_image_url;
-                private String profile_image_url;
-                private Boolean is_default_nickname;
-                private Boolean is_default_image;
+            public record Profile (
+                String nickname,
+                String thumbnail_image_url,
+                String profile_image_url,
+                Boolean is_default_nickname,
+                Boolean is_default_image
+            ) {
             }
         }
     }

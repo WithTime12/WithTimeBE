@@ -1,11 +1,18 @@
 package org.withtime.be.withtimebe.domain.dateplace.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.*;
 
+import org.hibernate.annotations.BatchSize;
+import org.withtime.be.withtimebe.domain.date.entity.DatePlacePlaceCategory;
+import org.withtime.be.withtimebe.domain.date.entity.PlaceCategory;
 import org.withtime.be.withtimebe.domain.dateplace.entity.enums.PlaceType;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
+@BatchSize(size = 100)
 @Entity
 @Getter
 @Builder
@@ -49,4 +56,9 @@ public class DatePlace extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "place_type")
     private PlaceType placeType;
+
+    @OneToMany(mappedBy = "datePlace")
+    @BatchSize(size = 10)
+    @Builder.Default
+    private List<DatePlacePlaceCategory> datePlacePlaceCategoryList = new ArrayList<>();
 }

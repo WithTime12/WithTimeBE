@@ -50,13 +50,15 @@ public class SecurityConfig {
             API_PREFIX + "/notices/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
-            "/v3/api-docs/**"
+            "/v3/api-docs/**",
     };
 
     private RequestMatcher[] admin = {
         requestMatcher(HttpMethod.GET, API_PREFIX + "/members/membership"),
         requestMatcher(HttpMethod.PUT, API_PREFIX + "/members/*/membership"),
         requestMatcher(HttpMethod.GET, API_PREFIX + "/visit-logs/**"),
+
+        requestMatcher(HttpMethod.GET, API_PREFIX + "/dateplaces/manage"),
     };
 
     @Bean

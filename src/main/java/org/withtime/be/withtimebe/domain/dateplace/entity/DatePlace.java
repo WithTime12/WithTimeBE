@@ -12,7 +12,6 @@ import org.withtime.be.withtimebe.domain.date.entity.PlaceCategory;
 import org.withtime.be.withtimebe.domain.dateplace.entity.enums.PlaceType;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
-@BatchSize(size = 100)
 @Entity
 @Getter
 @Builder

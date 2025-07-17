@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.withtime.be.withtimebe.domain.log.dto.response.VisitLogResponseDTO;
-import org.withtime.be.withtimebe.domain.log.entity.VisitLog;
+import org.withtime.be.withtimebe.domain.log.model.VisitLog;
 
 public class VisitLogConverter {
 

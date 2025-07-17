@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.withtime.be.withtimebe.domain.log.converter.VisitLogConverter;
 import org.withtime.be.withtimebe.domain.log.dto.response.VisitLogResponseDTO;
-import org.withtime.be.withtimebe.domain.log.entity.VisitLog;
+import org.withtime.be.withtimebe.domain.log.model.VisitLog;
 import org.withtime.be.withtimebe.domain.log.service.query.VisitLogQueryService;
 
 import io.swagger.v3.oas.annotations.Operation;

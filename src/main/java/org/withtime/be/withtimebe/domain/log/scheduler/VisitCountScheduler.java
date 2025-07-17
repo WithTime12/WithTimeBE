@@ -9,7 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.withtime.be.withtimebe.domain.log.entity.VisitLog;
+import org.withtime.be.withtimebe.domain.log.model.VisitLog;
 import org.withtime.be.withtimebe.domain.log.repository.VisitLogRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,9 +22,8 @@ public class VisitCountScheduler {
 	private final RedisTemplate<String, String> redisTemplate;
 	private final VisitLogRepository visitLogRepository;
 
-	// 매 정각마다 Redis 방문자 로그를 DB에 저장하는 스케쥴러
+	// 매 정각마다 Redis 방문자 로그를 DB에 저장하는 스케쥴러 (기획 완성되면 변경)
 	@Scheduled(cron = "${scheduler.visit-logs.visit-logs-cron}")
-	@Transactional
 	public void saveHourlyVisitCounts() {
 
 		LocalDate today = LocalDate.now();
@@ -46,14 +45,14 @@ public class VisitCountScheduler {
 		// Count
 		Long count = (ipSet != null) ? ipSet.size() : 0L;
 
-		// Entity
+		// Model
 		VisitLog visitLog = VisitLog.builder()
 			.date(today)
 			.hour(LocalTime.of(hour, 0))
 			.count(count)
 			.build();
 
-		// JPA Save 우선
+		// JPA Save
 		visitLogRepository.save(visitLog);
 
 		// Redis Delete

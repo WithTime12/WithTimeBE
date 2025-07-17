@@ -15,6 +15,19 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: 6379
+    mongodb:
+      uri: mongodb://localhost:27017/withtime
+  mail:
+    host: ${MAIL_SENDER_HOST}
+    port: 587
+    username: ${MAIL_SENDER_USERNAME}
+    password: ${MAIL_SENDER_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 jwt:
   secret: ${JWT_SECRET}

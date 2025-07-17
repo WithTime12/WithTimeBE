@@ -15,6 +15,17 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: 6379
+  mail:
+    host: ${MAIL_SENDER_HOST}
+    port: 587
+    username: ${MAIL_SENDER_USERNAME}
+    password: ${MAIL_SENDER_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 jwt:
   secret: ${JWT_SECRET}
@@ -30,3 +41,45 @@ beginner:
           - Exception
         web-hook-url: ${DISCORD_WEBHOOK_URL}
         enable: true
+
+weather:
+  api:
+    key: ${KMA_API_KEY}
+    base-url: https://apihub.kma.go.kr
+
+    # API 엔드포인트
+    grid-conversion-url: /api/typ01/cgi-bin/url/nph-dfs_xy_lonlat
+    short-term-forecast-url: /api/typ02/openApi/VilageFcstInfoService_2.0/getVilageFcst
+    medium-term-land-url: /api/typ01/url/fct_afs_wl.php
+    medium-term-temp-url: /api/typ01/url/fct_afs_wc.php
+
+    # API 타임아웃 설정
+    timeout:
+      connect: 5000
+      read: 15000
+
+    # 재시도 설정
+    retry:
+      max-attempts: 3
+      backoff-delay: 2000
+
+# 스케줄러 설정
+scheduler:
+  weather:
+    enabled: true  # 스케줄러 활성화 여부
+
+    # 데이터 수집 스케줄
+    short-term-cron: "10 2,5,8,11,14,17,20,23 * * * *"  # 단기예보 수집 (매 3시간 10분)
+    medium-term-cron: "30 6,18 * * * *"                # 중기예보 수집 (매 12시간 30분)
+    cleanup-cron: "0 0 3 * * *"                        # 데이터 정리 (매일 새벽 3시)
+
+    # 추천 정보 생성 스케줄
+    recommendation:
+      short-term-cron: "0 5 * * * *"        # 단기예보 추천 (매 시간 5분) - 0-2일
+      medium-term-cron: "0 30 */6 * * *"    # 중기예보 추천 (6시간마다 30분) - 3-6일
+
+    # 데이터 보관 기간 설정
+    retention:
+      short-term-days: 7   # 단기 예보 보관 기간
+      medium-term-days: 7  # 중기 예보 보관 기간
+      recommendation-days: 30  # 추천 정보 보관 기간

@@ -6,6 +6,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.withtime.be.withtimebe.domain.notice.converter.NoticeCategoryConverter;
+import org.withtime.be.withtimebe.domain.faq.converter.FaqCategoryConverter;
 import org.withtime.be.withtimebe.global.security.annotation.resolver.AuthenticatedMemberResolver;
 
 import java.util.List;
@@ -24,5 +25,6 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addFormatters(FormatterRegistry registry) {
         registry.addConverter(new NoticeCategoryConverter());
+        registry.addConverter(new FaqCategoryConverter());
     }
 }

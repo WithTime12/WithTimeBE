@@ -1,6 +1,7 @@
 package org.withtime.be.withtimebe.domain.notice.controller.command;
 
 import org.namul.api.payload.response.DefaultResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +31,7 @@ public class NoticeCommandController {
 
 	private final NoticeCommandService noticeCommandService;
 
-	@Operation(summary = "공지사항 생성 API Only Admin by 피우", description = "공지사항 생성 API입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "공지사항 생성 API by 피우 [Only Admin]", description = "공지사항 생성 API입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다."),
 		@ApiResponse(responseCode = "403",
@@ -48,7 +49,7 @@ public class NoticeCommandController {
 		return DefaultResponse.created(response);
 	}
 
-	@Operation(summary = "공지사항 수정 API Only Admin by 피우", description = "공지사항 수정 API입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "공지사항 수정 API by 피우 [Only Admin]", description = "공지사항 수정 API입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다."),
 		@ApiResponse(responseCode = "403",
@@ -70,7 +71,7 @@ public class NoticeCommandController {
 		return DefaultResponse.ok(response);
 	}
 
-	@Operation(summary = "공지사항 삭제 API Only Admin by 피우", description = "공지사항 삭제 API입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "공지사항 삭제 API by 피우 [Only Admin]", description = "공지사항 삭제 API입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "204", description = "성공입니다."),
 		@ApiResponse(responseCode = "403",
@@ -88,7 +89,7 @@ public class NoticeCommandController {
 		return DefaultResponse.noContent();
 	}
 
-	@Operation(summary = "삭제한 공지사항 되돌리기 API Only Admin by 피우", description = "삭제한 공지사항을 되돌리는 API입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "삭제한 공지사항 되돌리기 API by 피우 [Only Admin]", description = "삭제한 공지사항을 되돌리는 API입니다. 어드민만 사용 가능합니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다."),
 		@ApiResponse(responseCode = "403",

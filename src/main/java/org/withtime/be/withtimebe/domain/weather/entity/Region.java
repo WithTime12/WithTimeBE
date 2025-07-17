@@ -16,24 +16,24 @@ public class Region extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "region_id")
-    private Long id;
+    private Long id;           // region_id
 
-    @Column(name = "name")
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "latitude")
+    @Column(nullable = false, precision = 9, scale = 6)
     private BigDecimal latitude;
 
-    @Column(name = "longitude")
+    @Column(nullable = false, precision = 9, scale = 6)
     private BigDecimal longitude;
 
-    @Column(name = "grid_x")
+    @Column(name = "grid_x", nullable = false, precision = 5, scale = 2)
     private BigDecimal gridX;
 
-    @Column(name = "grid_y")
+    @Column(name = "grid_y", nullable = false, precision = 5, scale = 2)
     private BigDecimal gridY;
 
-    @Column(name = "reg_code")
-    private String regCode;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_code_id", nullable = false)
+    private RegionCode regionCode;
 }

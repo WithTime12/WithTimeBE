@@ -57,14 +57,6 @@ public class SecurityConfig {
     };
 
     private RequestMatcher[] admin = {
-        requestMatcher(HttpMethod.GET, API_PREFIX + "/members/membership"),
-        requestMatcher(HttpMethod.PUT, API_PREFIX + "/members/*/membership"),
-        requestMatcher(HttpMethod.GET, API_PREFIX + "/visit-logs/**"),
-
-        requestMatcher(HttpMethod.GET, API_PREFIX + "/dateplaces/manage"),
-    };
-
-    private RequestMatcher[] admin = {
             requestMatcher(HttpMethod.GET, API_PREFIX + "/notices/trash"),
             requestMatcher(HttpMethod.POST, API_PREFIX + "/notices/**"),
             requestMatcher(HttpMethod.PUT, API_PREFIX + "/notices/**"),
@@ -83,6 +75,12 @@ public class SecurityConfig {
             requestMatcher(HttpMethod.DELETE, API_PREFIX + "/regions/**"),
 
             requestMatcher(HttpMethod.POST, API_PREFIX + "/weather/trigger"),
+
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/members/membership"),
+            requestMatcher(HttpMethod.PUT, API_PREFIX + "/members/*/membership"),
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/visit-logs/**"),
+
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/dateplaces/management"),
     };
 
     @Bean

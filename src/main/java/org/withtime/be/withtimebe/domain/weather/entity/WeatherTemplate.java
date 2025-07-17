@@ -5,8 +5,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.withtime.be.withtimebe.domain.weather.entity.enums.PrecipCategory;
 import org.withtime.be.withtimebe.domain.weather.entity.enums.TempCategory;
-import org.withtime.be.withtimebe.domain.weather.entity.enums.Weather;
+import org.withtime.be.withtimebe.domain.weather.entity.enums.WeatherType;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,7 +26,7 @@ public class WeatherTemplate extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "weather", nullable = false)
-    private Weather weather;
+    private WeatherType weatherType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "temp_category", nullable = false)
@@ -36,9 +39,10 @@ public class WeatherTemplate extends BaseEntity {
     @Column(name = "message")
     private String message;
 
-    @Column(name = "keywords")
-    private String keywords;
-
     @Column(name = "emoji")
     private String emoji;
+
+    @OneToMany(mappedBy = "weatherTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<TemplateKeyword> templateKeywords = new ArrayList<>();
 }

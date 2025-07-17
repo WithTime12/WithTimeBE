@@ -16,7 +16,7 @@ spring:
       host: ${REDIS_HOST}
       port: 6379
       mongodb:
-        uri: mongodb://localhost:27017/withtime
+        uri: ${MONGO_URI}
   mail:
     host: ${MAIL_SENDER_HOST}
     port: 587

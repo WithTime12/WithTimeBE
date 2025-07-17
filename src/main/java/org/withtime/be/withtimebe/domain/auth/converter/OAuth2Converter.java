@@ -1,6 +1,7 @@
 package org.withtime.be.withtimebe.domain.auth.converter;
 
 import org.withtime.be.withtimebe.domain.auth.dto.response.OAuth2ResponseDTO;
+import org.withtime.be.withtimebe.domain.auth.factory.support.dto.GoogleOAuth2ResponseDTO;
 import org.withtime.be.withtimebe.domain.auth.factory.support.dto.KakaoOAuth2ResponseDTO;
 import org.withtime.be.withtimebe.domain.auth.factory.support.dto.NaverOAuth2ResponseDTO;
 import org.withtime.be.withtimebe.domain.member.entity.enums.SocialType;
@@ -27,6 +28,14 @@ public class OAuth2Converter {
                 .email(naver.email())
                 .providerId(naver.id())
                 .socialType(SocialType.NAVER)
+                .build();
+    }
+
+    public static OAuth2ResponseDTO.GetUserInfo toGetUserInfo(GoogleOAuth2ResponseDTO.UserInfo google) {
+        return OAuth2ResponseDTO.GetUserInfo.builder()
+                .email(google.email())
+                .providerId(google.id())
+                .socialType(SocialType.GOOGLE)
                 .build();
     }
 }

@@ -11,42 +11,40 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.withtime.be.withtimebe.domain.auth.converter.OAuth2Converter;
 import org.withtime.be.withtimebe.domain.auth.dto.response.OAuth2ResponseDTO;
-import org.withtime.be.withtimebe.domain.auth.factory.support.dto.KakaoOAuth2ResponseDTO;
+import org.withtime.be.withtimebe.domain.auth.factory.support.dto.GoogleOAuth2ResponseDTO;
 import org.withtime.be.withtimebe.domain.member.entity.enums.SocialType;
 import org.withtime.be.withtimebe.global.data.OAuth2ConfigData;
 
 import java.io.IOException;
 
 @Component
-public class KakaoUserLoader extends AbstractOAuth2UserLoader {
+public class GoogleUserLoader extends AbstractOAuth2UserLoader {
 
     private static final String AUTHORIZATION_TOKEN_PREFIX = "Bearer ";
-    private final SocialType socialType = SocialType.KAKAO;
+    private final SocialType socialType = SocialType.GOOGLE;
 
-    public KakaoUserLoader(OAuth2ConfigData oAuth2ConfigData) {
+    public GoogleUserLoader(OAuth2ConfigData oAuth2ConfigData) {
         super(oAuth2ConfigData);
     }
 
     @Override
     protected String getAccessToken(String code) throws IOException {
-        KakaoOAuth2ResponseDTO.Token oAuth2TokenDTO = getToken(code);
-        return oAuth2TokenDTO.access_token();
+        GoogleOAuth2ResponseDTO.Token token = getToken(code);
+        return token.access_token();
     }
 
     @Override
     protected OAuth2ResponseDTO.GetUserInfo getUserInfo(String token) throws IOException {
-        KakaoOAuth2ResponseDTO.KakaoProfile kakaoProfile = getKakaoProfile(token);
-        return OAuth2Converter.toGetUserInfo(kakaoProfile);
+        GoogleOAuth2ResponseDTO.UserInfo userInfo = getGoogleProfile(token);
+        return OAuth2Converter.toGetUserInfo(userInfo);
     }
-
 
     @Override
     public String getSocialType() {
         return this.socialType.name().toLowerCase();
     }
 
-    private KakaoOAuth2ResponseDTO.Token getToken(String code) throws IOException {
-        // 인가코드 토큰 가져오기
+    private GoogleOAuth2ResponseDTO.Token getToken(String code) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
 
@@ -55,6 +53,7 @@ public class KakaoUserLoader extends AbstractOAuth2UserLoader {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("grant_type", "authorization_code");
         map.add("client_id", getClientId());
+        map.add("client_secret", getClientSecret());
         map.add("redirect_uri", getRedirectUri());
         map.add("code", code);
         HttpEntity<MultiValueMap> request = new HttpEntity<>(map, httpHeaders);
@@ -67,10 +66,11 @@ public class KakaoUserLoader extends AbstractOAuth2UserLoader {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        return objectMapper.readValue(response1.getBody(), KakaoOAuth2ResponseDTO.Token.class);
+        return objectMapper.readValue(response1.getBody(), GoogleOAuth2ResponseDTO.Token.class);
+
     }
 
-    private KakaoOAuth2ResponseDTO.KakaoProfile getKakaoProfile(String token) throws IOException{
+    private GoogleOAuth2ResponseDTO.UserInfo getGoogleProfile(String token) throws IOException {
         // 토큰으로 정보 가져오기
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -89,6 +89,6 @@ public class KakaoUserLoader extends AbstractOAuth2UserLoader {
 
         ObjectMapper om = new ObjectMapper();
 
-        return om.readValue(response2.getBody(), KakaoOAuth2ResponseDTO.KakaoProfile.class);
+        return om.readValue(response2.getBody(), GoogleOAuth2ResponseDTO.UserInfo.class);
     }
 }

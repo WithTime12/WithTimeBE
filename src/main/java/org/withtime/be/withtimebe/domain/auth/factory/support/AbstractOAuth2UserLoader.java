@@ -1,8 +1,16 @@
 package org.withtime.be.withtimebe.domain.auth.factory.support;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.withtime.be.withtimebe.domain.auth.dto.response.OAuth2ResponseDTO;
 import org.withtime.be.withtimebe.domain.auth.factory.OAuth2UserLoader;
+import org.withtime.be.withtimebe.domain.auth.factory.support.dto.GoogleOAuth2ResponseDTO;
 import org.withtime.be.withtimebe.global.data.OAuth2ConfigData;
 import org.withtime.be.withtimebe.global.error.code.OAuthErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.OAuthException;

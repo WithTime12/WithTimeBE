@@ -15,50 +15,6 @@ import org.withtime.be.withtimebe.global.error.exception.NoticeException;
 
 public class NoticeConverter {
 
-	// Request DTO : 전체 조회 (Controller -> Service)
- 	public static NoticeRequestDTO.FindNoticeList toFindNoticeList(Pageable pageable, String type) {
-
-		NoticeCategory noticeCategory;
-
-		try {
-			noticeCategory = NoticeCategory.valueOf(type);
-		} catch (IllegalArgumentException e) {
-			throw new NoticeException(NoticeErrorCode.NOTICE_CATEGORY_NOT_FOUND);
-		}
-
-		return NoticeRequestDTO.FindNoticeList.builder()
-			.pageable(pageable)
-			.noticeCategory(noticeCategory)
-			.build();
-	}
-
-	// Request DTO : 검색어 전체 조회 (Controller -> Service)
-	public static NoticeRequestDTO.FindNoticeListByKeyword toFindNoticeListByKeyword(Pageable pageable, String keyword, String type) {
-
-		NoticeCategory noticeCategory;
-
-		try {
-			noticeCategory = NoticeCategory.valueOf(type);
-		} catch (IllegalArgumentException e) {
-			throw new NoticeException(NoticeErrorCode.NOTICE_CATEGORY_NOT_FOUND);
-		}
-
-		return NoticeRequestDTO.FindNoticeListByKeyword.builder()
-			.pageable(pageable)
-			.keyword(keyword)
-			.noticeCategory(noticeCategory)
-			.build();
-	}
-
-	// Request : 상세 조회 요청 (Controller -> Service) DTO
-	public static NoticeRequestDTO.FindNoticeDetail toFindNoticeDetail(Long noticeId, Member member) {
-
-		return NoticeRequestDTO.FindNoticeDetail.builder()
-			.noticeId(noticeId)
-			.member(member)
-			.build();
-	}
-
 	// Response DTO : NoticeResponseDTO.NoticeList
 	public static NoticeResponseDTO.NoticeList toNoticeList(Page<Notice> noticePage) {
 
@@ -87,16 +43,13 @@ public class NoticeConverter {
 	}
 
 	// Response : NoticeDetail(DTO)로 변환
-	public static NoticeResponseDTO.NoticeDetail toNoticeDetail(Notice notice, Member member) {
-
-		boolean hasAdminAuth = member != null && member.getRole().equals(Role.ADMIN);
+	public static NoticeResponseDTO.NoticeDetail toNoticeDetail(Notice notice) {
 
 		return NoticeResponseDTO.NoticeDetail.builder()
 			.noticeId(notice.getId())
 			.title(notice.getTitle())
 			.content(notice.getContent())
 			.isPinned(notice.getIsPinned())
-			.hasAdminAuth(hasAdminAuth)
 			.createdAt(notice.getCreatedAt())
 			.build();
 	}
@@ -108,6 +61,7 @@ public class NoticeConverter {
 			.title(request.title())
 			.content(request.content())
 			.isPinned(request.isPinned())
+			.noticeCategory(request.noticeCategory())
 			.build();
 	}
 }

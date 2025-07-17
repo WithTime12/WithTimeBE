@@ -16,6 +16,7 @@ import org.withtime.be.withtimebe.domain.notice.converter.NoticeConverter;
 import org.withtime.be.withtimebe.domain.notice.dto.request.NoticeRequestDTO;
 import org.withtime.be.withtimebe.domain.notice.dto.response.NoticeResponseDTO;
 import org.withtime.be.withtimebe.domain.notice.entity.Notice;
+import org.withtime.be.withtimebe.domain.notice.entity.enums.NoticeCategory;
 import org.withtime.be.withtimebe.domain.notice.service.query.NoticeQueryService;
 import org.withtime.be.withtimebe.global.annotation.SwaggerPageable;
 import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember;
@@ -47,10 +48,9 @@ public class NoticeQueryController {
 	@GetMapping
 	public DefaultResponse<NoticeResponseDTO.NoticeList> findNoticeList(
 		@PageableDefault(page = 0, size = 10) Pageable pageable,
-		@RequestParam String noticeCategory
+		@RequestParam NoticeCategory noticeCategory
 	) {
-		NoticeRequestDTO.FindNoticeList request = NoticeConverter.toFindNoticeList(pageable, noticeCategory);
-		Page<Notice> result = noticeQueryService.findNoticeList(request);
+		Page<Notice> result = noticeQueryService.findNoticeList(pageable, noticeCategory);
 		NoticeResponseDTO.NoticeList response = NoticeConverter.toNoticeList(result);
 		return DefaultResponse.ok(response);
 	}
@@ -70,10 +70,9 @@ public class NoticeQueryController {
 	public DefaultResponse<NoticeResponseDTO.NoticeList> findNoticeListByKeyword(
 		@PageableDefault(page = 0, size = 10) Pageable pageable,
 		@RequestParam String keyword,
-		@RequestParam String noticeCategory
+		@RequestParam NoticeCategory noticeCategory
 	) {
-		NoticeRequestDTO.FindNoticeListByKeyword request = NoticeConverter.toFindNoticeListByKeyword(pageable, keyword, noticeCategory);
-		Page<Notice> result = noticeQueryService.findNoticeListByKeyword(request);
+		Page<Notice> result = noticeQueryService.findNoticeListByKeyword(pageable, keyword, noticeCategory);
 		NoticeResponseDTO.NoticeList response = NoticeConverter.toNoticeList(result);
 		return DefaultResponse.ok(response);
 	}
@@ -97,9 +96,8 @@ public class NoticeQueryController {
 		@PathVariable("noticeId") Long noticeId,
 		@AuthenticatedMember Member member
 	) {
-		NoticeRequestDTO.FindNoticeDetail request = NoticeConverter.toFindNoticeDetail(noticeId, member);
-		Notice result = noticeQueryService.findNoticeDetail(request);
-		NoticeResponseDTO.NoticeDetail response = NoticeConverter.toNoticeDetail(result, member);
+		Notice result = noticeQueryService.findNoticeDetail(noticeId, member);
+		NoticeResponseDTO.NoticeDetail response = NoticeConverter.toNoticeDetail(result);
 		return DefaultResponse.ok(response);
 	}
 
@@ -121,10 +119,9 @@ public class NoticeQueryController {
 	@GetMapping("/trash")
 	public DefaultResponse<NoticeResponseDTO.NoticeList> findTrashNoticeList(
 		@PageableDefault(page = 0, size = 10) Pageable pageable,
-		@RequestParam String noticeCategory
+		@RequestParam NoticeCategory noticeCategory
 	) {
-		NoticeRequestDTO.FindNoticeList request = NoticeConverter.toFindNoticeList(pageable, noticeCategory);
-		Page<Notice> result = noticeQueryService.findTrashNoticeList(request);
+		Page<Notice> result = noticeQueryService.findTrashNoticeList(pageable, noticeCategory);
 		NoticeResponseDTO.NoticeList response = NoticeConverter.toNoticeList(result);
 		return DefaultResponse.ok(response);
 	}

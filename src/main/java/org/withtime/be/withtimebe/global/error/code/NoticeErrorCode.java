@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum NoticeErrorCode implements BaseErrorCode {
 
+	NOTICE_CATEGORY_EMPTY(HttpStatus.BAD_REQUEST, "NOTICE400_1", "공지사항 유형을 입력해주세요."),
+
 	DELETED_NOTICE_FORBIDDEN_ACCESS(HttpStatus.FORBIDDEN, "NOTICE403_1", "삭제된 공지사항을 열람할 Admin 권한이 없습니다."),
 
 	NOTICE_CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTICE404_1", "해당하는 공지사항 유형을 찾을 수 없습니다."),

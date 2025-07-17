@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,6 +36,7 @@ import org.withtime.be.withtimebe.global.util.JwtUtil;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String API_PREFIX = "/api/v1";
@@ -55,15 +57,24 @@ public class SecurityConfig {
     };
 
     private RequestMatcher[] admin = {
-        requestMatcher(HttpMethod.GET, API_PREFIX + "/notices/trash"),
-        requestMatcher(HttpMethod.POST, API_PREFIX + "/notices/**"),
-        requestMatcher(HttpMethod.PUT, API_PREFIX + "/notices/**"),
-        requestMatcher(HttpMethod.PATCH, API_PREFIX + "/notices/**"),
-        requestMatcher(HttpMethod.DELETE, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/notices/trash"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.PUT, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.PATCH, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/notices/**"),
 
-        requestMatcher(HttpMethod.POST, API_PREFIX + "/faqs/**"),
-        requestMatcher(HttpMethod.PUT, API_PREFIX + "/faqs/**"),
-        requestMatcher(HttpMethod.DELETE, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.PUT, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/faqs/**"),
+
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions/codes"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions/bundle"),
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/regions/codes"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/regions/codes/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/regions/**"),
+
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/weather/trigger"),
     };
 
     @Bean

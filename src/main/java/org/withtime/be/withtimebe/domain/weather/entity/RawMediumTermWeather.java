@@ -5,6 +5,7 @@ import lombok.*;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -40,4 +41,11 @@ public class RawMediumTermWeather extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;
+
+    public void updateWeatherData(String sky, Double pop, Double minTmp, Double maxTmp) {
+        this.sky = sky;
+        this.precipitationProbability = pop;
+        this.minTemperature = minTmp;
+        this.maxTemperature = maxTmp;
+    }
 }

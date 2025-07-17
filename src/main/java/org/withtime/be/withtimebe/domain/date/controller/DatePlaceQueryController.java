@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.dateplace.controller;
+package org.withtime.be.withtimebe.domain.date.controller;
 
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.data.domain.Page;
@@ -7,10 +7,10 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.withtime.be.withtimebe.domain.dateplace.converter.DatePlaceConverter;
-import org.withtime.be.withtimebe.domain.dateplace.dto.response.DatePlaceResponseDTO;
-import org.withtime.be.withtimebe.domain.dateplace.entity.DatePlace;
-import org.withtime.be.withtimebe.domain.dateplace.service.query.DatePlaceQueryService;
+import org.withtime.be.withtimebe.domain.date.converter.DatePlaceConverter;
+import org.withtime.be.withtimebe.domain.date.dto.response.DatePlaceResponseDTO;
+import org.withtime.be.withtimebe.domain.date.entity.DatePlace;
+import org.withtime.be.withtimebe.domain.date.service.query.DatePlaceQueryService;
 import org.withtime.be.withtimebe.global.annotation.SwaggerPageable;
 
 import io.swagger.v3.oas.annotations.Operation;

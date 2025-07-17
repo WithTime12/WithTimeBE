@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.dateplace.dto.response;
+package org.withtime.be.withtimebe.domain.date.dto.response;
 
 import java.util.List;
 

@@ -1,11 +1,11 @@
-package org.withtime.be.withtimebe.domain.dateplace.converter;
+package org.withtime.be.withtimebe.domain.date.converter;
 
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.withtime.be.withtimebe.domain.date.entity.PlaceCategory;
-import org.withtime.be.withtimebe.domain.dateplace.dto.response.DatePlaceResponseDTO;
-import org.withtime.be.withtimebe.domain.dateplace.entity.DatePlace;
+import org.withtime.be.withtimebe.domain.date.dto.response.DatePlaceResponseDTO;
+import org.withtime.be.withtimebe.domain.date.entity.DatePlace;
 
 public class DatePlaceConverter {
 

@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.dateplace.entity;
+package org.withtime.be.withtimebe.domain.date.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import org.hibernate.annotations.BatchSize;
-import org.withtime.be.withtimebe.domain.date.entity.DatePlacePlaceCategory;
-import org.withtime.be.withtimebe.domain.date.entity.PlaceCategory;
-import org.withtime.be.withtimebe.domain.dateplace.entity.enums.PlaceType;
+import org.withtime.be.withtimebe.domain.date.entity.enums.PlaceType;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 @Entity

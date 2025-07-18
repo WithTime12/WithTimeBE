@@ -21,7 +21,7 @@ public class OAuth2Controller {
 
     private final OAuth2CommandService oAuth2CommandService;
 
-    @Operation(summary = "소셜 로그인 API", description = "/oauth2/authorization/{provider}로 서버에 요청을 보낸 뒤 리다이렉트된 URI의 코드를 사용하여 요청, 리다이렉트되는 URI 의 Endpoint는 해당 API와 동일합니다.")
+    @Operation(summary = "소셜 로그인 API by 요시", description = "/oauth2/authorization/{provider}로 서버에 요청을 보낸 뒤 리다이렉트된 URI의 코드를 사용하여 요청, 리다이렉트되는 URI 의 Endpoint는 해당 API와 동일합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200",
                     description = """

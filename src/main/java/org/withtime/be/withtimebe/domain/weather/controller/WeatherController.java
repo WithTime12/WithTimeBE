@@ -1,20 +1,26 @@
 package org.withtime.be.withtimebe.domain.weather.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.namul.api.payload.response.DefaultResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.*;
+import org.withtime.be.withtimebe.domain.weather.data.service.WeatherRecommendationGenerationService;
+import org.withtime.be.withtimebe.domain.weather.dto.request.WeatherReqDTO;
+import org.withtime.be.withtimebe.domain.weather.dto.response.WeatherResDTO;
 import org.withtime.be.withtimebe.domain.weather.service.command.WeatherTriggerService;
 import org.withtime.be.withtimebe.domain.weather.dto.request.WeatherSyncReqDTO;
 import org.withtime.be.withtimebe.domain.weather.dto.response.WeatherSyncResDTO;
+
+import java.time.LocalDate;
 
 @Slf4j
 @RestController
@@ -24,6 +30,7 @@ import org.withtime.be.withtimebe.domain.weather.dto.response.WeatherSyncResDTO;
 public class WeatherController {
 
     private final WeatherTriggerService weatherTriggerService;
+    private final WeatherRecommendationGenerationService weatherRecommendationGenerationService;
 
     @PostMapping("/trigger")
     @Operation(summary = "수동 동기화 트리거 API by 지미 [Only Admin]",
@@ -31,6 +38,7 @@ public class WeatherController {
                     관리자가 수동으로 다음 중 하나의 작업을 실행합니다:
                     - SHORT_TERM: 단기 예보 데이터 수집
                     - MEDIUM_TERM: 중기 예보 데이터 수집
+                    - RECOMMENDATION: 날씨 기반 추천 생성
                     - ALL: 전체 동기화 작업 수행
                     ---
                     모든 작업은 비동기로 실행되며, 기존 데이터는 강제로 덮어씁니다.
@@ -58,6 +66,34 @@ public class WeatherController {
 
         WeatherSyncResDTO.ManualTriggerResult response = weatherTriggerService.triggerAsync(request);
 
+        return DefaultResponse.ok(response);
+    }
+
+    @GetMapping("/{regionId}/weekly")
+    @Operation(
+            summary = "지역별 주간 날씨 기반 추천 조회",
+            description = """
+        특정 지역의 7일치(오늘 기준) 날씨 데이터를 바탕으로 한 데이트 추천 정보를 제공합니다.
+
+        - 날짜 범위: `startDate`부터 7일간 (startDate 포함)
+        - 추천 데이터는 날씨 분류 후 템플릿 기반으로 생성됩니다.
+        """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "주간 추천 조회 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "잘못된 파라미터 형식 (날짜 혹은 지역 ID 오류)"),
+            @ApiResponse(responseCode = "404", description = "해당 지역의 추천 정보가 존재하지 않음")
+    })
+    public DefaultResponse<WeatherResDTO.WeeklyRecommendation> getWeeklyRecommendation(
+            @Parameter(description = "지역 ID)", required = true)
+            @PathVariable @NotNull @Positive Long regionId,
+
+            @Parameter(description = "조회 시작일 (YYYY-MM-DD)", required = true, example = "2025-07-17")
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate) {
+
+        log.info("주간 날씨 추천 조회 API 호출: regionId={}, startDate={}", regionId, startDate);
+        WeatherReqDTO.GetWeeklyRecommendation request = WeatherReqDTO.GetWeeklyRecommendation.of(regionId, startDate);
+        WeatherResDTO.WeeklyRecommendation response = weatherRecommendationGenerationService.getWeeklyRecommendation(request);
         return DefaultResponse.ok(response);
     }
 }

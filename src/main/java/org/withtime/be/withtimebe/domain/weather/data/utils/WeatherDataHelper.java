@@ -11,6 +11,9 @@ import org.withtime.be.withtimebe.domain.weather.repository.RawMediumTermWeather
 import org.withtime.be.withtimebe.domain.weather.repository.RawShortTermWeatherRepository;
 import org.withtime.be.withtimebe.domain.weather.repository.RegionRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +38,37 @@ public class WeatherDataHelper {
             }
         }
         return "2300";
+    }
+
+    public static BaseDateTime calculateBaseDateTime() {
+        LocalDateTime now = LocalDateTime.now();
+        return calculateBaseDateTime(now);
+    }
+
+    public static BaseDateTime calculateBaseDateTime(LocalDateTime targetTime) {
+        int currentHour = targetTime.getHour();
+
+        // base_time 계산
+        String baseTime = calculateNearestBaseTime(currentHour);
+
+        // base_date 계산
+        LocalDate baseDate = targetTime.toLocalDate();
+
+        // 02:00 이전이면 전날 날짜 + 2300 사용
+        if (currentHour < 2) {
+            baseDate = baseDate.minusDays(1);
+            baseTime = "2300";
+        }
+
+        String baseDateStr = baseDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        return new BaseDateTime(baseDateStr, baseTime);
+    }
+
+    public record BaseDateTime(String baseDate, String baseTime) {
+        public LocalDate getBaseDateAsLocalDate() {
+            return LocalDate.parse(baseDate, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        }
     }
 
     public static UpsertResult upsertShortTermWeatherData(

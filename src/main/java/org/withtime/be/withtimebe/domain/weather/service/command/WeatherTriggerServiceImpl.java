@@ -3,6 +3,7 @@ package org.withtime.be.withtimebe.domain.weather.service.command;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.withtime.be.withtimebe.domain.weather.data.service.WeatherDataCleanupService;
 import org.withtime.be.withtimebe.domain.weather.data.service.WeatherDataCollectionService;
 import org.withtime.be.withtimebe.domain.weather.data.service.WeatherRecommendationGenerationService;
 import org.withtime.be.withtimebe.domain.weather.data.utils.WeatherDataHelper;
@@ -21,6 +22,7 @@ public class WeatherTriggerServiceImpl implements WeatherTriggerService{
 
     private final WeatherDataCollectionService dataCollectionService;
     private final WeatherRecommendationGenerationService recommendationGenerationService;
+    private final WeatherDataCleanupService dataCleanupService;
 
     public WeatherSyncResDTO.ManualTriggerResult triggerAsync(WeatherSyncReqDTO.ManualTrigger request) {
         LocalDateTime triggerTime = LocalDateTime.now();
@@ -49,15 +51,18 @@ public class WeatherTriggerServiceImpl implements WeatherTriggerService{
 
         return switch (request.jobType()) {
             case "SHORT_TERM" -> {
-                LocalDateTime now = LocalDateTime.now();
-                LocalDate baseDate = now.toLocalDate();
-                String baseTime = WeatherDataHelper.calculateNearestBaseTime(now.getHour());
+                // 올바른 base_date와 base_time 계산
+                WeatherDataHelper.BaseDateTime baseDateTime = WeatherDataHelper.calculateBaseDateTime();
+                log.debug("SHORT_TERM 작업 - 계산된 base_date: {}, base_time: {}",
+                        baseDateTime.baseDate(), baseDateTime.baseTime());
+
                 yield dataCollectionService.collectShortTermWeatherData(
-                        request.targetRegionIds(), baseDate, baseTime, true);  // ← forceExecution = true
+                        request.targetRegionIds(), baseDateTime.getBaseDateAsLocalDate(),
+                        baseDateTime.baseTime(), true);  // forceExecution = true
             }
 
             case "MEDIUM_TERM" -> dataCollectionService.collectMediumTermWeatherData(
-                    request.targetRegionIds(), LocalDate.now(), true); // ← forceExecution = true
+                    request.targetRegionIds(), LocalDate.now(), true); // forceExecution = true
 
             case "RECOMMENDATION" -> {
                 LocalDate startDate = LocalDate.now();
@@ -66,27 +71,35 @@ public class WeatherTriggerServiceImpl implements WeatherTriggerService{
                         request.targetRegionIds(), startDate, endDate, true, "일반");
             }
 
+            case "CLEANUP" -> dataCleanupService.cleanupOldWeatherData(
+                    7, true, true, true, false);
+
             case "ALL" -> {
-                LocalDateTime now = LocalDateTime.now();
-                LocalDate baseDate = now.toLocalDate();
-                String baseTime = WeatherDataHelper.calculateNearestBaseTime(now.getHour());
+                // 올바른 base_date와 base_time 계산
+                WeatherDataHelper.BaseDateTime baseDateTime = WeatherDataHelper.calculateBaseDateTime();
+                log.debug("ALL 작업 - 계산된 base_date: {}, base_time: {}",
+                        baseDateTime.baseDate(), baseDateTime.baseTime());
 
+                WeatherSyncResDTO.ShortTermSyncResult shortResult = dataCollectionService.collectShortTermWeatherData(
+                        request.targetRegionIds(), baseDateTime.getBaseDateAsLocalDate(),
+                        baseDateTime.baseTime(), true);
 
-                var shortResult = dataCollectionService.collectShortTermWeatherData(
-                        request.targetRegionIds(), baseDate, baseTime, true);
-
-                var mediumResult = dataCollectionService.collectMediumTermWeatherData(
+                WeatherSyncResDTO.MediumTermSyncResult mediumResult = dataCollectionService.collectMediumTermWeatherData(
                         request.targetRegionIds(), LocalDate.now(), true);
 
                 LocalDate startDate = LocalDate.now();
                 LocalDate endDate = startDate.plusDays(6);
-                var recommendationResult = recommendationGenerationService.generateRecommendations(
+                WeatherSyncResDTO.RecommendationGenerationResult recommendationResult = recommendationGenerationService.generateRecommendations(
                         request.targetRegionIds(), startDate, endDate, true, "일반");
+
+                WeatherSyncResDTO.CleanupResult cleanupResult = dataCleanupService.cleanupOldWeatherData(
+                        7, true, true, true, false);
 
                 yield WeatherSyncResDTO.CompleteSyncResult.builder()
                         .shortTermResult(shortResult)
                         .mediumTermResult(mediumResult)
                         .recommendationResult(recommendationResult)
+                        .cleanupResult(cleanupResult)
                         .overallStartTime(LocalDateTime.now())
                         .overallEndTime(LocalDateTime.now())
                         .overallDurationMs(0L)

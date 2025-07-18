@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.withtime.be.withtimebe.domain.weather.data.service.WeatherDataCleanupService;
 import org.withtime.be.withtimebe.domain.weather.data.service.WeatherDataCollectionService;
 import org.withtime.be.withtimebe.domain.weather.data.service.WeatherRecommendationGenerationService;
 import org.withtime.be.withtimebe.domain.weather.data.utils.WeatherDataHelper;
@@ -22,19 +23,21 @@ public class WeatherScheduler {
 
     private final WeatherDataCollectionService weatherDataCollectionService;
     private final WeatherRecommendationGenerationService weatherRecommendationGenerationService;
+    private final WeatherDataCleanupService dataCleanupService;
 
     // 스케줄러 실행 상태 volatile로 추척
     private volatile boolean shortTermSyncRunning = false;
     private volatile boolean mediumTermSyncRunning = false;
     private volatile boolean shortTermRecommendationRunning = false;
     private volatile boolean mediumTermRecommendationRunning = false;
+    private volatile boolean cleanupRunning = false;
 
     /**
      * 단기 예보 데이터 수집 스케줄러
      * 매 3시간마다 실행 (02:10, 05:10, 08:10, 11:10, 14:10, 17:10, 20:10, 23:10)
      * 기상청 발표 시각보다 10분 후에 실행하여 데이터 준비 시간 확보
      */
-    @Scheduled(cron = "${scheduler.weather.short-term-cron}")
+    @Scheduled(cron = "${scheduler.weather.real-short-term-cron}")
     @Async("weatherTaskExecutor")
     public void scheduledShortTermWeatherSync() {
         if (shortTermSyncRunning) {
@@ -46,13 +49,14 @@ public class WeatherScheduler {
             shortTermSyncRunning = true;
             log.info("단기 예보 동기화 스케줄러 시작");
 
-            LocalDateTime now = LocalDateTime.now();
-            LocalDate baseDate = now.toLocalDate();
-            String baseTime = WeatherDataHelper.calculateNearestBaseTime(now.getHour());
+            // 올바른 base_date와 base_time 계산
+            WeatherDataHelper.BaseDateTime baseDateTime = WeatherDataHelper.calculateBaseDateTime();
+
+            log.debug("계산된 base_date: {}, base_time: {}", baseDateTime.baseDate(), baseDateTime.baseTime());
 
             // 모든 지역에 대해 동기화 실행
             WeatherSyncResDTO.ShortTermSyncResult result = weatherDataCollectionService.collectShortTermWeatherData(
-                    null, baseDate, baseTime, false);
+                    null, baseDateTime.getBaseDateAsLocalDate(), baseDateTime.baseTime(), false);
 
             log.info("단기 예보 동기화 스케줄러 완료: 성공 {}/{} 지역, 신규 {} 건, 업데이트 {} 건",
                     result.successfulRegions(), result.totalRegions(),
@@ -69,7 +73,7 @@ public class WeatherScheduler {
      * 중기 예보 데이터 수집 스케줄러
      * 매 12시간마다 실행 (06:30, 18:30)
      */
-    @Scheduled(cron = "${scheduler.weather.medium-term-cron}")
+    @Scheduled(cron = "${scheduler.weather.real-medium-term-cron}")
     @Async("weatherTaskExecutor")
     public void scheduledMediumTermWeatherSync() {
         if (mediumTermSyncRunning) {
@@ -102,7 +106,7 @@ public class WeatherScheduler {
      * 단기예보 기반 추천 정보 생성 스케줄러 (0-3일, 실제 단기예보 데이터 범위)
      * 매 시간 5분에 실행 - 단기예보는 1시간마다 업데이트
      */
-    @Scheduled(cron = "${scheduler.weather.recommendation.short-term-cron}")
+    @Scheduled(cron = "${scheduler.weather.recommendation.real-short-term-cron}")
     @Async("weatherTaskExecutor")
     public void scheduledShortTermRecommendationGeneration() {
         if (shortTermRecommendationRunning) {
@@ -137,7 +141,7 @@ public class WeatherScheduler {
      * 중기예보 기반 추천 정보 생성 스케줄러 (4-10일, 실제 중기예보 데이터 범위)
      * 매 6시간 30분에 실행 - 중기예보는 12시간마다 업데이트되므로 6시간마다 충분
      */
-    @Scheduled(cron = "${scheduler.weather.recommendation.medium-term-cron:0 30 0,6,12,18 * * *}")
+    @Scheduled(cron = "${scheduler.weather.recommendation.real-medium-term-cron:0 30 0,6,12,18 * * *}")
     @Async("weatherTaskExecutor")
     public void scheduledMediumTermRecommendationGeneration() {
         if (mediumTermRecommendationRunning) {
@@ -165,6 +169,47 @@ public class WeatherScheduler {
             log.error("중기예보 추천 생성 스케줄러 실행 중 오류 발생", e);
         } finally {
             mediumTermRecommendationRunning = false;
+        }
+    }
+
+    /**
+     * 데이터 정리 스케줄러
+     * 매일 새벽 3시에 실행
+     */
+    @Scheduled(cron = "${scheduler.weather.real-cleanup-cron}")
+    @Async("weatherTaskExecutor")
+    public void scheduledDataCleanup() {
+        if (cleanupRunning) {
+            log.warn("데이터 정리가 이미 실행 중입니다. 스킵합니다.");
+            return;
+        }
+
+        try {
+            cleanupRunning = true;
+            log.info("데이터 정리 스케줄러 시작");
+
+            // 7일 이전 데이터 정리
+            int retentionDays = 7;
+            WeatherSyncResDTO.CleanupResult result = dataCleanupService.cleanupOldWeatherData(
+                    retentionDays, true, true, true, false);
+
+            log.info("데이터 정리 스케줄러 완료: 보관기간 {}일, 처리시간 {}ms",
+                    retentionDays, result.processingDurationMs());
+
+            if (result.shortTermStats() != null) {
+                log.info("단기예보 정리: {} 건 삭제", result.shortTermStats().recordsDeleted());
+            }
+            if (result.mediumTermStats() != null) {
+                log.info("중기예보 정리: {} 건 삭제", result.mediumTermStats().recordsDeleted());
+            }
+            if (result.recommendationStats() != null) {
+                log.info("추천정보 정리: {} 건 삭제", result.recommendationStats().recordsDeleted());
+            }
+
+        } catch (Exception e) {
+            log.error("데이터 정리 스케줄러 실행 중 오류 발생", e);
+        } finally {
+            cleanupRunning = false;
         }
     }
 }

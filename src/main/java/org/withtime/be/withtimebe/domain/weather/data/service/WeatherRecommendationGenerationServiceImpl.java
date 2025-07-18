@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.weather.converter.WeatherConverter;
 import org.withtime.be.withtimebe.domain.weather.converter.WeatherSyncConverter;
+import org.withtime.be.withtimebe.domain.weather.data.utils.WeatherClassificationUtils;
 import org.withtime.be.withtimebe.domain.weather.data.utils.WeatherDataHelper;
 import org.withtime.be.withtimebe.domain.weather.data.utils.WeatherRecommendationUtils;
 import org.withtime.be.withtimebe.domain.weather.dto.request.WeatherReqDTO;
@@ -104,6 +105,40 @@ public class WeatherRecommendationGenerationServiceImpl implements WeatherRecomm
         return WeatherConverter.toWeeklyRecommendation(
                 recommendations, region.getId(), region.getName(),
                 request.startDate(), endDate);
+    }
+
+    @Override
+    public WeatherResDTO.WeeklyPrecipitation getWeeklyPrecipitation(
+            WeatherReqDTO.GetWeeklyPrecipitation request) {
+
+        log.info("주간 강수확률 조회 요청: regionId={}, startDate={}",
+                request.regionId(), request.startDate());
+
+        // 1. 지역 존재 확인
+        Region region = validateRegionExists(request.regionId());
+
+        // 2. 7일간 강수확률 정보 조회
+        LocalDate endDate = request.getEndDate();
+        List<WeatherResDTO.DailyPrecipitation> dailyPrecipitations = new ArrayList<>();
+
+        // 3. 날짜별로 강수확률 조회
+        for (LocalDate date = request.startDate(); !date.isAfter(endDate); date = date.plusDays(1)) {
+            WeatherResDTO.DailyPrecipitation dailyPrecip = getPrecipitationForDate(region, date);
+            dailyPrecipitations.add(dailyPrecip);
+        }
+
+        log.info("주간 강수확률 조회 완료: regionId={}, 조회된 데이터 수={}",
+                request.regionId(), dailyPrecipitations.size());
+
+        return WeatherResDTO.WeeklyPrecipitation.builder()
+                .region(WeatherConverter.toRegionInfo(region))
+                .startDate(request.startDate())
+                .endDate(endDate)
+                .dailyPrecipitations(dailyPrecipitations)
+                .totalDays(dailyPrecipitations.size())
+                .message(String.format("%s 지역의 %s부터 %s까지 7일간 강수확률 정보입니다.",
+                        region.getName(), request.startDate(), endDate))
+                .build();
     }
 
     private void updateStats(List<WeatherSyncResDTO.RegionRecommendationResult> regionResults,
@@ -209,6 +244,52 @@ public class WeatherRecommendationGenerationServiceImpl implements WeatherRecomm
         }
 
         throw new WeatherException(WeatherErrorCode.WEATHER_DATA_NOT_FOUND);
+    }
+
+    private WeatherResDTO.DailyPrecipitation getPrecipitationForDate(Region region, LocalDate date) {
+        try {
+            // 1. 중기예보 우선 조회
+            List<RawMediumTermWeather> mediumTermData =
+                    mediumTermWeatherRepository.findLatestByRegionIdAndForecastDate(region.getId(), date);
+
+            if (!mediumTermData.isEmpty()) {
+                RawMediumTermWeather data = WeatherClassificationUtils
+                        .selectRepresentativeMediumTermData(mediumTermData, date);
+
+                return WeatherResDTO.DailyPrecipitation.builder()
+                        .forecastDate(date)
+                        .precipitationProbability(data.getPrecipitationProbability())
+                        .build();
+            }
+
+            // 2. 중기예보 없으면 단기예보 사용
+            List<RawShortTermWeather> shortTermData =
+                    shortTermWeatherRepository.findLatestByRegionIdAndForecastDate(region.getId(), date);
+
+            if (!shortTermData.isEmpty()) {
+                RawShortTermWeather data = WeatherClassificationUtils
+                        .selectRepresentativeShortTermData(shortTermData, date);
+
+                return WeatherResDTO.DailyPrecipitation.builder()
+                        .forecastDate(date)
+                        .precipitationProbability(data.getPrecipitationProbability())
+                        .build();
+            }
+
+            // 3. 데이터가 없는 경우
+            log.warn("강수확률 데이터 없음: regionId={}, date={}", region.getId(), date);
+            return WeatherResDTO.DailyPrecipitation.builder()
+                    .forecastDate(date)
+                    .precipitationProbability(null)
+                    .build();
+
+        } catch (Exception e) {
+            log.error("강수확률 조회 중 오류 발생: regionId={}, date={}", region.getId(), date, e);
+            return WeatherResDTO.DailyPrecipitation.builder()
+                    .forecastDate(date)
+                    .precipitationProbability(null)
+                    .build();
+        }
     }
 
     private Region validateRegionExists(Long regionId) {

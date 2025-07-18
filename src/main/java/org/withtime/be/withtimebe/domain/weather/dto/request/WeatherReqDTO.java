@@ -42,4 +42,31 @@ public class WeatherReqDTO {
         }
     }
 
+    public record GetWeeklyPrecipitation(
+            @NotNull(message = "지역 ID는 필수 입력값입니다.")
+            @Positive(message = "지역 ID는 양수여야 합니다.")
+            Long regionId,
+
+            @NotNull(message = "시작 날짜는 필수 입력값입니다.")
+            LocalDate startDate
+    ) {
+        public static GetWeeklyPrecipitation of(Long regionId, LocalDate startDate) {
+            if (startDate != null) {
+                LocalDate now = LocalDate.now();
+                LocalDate minDate = now.minusDays(7);
+                LocalDate maxDate = now.plusDays(10);
+
+                if (startDate.isBefore(minDate) || startDate.isAfter(maxDate)) {
+                    throw new IllegalArgumentException(
+                            "조회 가능한 시작 날짜 범위를 벗어났습니다. (7일 전 ~ 10일 후)");
+                }
+            }
+
+            return new GetWeeklyPrecipitation(regionId, startDate);
+        }
+        public LocalDate getEndDate() {
+            return startDate.plusDays(6);
+        }
+    }
+
 }

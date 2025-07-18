@@ -96,4 +96,35 @@ public class WeatherController {
         WeatherResDTO.WeeklyRecommendation response = weatherRecommendationGenerationService.getWeeklyRecommendation(request);
         return DefaultResponse.ok(response);
     }
+
+    @GetMapping("/{regionId}/precipitation")
+    @Operation(
+            summary = "지역별 7일간 강수확률 조회",
+            description = """
+    특정 지역의 7일간 강수확률 정보만 간단하게 조회합니다.
+    
+    - 날짜 범위: `startDate`부터 7일간 (startDate 포함)
+    - 중기예보 데이터를 우선적으로 사용하고, 없을 경우 단기예보 데이터 사용
+    - 각 날짜별 강수확률과 주간 평균, 경향 분석 제공
+    """
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "강수확률 조회 성공", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "400", description = "잘못된 파라미터 형식 (날짜 혹은 지역 ID 오류)"),
+            @ApiResponse(responseCode = "404", description = "해당 지역이 존재하지 않음")
+    })
+    public DefaultResponse<WeatherResDTO.WeeklyPrecipitation> getWeeklyPrecipitation(
+            @Parameter(description = "지역 ID", required = true)
+            @PathVariable @NotNull @Positive Long regionId,
+
+            @Parameter(description = "조회 시작일 (YYYY-MM-DD)", required = true, example = "2025-07-18")
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate) {
+
+        log.info("7일간 강수확률 조회 API 호출: regionId={}, startDate={}", regionId, startDate);
+
+        WeatherReqDTO.GetWeeklyPrecipitation request = WeatherReqDTO.GetWeeklyPrecipitation.of(regionId, startDate);
+        WeatherResDTO.WeeklyPrecipitation response = weatherRecommendationGenerationService.getWeeklyPrecipitation(request);
+
+        return DefaultResponse.ok(response);
+    }
 }

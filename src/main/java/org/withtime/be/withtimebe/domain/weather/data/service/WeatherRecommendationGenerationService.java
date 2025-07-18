@@ -13,4 +13,6 @@ public interface WeatherRecommendationGenerationService {
             List<Long> regionIds, LocalDate startDate, LocalDate endDate, boolean forceRegenerate, String recommendationType);
 
     WeatherResDTO.WeeklyRecommendation getWeeklyRecommendation(WeatherReqDTO.GetWeeklyRecommendation request);
+
+    WeatherResDTO.WeeklyPrecipitation getWeeklyPrecipitation(WeatherReqDTO.GetWeeklyPrecipitation request);
 }

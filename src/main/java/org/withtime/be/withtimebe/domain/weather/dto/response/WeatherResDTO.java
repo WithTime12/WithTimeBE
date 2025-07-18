@@ -112,30 +112,26 @@ public class WeatherResDTO {
     }
 
     /**
-     * 날씨 추천 조회 실패 응답 (데이터 없음)
+     * 일별 강수확률 정보
      */
     @Builder
-    public record WeatherRecommendationNotFound(
-            Long regionId,
-            String regionName,
-            LocalDate requestedDate,
-            String message,
-            List<String> suggestions  // 대안 제안 (예: 가장 가까운 날짜의 데이터)
+    public record DailyPrecipitation(
+            LocalDate forecastDate,
+            Double precipitationProbability  // 강수확률 (%)
     ) {
     }
 
-
     /**
-     * 간단한 날씨 정보 (목록 조회용)
+     * 7일간 강수확률 정보
      */
     @Builder
-    public record WeatherRecommendationSummary(
-            Long recommendationId,
-            LocalDate forecastDate,
-            String regionName,
-            WeatherType weatherType,
-            String emoji,
-            String shortMessage  // 메시지의 첫 50자
+    public record WeeklyPrecipitation(
+            RegionInfo region,
+            LocalDate startDate,
+            LocalDate endDate,
+            List<DailyPrecipitation> dailyPrecipitations,
+            int totalDays,
+            String message
     ) {
     }
 }

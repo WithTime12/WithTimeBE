@@ -24,4 +24,19 @@ public interface RawMediumTermWeatherRepository extends JpaRepository<RawMediumT
     List<RawMediumTermWeather> findLatestByRegionIdAndForecastDate(
             @Param("regionId") Long regionId,
             @Param("forecastDate") LocalDate forecastDate);
+
+    /**
+     * 지역별 날짜 범위 중기예보 배치 조회
+     */
+    @Query("""
+    SELECT rmtw FROM RawMediumTermWeather rmtw 
+    WHERE rmtw.region.id = :regionId 
+    AND rmtw.forecastDate BETWEEN :startDate AND :endDate
+    ORDER BY rmtw.forecastDate ASC, rmtw.baseDate DESC
+    """)
+    List<RawMediumTermWeather> findByRegionIdAndForecastDateRange(
+            @Param("regionId") Long regionId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -116,19 +117,36 @@ public class WeatherRecommendationGenerationServiceImpl implements WeatherRecomm
 
         // 1. 지역 존재 확인
         Region region = validateRegionExists(request.regionId());
-
-        // 2. 7일간 강수확률 정보 조회
         LocalDate endDate = request.getEndDate();
+
+        // 2. 7일치 데이터 한 번에 조회
+        List<RawMediumTermWeather> mediumTermDataList =
+                mediumTermWeatherRepository.findByRegionIdAndForecastDateRange(
+                        request.regionId(), request.startDate(), endDate);
+
+        List<RawShortTermWeather> shortTermDataList =
+                shortTermWeatherRepository.findByRegionIdAndForecastDateRange(
+                        request.regionId(), request.startDate(), endDate);
+
+        // 3. 날짜별로 그룹핑 (메모리에서 처리)
+        Map<LocalDate, List<RawMediumTermWeather>> mediumTermByDate = mediumTermDataList.stream()
+                .collect(Collectors.groupingBy(RawMediumTermWeather::getForecastDate));
+
+        Map<LocalDate, List<RawShortTermWeather>> shortTermByDate = shortTermDataList.stream()
+                .collect(Collectors.groupingBy(RawShortTermWeather::getForecastDate));
+
+        // 4. 7일간 강수확률 정보 구성
         List<WeatherResDTO.DailyPrecipitation> dailyPrecipitations = new ArrayList<>();
 
-        // 3. 날짜별로 강수확률 조회
         for (LocalDate date = request.startDate(); !date.isAfter(endDate); date = date.plusDays(1)) {
-            WeatherResDTO.DailyPrecipitation dailyPrecip = getPrecipitationForDate(region, date);
+            WeatherResDTO.DailyPrecipitation dailyPrecip = getPrecipitationForDateOptimized(
+                    date, mediumTermByDate.get(date), shortTermByDate.get(date));
             dailyPrecipitations.add(dailyPrecip);
         }
 
-        log.info("주간 강수확률 조회 완료: regionId={}, 조회된 데이터 수={}",
-                request.regionId(), dailyPrecipitations.size());
+        log.info("주간 강수확률 조회 완료: regionId={}, 조회된 데이터 수={}, 중기예보 {}건, 단기예보 {}건",
+                request.regionId(), dailyPrecipitations.size(),
+                mediumTermDataList.size(), shortTermDataList.size());
 
         return WeatherResDTO.WeeklyPrecipitation.builder()
                 .region(WeatherConverter.toRegionInfo(region))
@@ -246,13 +264,13 @@ public class WeatherRecommendationGenerationServiceImpl implements WeatherRecomm
         throw new WeatherException(WeatherErrorCode.WEATHER_DATA_NOT_FOUND);
     }
 
-    private WeatherResDTO.DailyPrecipitation getPrecipitationForDate(Region region, LocalDate date) {
+    private WeatherResDTO.DailyPrecipitation getPrecipitationForDateOptimized(
+            LocalDate date,
+            List<RawMediumTermWeather> mediumTermData,
+            List<RawShortTermWeather> shortTermData) {
         try {
-            // 1. 중기예보 우선 조회
-            List<RawMediumTermWeather> mediumTermData =
-                    mediumTermWeatherRepository.findLatestByRegionIdAndForecastDate(region.getId(), date);
-
-            if (!mediumTermData.isEmpty()) {
+            // 1. 중기예보 우선 사용
+            if (mediumTermData != null && !mediumTermData.isEmpty()) {
                 RawMediumTermWeather data = WeatherClassificationUtils
                         .selectRepresentativeMediumTermData(mediumTermData, date);
 
@@ -262,11 +280,8 @@ public class WeatherRecommendationGenerationServiceImpl implements WeatherRecomm
                         .build();
             }
 
-            // 2. 중기예보 없으면 단기예보 사용
-            List<RawShortTermWeather> shortTermData =
-                    shortTermWeatherRepository.findLatestByRegionIdAndForecastDate(region.getId(), date);
-
-            if (!shortTermData.isEmpty()) {
+            // 2. 단기예보 사용
+            if (shortTermData != null && !shortTermData.isEmpty()) {
                 RawShortTermWeather data = WeatherClassificationUtils
                         .selectRepresentativeShortTermData(shortTermData, date);
 
@@ -277,14 +292,14 @@ public class WeatherRecommendationGenerationServiceImpl implements WeatherRecomm
             }
 
             // 3. 데이터가 없는 경우
-            log.warn("강수확률 데이터 없음: regionId={}, date={}", region.getId(), date);
+            log.debug("강수확률 데이터 없음: date={}", date);
             return WeatherResDTO.DailyPrecipitation.builder()
                     .forecastDate(date)
                     .precipitationProbability(null)
                     .build();
 
         } catch (Exception e) {
-            log.error("강수확률 조회 중 오류 발생: regionId={}, date={}", region.getId(), date, e);
+            log.error("강수확률 조회 중 오류 발생: date={}", date, e);
             return WeatherResDTO.DailyPrecipitation.builder()
                     .forecastDate(date)
                     .precipitationProbability(null)

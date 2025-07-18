@@ -25,4 +25,19 @@ public interface RawShortTermWeatherRepository extends JpaRepository<RawShortTer
     List<RawShortTermWeather> findLatestByRegionIdAndForecastDate(
             @Param("regionId") Long regionId,
             @Param("forecastDate") LocalDate forecastDate);
+
+    /**
+     * 지역별 날짜 범위 단기예보 배치 조회
+     */
+    @Query("""
+    SELECT rstw FROM RawShortTermWeather rstw 
+    WHERE rstw.region.id = :regionId 
+    AND rstw.forecastDate BETWEEN :startDate AND :endDate
+    ORDER BY rstw.forecastDate ASC, rstw.baseDate DESC, rstw.baseTime DESC
+    """)
+    List<RawShortTermWeather> findByRegionIdAndForecastDateRange(
+            @Param("regionId") Long regionId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

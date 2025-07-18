@@ -6,9 +6,11 @@ import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
 import org.namul.api.payload.writer.FailureResponseWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +22,8 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -33,6 +37,7 @@ import org.withtime.be.withtimebe.global.util.JwtUtil;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String API_PREFIX = "/api/v1";
@@ -47,18 +52,40 @@ public class SecurityConfig {
             API_PREFIX + "/auth/**",
             API_PREFIX + "/notices/**",
             API_PREFIX + "/oauth2/**",
+            API_PREFIX + "/faqs/**",
             "/oauth2/authorization/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**"
     };
 
+    private RequestMatcher[] admin = {
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/notices/trash"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.PUT, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.PATCH, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/notices/**"),
+
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.PUT, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/faqs/**"),
+
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions/codes"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions/bundle"),
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/regions/codes"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/regions/codes/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/regions/**"),
+
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/weather/trigger"),
+    };
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers(admin).hasRole("ADMIN")
                         .requestMatchers(allowUrl).permitAll()
-                        .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jsonLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
@@ -123,5 +150,9 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    private RequestMatcher requestMatcher(HttpMethod method, String url) {
+        return PathPatternRequestMatcher.withDefaults().matcher(method, url);
     }
 }

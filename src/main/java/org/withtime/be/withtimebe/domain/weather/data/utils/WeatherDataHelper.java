@@ -1,5 +1,7 @@
 package org.withtime.be.withtimebe.domain.weather.data.utils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.withtime.be.withtimebe.domain.weather.entity.RawMediumTermWeather;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-@Component
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WeatherDataHelper {
 
     // 지역 ID가 없으면 전체, 있으면 ID 기반 조회

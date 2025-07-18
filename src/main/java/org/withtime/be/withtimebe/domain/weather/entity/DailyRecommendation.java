@@ -19,7 +19,7 @@ public class DailyRecommendation extends BaseEntity {
     @Column(name = "daily_recommendation_id")
     private Long id;
 
-    @Column(name = "forecate_date", nullable = false)
+    @Column(name = "forecast_date", nullable = false)
     private LocalDate forecastDate;
 
     @ManyToOne(fetch = FetchType.LAZY)

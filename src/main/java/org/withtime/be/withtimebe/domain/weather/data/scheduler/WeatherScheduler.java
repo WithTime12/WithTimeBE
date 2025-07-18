@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.withtime.be.withtimebe.domain.weather.data.service.WeatherDataCollectionService;
+import org.withtime.be.withtimebe.domain.weather.data.service.WeatherRecommendationGenerationService;
 import org.withtime.be.withtimebe.domain.weather.data.utils.WeatherDataHelper;
 import org.withtime.be.withtimebe.domain.weather.dto.response.WeatherSyncResDTO;
 
@@ -20,10 +21,13 @@ import java.time.LocalDateTime;
 public class WeatherScheduler {
 
     private final WeatherDataCollectionService weatherDataCollectionService;
+    private final WeatherRecommendationGenerationService weatherRecommendationGenerationService;
 
     // 스케줄러 실행 상태 volatile로 추척
     private volatile boolean shortTermSyncRunning = false;
     private volatile boolean mediumTermSyncRunning = false;
+    private volatile boolean shortTermRecommendationRunning = false;
+    private volatile boolean mediumTermRecommendationRunning = false;
 
     /**
      * 단기 예보 데이터 수집 스케줄러
@@ -91,6 +95,76 @@ public class WeatherScheduler {
             log.error("중기 예보 동기화 스케줄러 실행 중 오류 발생", e);
         } finally {
             mediumTermSyncRunning = false;
+        }
+    }
+
+    /**
+     * 단기예보 기반 추천 정보 생성 스케줄러 (0-3일, 실제 단기예보 데이터 범위)
+     * 매 시간 5분에 실행 - 단기예보는 1시간마다 업데이트
+     */
+    @Scheduled(cron = "${scheduler.weather.recommendation.short-term-cron}")
+    @Async("weatherTaskExecutor")
+    public void scheduledShortTermRecommendationGeneration() {
+        if (shortTermRecommendationRunning) {
+            log.warn("단기예보 추천 생성이 이미 실행 중입니다. 스킵합니다.");
+            return;
+        }
+
+        try {
+            shortTermRecommendationRunning = true;
+            log.info("단기예보 추천 생성 스케줄러 시작 (실제 단기예보 데이터 기반)");
+
+            // 오늘부터 4일간만 처리 (실제 단기예보 데이터가 있는 범위)
+            LocalDate startDate = LocalDate.now();
+            LocalDate endDate = startDate.plusDays(3);
+
+            WeatherSyncResDTO.RecommendationGenerationResult result =
+                    weatherRecommendationGenerationService.generateRecommendations(
+                            null, startDate, endDate, true, "단기예보");  // 강제 재생성으로 최신 데이터 반영
+
+            log.info("단기예보 추천 생성 스케줄러 완료: 성공 {}/{} 지역, 신규 {} 건, 업데이트 {} 건",
+                    result.successfulRegions(), result.totalRegions(),
+                    result.newRecommendations(), result.updatedRecommendations());
+
+        } catch (Exception e) {
+            log.error("단기예보 추천 생성 스케줄러 실행 중 오류 발생", e);
+        } finally {
+            shortTermRecommendationRunning = false;
+        }
+    }
+
+    /**
+     * 중기예보 기반 추천 정보 생성 스케줄러 (4-10일, 실제 중기예보 데이터 범위)
+     * 매 6시간 30분에 실행 - 중기예보는 12시간마다 업데이트되므로 6시간마다 충분
+     */
+    @Scheduled(cron = "${scheduler.weather.recommendation.medium-term-cron:0 30 0,6,12,18 * * *}")
+    @Async("weatherTaskExecutor")
+    public void scheduledMediumTermRecommendationGeneration() {
+        if (mediumTermRecommendationRunning) {
+            log.warn("중기예보 추천 생성이 이미 실행 중입니다. 스킵합니다.");
+            return;
+        }
+
+        try {
+            mediumTermRecommendationRunning = true;
+            log.info("중기예보 추천 생성 스케줄러 시작 (실제 중기예보 데이터 기반)");
+
+            // 4일후부터 3일간만 처리 (일반적인 서비스 범위)
+            LocalDate startDate = LocalDate.now().plusDays(4);
+            LocalDate endDate = LocalDate.now().plusDays(6);
+
+            WeatherSyncResDTO.RecommendationGenerationResult result =
+                    weatherRecommendationGenerationService.generateRecommendations(
+                            null, startDate, endDate, true, "중기예보");  // 강제 재생성
+
+            log.info("중기예보 추천 생성 스케줄러 완료: 성공 {}/{} 지역, 신규 {} 건, 업데이트 {} 건",
+                    result.successfulRegions(), result.totalRegions(),
+                    result.newRecommendations(), result.updatedRecommendations());
+
+        } catch (Exception e) {
+            log.error("중기예보 추천 생성 스케줄러 실행 중 오류 발생", e);
+        } finally {
+            mediumTermRecommendationRunning = false;
         }
     }
 }

@@ -249,19 +249,83 @@ public class WeatherRecommendationGenerationServiceImpl implements WeatherRecomm
     }
 
     private WeatherResDTO.WeatherClassificationResult classifyWeatherForDate(Region region, LocalDate date) {
-        // 1. 중기예보 우선 조회
+
+        // 1. 두 데이터 소스 모두 조회
         List<RawMediumTermWeather> mediumTermData = mediumTermWeatherRepository.findLatestByRegionIdAndForecastDate(region.getId(), date);
-        if (!mediumTermData.isEmpty()) {
-            return classificationService.classifyMediumTermWeather(mediumTermData, region.getId(), date);
-        }
-
-        // 2. 중기예보 없으면 단기예보 사용 (온도 중앙값 적용)
         List<RawShortTermWeather> shortTermData = shortTermWeatherRepository.findLatestByRegionIdAndForecastDate(region.getId(), date);
-        if (!shortTermData.isEmpty()) {
-            return classificationService.classifyShortTermWeatherWithCentralTemp(shortTermData, region.getId(), date);
+
+        // 2. 스마트 우선순위 결정
+        DataSourceDecision decision = determineOptimalDataSource(date, shortTermData, mediumTermData);
+
+        // 3. 결정된 데이터 소스 사용
+        return switch (decision.source()) {
+            case SHORT_TERM -> {
+                log.debug("단기예보 사용: {} (이유: {})", date, decision.reason());
+                yield classificationService.classifyShortTermWeatherWithCentralTemp(shortTermData, region.getId(), date);
+            }
+            case MEDIUM_TERM -> {
+                log.debug("중기예보 사용: {} (이유: {})", date, decision.reason());
+                yield classificationService.classifyMediumTermWeather(mediumTermData, region.getId(), date);
+            }
+            case NONE -> {
+                log.error("사용 가능한 날씨 데이터 없음: {}", date);
+                throw new WeatherException(WeatherErrorCode.WEATHER_DATA_NOT_FOUND);
+            }
+        };
+    }
+
+    private DataSourceDecision determineOptimalDataSource(LocalDate targetDate,
+                                                          List<RawShortTermWeather> shortTermData,
+                                                          List<RawMediumTermWeather> mediumTermData) {
+
+        LocalDate today = LocalDate.now();
+        long daysFromToday = ChronoUnit.DAYS.between(today, targetDate);
+
+        // 1. 데이터 존재 여부 확인
+        boolean hasShortTerm = shortTermData != null && !shortTermData.isEmpty();
+        boolean hasMediumTerm = mediumTermData != null && !mediumTermData.isEmpty();
+
+        if (!hasShortTerm && !hasMediumTerm) {
+            return new DataSourceDecision(DataSource.NONE, "데이터 없음");
         }
 
-        throw new WeatherException(WeatherErrorCode.WEATHER_DATA_NOT_FOUND);
+        // 2. 단기예보 우선 범위 (0~3일): 단기예보가 더 정확
+        if (daysFromToday >= 0 && daysFromToday <= 3) {
+            if (hasShortTerm) {
+                // 단기예보 데이터 품질 검사
+                if (shortTermData.size() >= 8) {
+                    return new DataSourceDecision(DataSource.SHORT_TERM,
+                            String.format("단기예보 범위 내(%d일 후), 충분한 데이터(%d개)", daysFromToday, shortTermData.size()));
+                } else {
+                    log.warn("단기예보 데이터 부족: {}일 후, {}개 데이터", daysFromToday, shortTermData.size());
+                    return hasMediumTerm ?
+                            new DataSourceDecision(DataSource.MEDIUM_TERM, "단기예보 데이터 부족으로 중기예보 사용") :
+                            new DataSourceDecision(DataSource.SHORT_TERM, "단기예보 데이터 부족하지만 중기예보 없음");
+                }
+            } else {
+                return new DataSourceDecision(DataSource.MEDIUM_TERM, "단기예보 없음");
+            }
+        }
+
+        // 3. 중기예보 우선 범위 (4일~): 중기예보가 적절
+        else if (daysFromToday >= 4) {
+            if (hasMediumTerm) {
+                return new DataSourceDecision(DataSource.MEDIUM_TERM,
+                        String.format("중기예보 범위 내(%d일 후)", daysFromToday));
+            } else {
+                return new DataSourceDecision(DataSource.SHORT_TERM, "중기예보 없어서 단기예보 사용");
+            }
+        }
+
+        // 4. 과거 날짜: 단기예보 우선 (더 정확했던 데이터)
+        else {
+            if (hasShortTerm) {
+                return new DataSourceDecision(DataSource.SHORT_TERM,
+                        String.format("과거 날짜(%d일 전), 단기예보 우선", Math.abs(daysFromToday)));
+            } else {
+                return new DataSourceDecision(DataSource.MEDIUM_TERM, "과거 날짜, 단기예보 없음");
+            }
+        }
     }
 
     private WeatherResDTO.DailyPrecipitation getPrecipitationForDateOptimized(
@@ -320,4 +384,16 @@ public class WeatherRecommendationGenerationServiceImpl implements WeatherRecomm
                                               Map<WeatherType, Integer> weatherTypeStats) {}
 
     private record RecommendationResult(WeatherType weatherType, boolean isNew) {}
+
+    /**
+     * 데이터 소스 결정 결과
+     */
+    private record DataSourceDecision(DataSource source, String reason) {}
+
+    /**
+     * 데이터 소스 열거형
+     */
+    private enum DataSource {
+        SHORT_TERM, MEDIUM_TERM, NONE
+    }
 }

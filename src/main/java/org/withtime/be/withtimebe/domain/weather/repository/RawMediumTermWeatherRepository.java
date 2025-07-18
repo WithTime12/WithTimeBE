@@ -1,6 +1,7 @@
 package org.withtime.be.withtimebe.domain.weather.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.withtime.be.withtimebe.domain.weather.entity.RawMediumTermWeather;
@@ -39,4 +40,27 @@ public interface RawMediumTermWeatherRepository extends JpaRepository<RawMediumT
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
+
+    /**
+     * 오래된 중기 예보 데이터 개수 조회 (삭제 대상 확인용)
+     * @param cutoffDate 기준 날짜 (이 날짜 이전 예보 대상 데이터가 삭제 대상)
+     * @return 삭제 대상 레코드 수
+     */
+    @Query("SELECT COUNT(rmtw) FROM RawMediumTermWeather rmtw WHERE rmtw.forecastDate < :cutoffDate")
+    long countOldData(@Param("cutoffDate") LocalDate cutoffDate);
+
+    /**
+     * 오래된 중기 예보 데이터 상세 정보 조회 (통계용)
+     */
+    @Query("SELECT MIN(rmtw.forecastDate), MAX(rmtw.forecastDate), COUNT(rmtw) " +
+            "FROM RawMediumTermWeather rmtw WHERE rmtw.forecastDate < :cutoffDate")
+    Object[] getOldDataStatistics(@Param("cutoffDate") LocalDate cutoffDate);
+
+    /**
+     * 오래된 중기 예보 데이터 삭제 (cutoffDate 이전 예보 대상 데이터)
+     * @return 삭제된 레코드 수
+     */
+    @Modifying
+    @Query("DELETE FROM RawMediumTermWeather rmtw WHERE rmtw.forecastDate < :cutoffDate")
+    int deleteOldData(@Param("cutoffDate") LocalDate cutoffDate);
 }

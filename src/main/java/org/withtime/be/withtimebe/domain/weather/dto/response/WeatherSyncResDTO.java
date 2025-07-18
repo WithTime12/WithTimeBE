@@ -91,6 +91,7 @@ public class WeatherSyncResDTO {
             ShortTermSyncResult shortTermResult,        // 단기 예보 결과
             MediumTermSyncResult mediumTermResult,      // 중기 예보 결과
             RecommendationGenerationResult recommendationResult,  // 추천 생성 결과
+            CleanupResult cleanupResult,                // 정리 작업 결과
             LocalDateTime overallStartTime,             // 전체 시작 시간
             LocalDateTime overallEndTime,               // 전체 종료 시간
             long overallDurationMs,                     // 전체 소요 시간 (밀리초)
@@ -150,6 +151,37 @@ public class WeatherSyncResDTO {
             long processingDurationMs,          // 처리 소요 시간 (밀리초)
             List<RegionRecommendationResult> regionResults,  // 지역별 결과
             WeatherTypeStatistics weatherStats, // 날씨별 통계
+            List<String> errorMessages,         // 오류 메시지들
+            String message                      // 전체 결과 메시지
+    ) {
+    }
+
+    /**
+     * 정리 작업별 통계
+     */
+    @Builder
+    public record CleanupStats(
+            String dataType,            // 데이터 타입 (단기/중기/추천)
+            boolean executed,           // 실행 여부
+            int recordsFound,           // 발견된 레코드 수
+            int recordsDeleted         // 삭제된 레코드 수
+    ) {
+    }
+
+    /**
+     * 데이터 정리 결과 DTO
+     */
+    @Builder
+    public record CleanupResult(
+            boolean dryRun,                     // Dry run 여부
+            int retentionDays,                  // 보관 기간
+            LocalDate cutoffDate,               // 삭제 기준 날짜
+            CleanupStats shortTermStats,        // 단기 예보 정리 결과
+            CleanupStats mediumTermStats,       // 중기 예보 정리 결과
+            CleanupStats recommendationStats,   // 추천 정보 정리 결과
+            LocalDateTime processingStartTime,  // 처리 시작 시간
+            LocalDateTime processingEndTime,    // 처리 종료 시간
+            long processingDurationMs,          // 처리 소요 시간 (밀리초)
             List<String> errorMessages,         // 오류 메시지들
             String message                      // 전체 결과 메시지
     ) {

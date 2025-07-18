@@ -39,6 +39,7 @@ public class WeatherController {
                     - SHORT_TERM: 단기 예보 데이터 수집
                     - MEDIUM_TERM: 중기 예보 데이터 수집
                     - RECOMMENDATION: 날씨 기반 추천 생성
+                    - CLEANUP: 오래된 날씨 데이터 삭제
                     - ALL: 전체 동기화 작업 수행
                     ---
                     모든 작업은 비동기로 실행되며, 기존 데이터는 강제로 덮어씁니다.

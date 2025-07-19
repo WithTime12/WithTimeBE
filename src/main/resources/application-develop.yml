@@ -69,14 +69,14 @@ scheduler:
     enabled: true  # 스케줄러 활성화 여부
 
     # 데이터 수집 스케줄
-    real-short-term-cron: "10 2,5,8,11,14,17,20,23 * * * *"  # 단기예보 수집 (매 3시간 10분)
-    real-medium-term-cron: "30 6,18 * * * *"                # 중기예보 수집 (매 12시간 30분)
-    real-cleanup-cron: "0 0 3 * * *"                        # 데이터 정리 (매일 새벽 3시)
+    short-term-cron: "10 2,5,8,11,14,17,20,23 * * * *"  # 단기예보 수집 (매 3시간 10분)
+    medium-term-cron: "30 6,18 * * * *"                # 중기예보 수집 (매 12시간 30분)
+    cleanup-cron: "0 0 3 * * *"                        # 데이터 정리 (매일 새벽 3시)
 
     # 추천 정보 생성 스케줄
     recommendation:
-      real-short-term-cron: "0 5 * * * *"        # 단기예보 추천 (매 시간 5분) - 0-2일
-      real-medium-term-cron: "0 30 */6 * * *"    # 중기예보 추천 (6시간마다 30분) - 3-6일
+      short-term-cron: "0 5 * * * *"        # 단기예보 추천 (매 시간 5분) - 0-2일
+      medium-term-cron: "0 30 */6 * * *"    # 중기예보 추천 (6시간마다 30분) - 3-6일
 
     # 데이터 보관 기간 설정
     retention:

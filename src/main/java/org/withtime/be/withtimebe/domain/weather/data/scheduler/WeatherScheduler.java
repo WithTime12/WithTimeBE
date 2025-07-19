@@ -13,7 +13,7 @@ import org.withtime.be.withtimebe.domain.weather.data.utils.WeatherDataHelper;
 import org.withtime.be.withtimebe.domain.weather.dto.response.WeatherSyncResDTO;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Component
@@ -37,7 +37,7 @@ public class WeatherScheduler {
      * 매 3시간마다 실행 (02:10, 05:10, 08:10, 11:10, 14:10, 17:10, 20:10, 23:10)
      * 기상청 발표 시각보다 10분 후에 실행하여 데이터 준비 시간 확보
      */
-    @Scheduled(cron = "${scheduler.weather.real-short-term-cron}")
+    @Scheduled(cron = "${scheduler.weather.short-term-cron}")
     @Async("weatherTaskExecutor")
     public void scheduledShortTermWeatherSync() {
         if (shortTermSyncRunning) {
@@ -73,7 +73,7 @@ public class WeatherScheduler {
      * 중기 예보 데이터 수집 스케줄러
      * 매 12시간마다 실행 (06:30, 18:30)
      */
-    @Scheduled(cron = "${scheduler.weather.real-medium-term-cron}")
+    @Scheduled(cron = "${scheduler.weather.medium-term-cron}")
     @Async("weatherTaskExecutor")
     public void scheduledMediumTermWeatherSync() {
         if (mediumTermSyncRunning) {
@@ -106,7 +106,7 @@ public class WeatherScheduler {
      * 단기예보 기반 추천 정보 생성 스케줄러 (0-3일, 실제 단기예보 데이터 범위)
      * 매 시간 5분에 실행 - 단기예보는 1시간마다 업데이트
      */
-    @Scheduled(cron = "${scheduler.weather.recommendation.real-short-term-cron}")
+    @Scheduled(cron = "${scheduler.weather.recommendation.short-term-cron}")
     @Async("weatherTaskExecutor")
     public void scheduledShortTermRecommendationGeneration() {
         if (shortTermRecommendationRunning) {
@@ -141,7 +141,7 @@ public class WeatherScheduler {
      * 중기예보 기반 추천 정보 생성 스케줄러 (4-10일, 실제 중기예보 데이터 범위)
      * 매 6시간 30분에 실행 - 중기예보는 12시간마다 업데이트되므로 6시간마다 충분
      */
-    @Scheduled(cron = "${scheduler.weather.recommendation.real-medium-term-cron:0 30 0,6,12,18 * * *}")
+    @Scheduled(cron = "${scheduler.weather.recommendation.medium-term-cron}")
     @Async("weatherTaskExecutor")
     public void scheduledMediumTermRecommendationGeneration() {
         if (mediumTermRecommendationRunning) {
@@ -176,7 +176,7 @@ public class WeatherScheduler {
      * 데이터 정리 스케줄러
      * 매일 새벽 3시에 실행
      */
-    @Scheduled(cron = "${scheduler.weather.real-cleanup-cron}")
+    @Scheduled(cron = "${scheduler.weather.cleanup-cron}")
     @Async("weatherTaskExecutor")
     public void scheduledDataCleanup() {
         if (cleanupRunning) {
@@ -210,6 +210,60 @@ public class WeatherScheduler {
             log.error("데이터 정리 스케줄러 실행 중 오류 발생", e);
         } finally {
             cleanupRunning = false;
+        }
+    }
+
+    /**
+     * 애플리케이션 시작 시 초기 데이터 동기화
+     * 서버 재시작 후 최신 데이터 확보
+     */
+    @Scheduled(initialDelay = 60000, fixedDelay = Long.MAX_VALUE) // 1분 후 1회 실행
+    @Async("weatherTaskExecutor")
+    public void initialDataSync() {
+        log.info("애플리케이션 시작 후 초기 데이터 동기화 시작");
+
+        try {
+            // 올바른 base_date와 base_time 계산
+            WeatherDataHelper.BaseDateTime baseDateTime = WeatherDataHelper.calculateBaseDateTime();
+
+            CompletableFuture<Void> shortTermFuture = CompletableFuture.runAsync(() -> {
+                try {
+                    weatherDataCollectionService.collectShortTermWeatherData(
+                            null, baseDateTime.getBaseDateAsLocalDate(), baseDateTime.baseTime(), false);
+                    log.info("초기 단기 예보 동기화 완료");
+                } catch (Exception e) {
+                    log.error("초기 단기 예보 동기화 실패", e);
+                }
+            });
+
+            // 중기 예보 동기화
+            CompletableFuture<Void> mediumTermFuture = CompletableFuture.runAsync(() -> {
+                try {
+                    weatherDataCollectionService.collectMediumTermWeatherData(null, LocalDate.now(), false);
+                    log.info("초기 중기 예보 동기화 완료");
+                } catch (Exception e) {
+                    log.error("초기 중기 예보 동기화 실패", e);
+                }
+            });
+
+            // 두 동기화 작업 완료 후 추천 정보 생성
+            CompletableFuture.allOf(shortTermFuture, mediumTermFuture).thenRun(() -> {
+                try {
+                    // 전체 기간 추천 정보 생성 (실제 데이터 존재 여부 기반)
+                    LocalDate startDate = LocalDate.now();
+                    LocalDate endDate = startDate.plusDays(6);
+                    weatherRecommendationGenerationService.generateRecommendations(
+                            null, startDate, endDate, false, "초기동기화");
+                    log.info("초기 추천 정보 생성 완료");
+                } catch (Exception e) {
+                    log.error("초기 추천 정보 생성 실패", e);
+                }
+            });
+
+            log.info("초기 데이터 동기화 작업이 시작되었습니다.");
+
+        } catch (Exception e) {
+            log.error("초기 데이터 동기화 중 오류 발생", e);
         }
     }
 }

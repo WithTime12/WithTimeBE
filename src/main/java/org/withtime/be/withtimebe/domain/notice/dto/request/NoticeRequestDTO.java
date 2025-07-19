@@ -10,32 +10,15 @@ import lombok.Builder;
 
 public record NoticeRequestDTO() {
 
-	@Builder
-	public record FindNoticeList(
-		Pageable pageable,    // 게시글 식별자 값
-		NoticeCategory noticeCategory	// 게시글 유형
-	) {}
-
-	@Builder
-	public record FindNoticeListByKeyword(
-		Pageable pageable,    // 게시글 식별자 값
-		String keyword,		// 검색 키워드
-		NoticeCategory noticeCategory	// 게시글 유형
-	) {}
-
-	@Builder
-	public record FindNoticeDetail(
-		Long noticeId,
-		Member member
-	) {}
-
 	public record CreateNotice(
 		@NotBlank(message = "제목을 입력해주세요")
 		String title,
 		@NotBlank(message = "내용을 입력해주세요")
 		String content,
 		@NotNull(message = "상단 고정 여부를 결정해주세요")
-		Boolean isPinned
+		Boolean isPinned,
+		@NotNull(message = "공지사항 유형을 입력해주세요")
+		NoticeCategory noticeCategory
 	) {}
 
 	public record UpdateNotice (

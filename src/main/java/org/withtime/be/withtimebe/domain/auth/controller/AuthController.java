@@ -24,7 +24,7 @@ public class AuthController {
     private final AuthCommandService authCommandService;
     private final EmailCommandService emailCommandService;
 
-    @Operation(summary = "회원가입 API by 요시", description = "최초 회원가입 시 필요한 정보를 포함하여 회원가입 진행")
+    @Operation(summary = "회원가입 API by 요시", description = "최초 회원가입 시 필요한 정보를 포함하여 회원가입 진행, 소셜 로그인인 경우에만 socialId 포함하고 아닌 경우 제거하거나 null")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "회원가입 성공"),
             @ApiResponse(
@@ -32,6 +32,13 @@ public class AuthController {
                     description = """
                             다음과 같은 이유로 실패할 수 있습니다:
                             - AUTH400_1: 이미 존재하는 이메일입니다.
+                            """
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - SOCIAL404_1: 소셜을 찾을 수 없습니다.
                             """
             )
     })

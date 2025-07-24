@@ -39,7 +39,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     public void signUp(AuthRequestDTO.SignUp request) {
         validateSignUp(request);
 
-        Member member = memberRepository.save(AuthConverter.toLocalMember(request.email(), request.username(), request.socialId() != null ? passwordEncoder.encode(request.password()) : null, request.phoneNumber(), request.gender(), request.birth()));
+        Member member = memberRepository.save(AuthConverter.toLocalMember(request.email(), request.username(), request.socialId() != null ? null : passwordEncoder.encode(request.password()), request.phoneNumber(), request.gender(), request.birth()));
         if (request.socialId() != null) {
             Social social = socialRepository.findById(request.socialId()).orElseThrow(() ->
                     new SocialException(SocialErrorCode.NOT_FOUND_SOCIAL));

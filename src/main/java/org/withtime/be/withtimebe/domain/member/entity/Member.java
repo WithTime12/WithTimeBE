@@ -42,9 +42,6 @@ public class Member extends BaseEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "nickname")
-    private String nickname;
-
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;

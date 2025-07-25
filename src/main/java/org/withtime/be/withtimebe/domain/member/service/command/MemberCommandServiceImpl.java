@@ -27,12 +27,12 @@ public class MemberCommandServiceImpl implements MemberCommandService {
        if (member.getPassword() != null && !passwordEncoder.matches(request.nowPassword(), member.getPassword())) {
            throw new AuthException(AuthErrorCode.INCORRECT_PASSWORD);
        }
-       this.changePassword(member.getId(), request.newPassword());
+       this.changePassword(member.getEmail(), request.newPassword());
     }
 
     @Override
-    public void changePassword(Long memberId, String password) {
-        Member member = memberRepository.findById(memberId).orElseThrow(() ->
+    public void changePassword(String email, String password) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(() ->
                 new MemberException(MemberErrorCode.NOT_FOUND));
         validateChangePassword(member, password);
         member.changePassword(passwordEncoder.encode(password));

@@ -5,6 +5,6 @@ import org.withtime.be.withtimebe.domain.member.entity.Member;
 
 public interface MemberCommandService {
     void changePassword(Member member, MemberRequestDTO.ChangePassword request);
-    void changePassword(Long memberId, String password);
+    void changePassword(String email, String password);
     Member changeInfo(Long memberId, MemberRequestDTO.ChangeInfo request);
 }

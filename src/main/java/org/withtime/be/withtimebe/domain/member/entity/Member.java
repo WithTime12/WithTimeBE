@@ -52,6 +52,21 @@ public class Member extends BaseEntity {
     @Column(name = "birth")
     private LocalDate birth;
 
+    @Column(name = "device_token")
+    private String deviceToken;
+
+    @Column(name = "push_alarm")
+    @Builder.Default
+    private Boolean pushAlarm = true;
+
+    @Column(name = "email_alarm")
+    @Builder.Default
+    private Boolean emailAlarm = true;
+
+    @Column(name = "sms_alarm")
+    @Builder.Default
+    private Boolean smsAlarm = true;
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 

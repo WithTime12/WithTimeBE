@@ -21,12 +21,12 @@ public class Alarm extends BaseEntity {
     @Column(name = "title")
     private String title;
 
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "alarm_type")
     private AlarmType alarmType;
-
-    @Column(name = "target_key")
-    private Long targetKey;
 
     @Column(name = "is_read", nullable = false)
     private Boolean isRead;

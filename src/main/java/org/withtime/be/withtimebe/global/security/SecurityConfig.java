@@ -53,6 +53,7 @@ public class SecurityConfig {
             API_PREFIX + "/notices/**",
             API_PREFIX + "/oauth2/**",
             API_PREFIX + "/faqs/**",
+            API_PREFIX + "/logs/keyword/**",
             "/oauth2/authorization/**",
             "/swagger-ui/**",
             "/swagger-resources/**",

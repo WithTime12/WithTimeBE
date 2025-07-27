@@ -23,7 +23,7 @@ public class PlaceCategoryLogQueryController {
 
 	private final PlaceCategoryLogQueryService placeCategoryLogQueryService;
 
-	@Operation(summary = "이번 주 인기 키워드 조회 API by 피우 [Only Admin]", description = "이번 주 많이 찾은 키워드를 조회하는 API입니다. 어드민만 사용 가능합니다.")
+	@Operation(summary = "이번 주 인기 키워드 조회 API by 피우", description = "이번 주 많이 찾은 키워드를 조회하는 API입니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다.")
 	})

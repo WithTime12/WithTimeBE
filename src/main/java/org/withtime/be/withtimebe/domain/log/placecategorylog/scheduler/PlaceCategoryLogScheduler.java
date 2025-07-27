@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.withtime.be.withtimebe.domain.date.entity.PlaceCategory;
 import org.withtime.be.withtimebe.domain.date.repository.PlaceCategoryRepository;
+import org.withtime.be.withtimebe.domain.log.placecategorylog.converter.PlaceCategoryLogConverter;
 import org.withtime.be.withtimebe.domain.log.placecategorylog.model.PlaceCategoryLog;
 import org.withtime.be.withtimebe.domain.log.placecategorylog.repository.PlaceCategoryLogRepository;
 
@@ -78,12 +79,8 @@ public class PlaceCategoryLogScheduler {
 				Optional<PlaceCategory> placeCategoryOptional = placeCategoryRepository.findById(placeCategoryId);
 				if(placeCategoryOptional.isPresent()) {
 					PlaceCategory placeCategory = placeCategoryOptional.get();
-					PlaceCategoryLog newPlaceCategoryLog = PlaceCategoryLog.builder()
-						.placeCategoryId(placeCategory.getId())
-						.placeCategoryLabel(placeCategory.getLabel())
-						.count(score)
-						.date(now)
-						.build();
+					PlaceCategoryLog newPlaceCategoryLog = PlaceCategoryLogConverter
+						.toPlaceCategoryLog(placeCategory, score, now);
 					placeCategoryLogList.add(newPlaceCategoryLog);
 				}
 			}

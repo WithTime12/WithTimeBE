@@ -129,3 +129,6 @@ scheduler:
     place-category:
       enabled: true
       sync-cron: "0 */5 * * * *"  # 5분마다 Redis -> Mongo 동기화
+    date-place:
+      enabled: true
+      sync-cron: "0 0 0 * * *"  # 매일 자정마다 동기화

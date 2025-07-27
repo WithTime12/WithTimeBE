@@ -1,0 +1,33 @@
+package org.withtime.be.withtimebe.domain.log.service.query;
+
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.withtime.be.withtimebe.domain.log.model.PlaceCategoryLog;
+import org.withtime.be.withtimebe.domain.log.repository.PlaceCategoryLogRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class PlaceCategoryLogQueryServiceImpl implements PlaceCategoryLogQueryService {
+
+	private final PlaceCategoryLogRepository placeCategoryLogRepository;
+
+	@Override
+	public List<PlaceCategoryLog> findWeeklyPlaceCategoryLogList() {
+
+		LocalDate now = LocalDate.now();
+
+		LocalDate startOfWeek = now.with(DayOfWeek.MONDAY);
+		LocalDate endOfWeek = now.with(DayOfWeek.SUNDAY);
+
+		return placeCategoryLogRepository.findByDateBetween(startOfWeek, endOfWeek);
+	}
+}

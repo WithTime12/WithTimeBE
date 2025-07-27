@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.log.dto;
+package org.withtime.be.withtimebe.domain.log.placecategorylog.dto;
 
 import java.util.List;
 

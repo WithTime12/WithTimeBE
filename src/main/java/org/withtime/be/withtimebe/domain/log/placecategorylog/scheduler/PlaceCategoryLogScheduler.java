@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.log.scheduler;
+package org.withtime.be.withtimebe.domain.log.placecategorylog.scheduler;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,8 +17,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.withtime.be.withtimebe.domain.date.entity.PlaceCategory;
 import org.withtime.be.withtimebe.domain.date.repository.PlaceCategoryRepository;
-import org.withtime.be.withtimebe.domain.log.model.PlaceCategoryLog;
-import org.withtime.be.withtimebe.domain.log.repository.PlaceCategoryLogRepository;
+import org.withtime.be.withtimebe.domain.log.placecategorylog.model.PlaceCategoryLog;
+import org.withtime.be.withtimebe.domain.log.placecategorylog.repository.PlaceCategoryLogRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

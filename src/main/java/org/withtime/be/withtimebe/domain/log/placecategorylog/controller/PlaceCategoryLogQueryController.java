@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.log.controller;
+package org.withtime.be.withtimebe.domain.log.placecategorylog.controller;
 
 import java.util.List;
 
@@ -6,10 +6,10 @@ import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.withtime.be.withtimebe.domain.log.converter.PlaceCategoryLogConverter;
-import org.withtime.be.withtimebe.domain.log.dto.PlaceCategoryLogResponseDTO;
-import org.withtime.be.withtimebe.domain.log.model.PlaceCategoryLog;
-import org.withtime.be.withtimebe.domain.log.service.query.PlaceCategoryLogQueryService;
+import org.withtime.be.withtimebe.domain.log.placecategorylog.converter.PlaceCategoryLogConverter;
+import org.withtime.be.withtimebe.domain.log.placecategorylog.dto.PlaceCategoryLogResponseDTO;
+import org.withtime.be.withtimebe.domain.log.placecategorylog.model.PlaceCategoryLog;
+import org.withtime.be.withtimebe.domain.log.placecategorylog.service.query.PlaceCategoryLogQueryService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

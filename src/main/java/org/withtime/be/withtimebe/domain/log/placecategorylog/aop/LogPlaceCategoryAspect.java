@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.log.aop;
+package org.withtime.be.withtimebe.domain.log.placecategorylog.aop;
 
 import java.lang.reflect.Field;
 import java.time.DayOfWeek;
@@ -33,7 +33,7 @@ public class LogPlaceCategoryAspect {
 
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	@Before("@annotation(org.withtime.be.withtimebe.domain.log.annotation.LogPlaceCategory)")
+	@Before("@annotation(org.withtime.be.withtimebe.domain.log.placecategorylog.annotation.LogPlaceCategory)")
 	public void logPlaceCategory(JoinPoint joinPoint) {
 		
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();

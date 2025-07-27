@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.log.model;
+package org.withtime.be.withtimebe.domain.log.placecategorylog.model;
 
 import java.time.LocalDate;
 

@@ -1,10 +1,10 @@
-package org.withtime.be.withtimebe.domain.log.converter;
+package org.withtime.be.withtimebe.domain.log.placecategorylog.converter;
 
 import java.util.Comparator;
 import java.util.List;
 
-import org.withtime.be.withtimebe.domain.log.dto.PlaceCategoryLogResponseDTO;
-import org.withtime.be.withtimebe.domain.log.model.PlaceCategoryLog;
+import org.withtime.be.withtimebe.domain.log.placecategorylog.dto.PlaceCategoryLogResponseDTO;
+import org.withtime.be.withtimebe.domain.log.placecategorylog.model.PlaceCategoryLog;
 
 public class PlaceCategoryLogConverter {
 

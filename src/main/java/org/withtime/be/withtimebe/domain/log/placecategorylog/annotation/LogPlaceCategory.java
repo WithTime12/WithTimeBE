@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.log.annotation;
+package org.withtime.be.withtimebe.domain.log.placecategorylog.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

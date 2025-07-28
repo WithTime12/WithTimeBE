@@ -6,4 +6,5 @@ import org.withtime.be.withtimebe.domain.member.entity.Member;
 public interface AlarmSender<T> {
 
     void send(Member member, AlarmRequestDTO.SendAlarm request) throws Exception;
+    Class<T> supportedClass();
 }

@@ -1,32 +1,22 @@
 package org.withtime.be.withtimebe.domain.member.alarm.service;
 
 import com.google.firebase.messaging.Message;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.withtime.be.withtimebe.domain.member.alarm.generator.AlarmMessageGenerator;
 import org.withtime.be.withtimebe.domain.member.alarm.sender.AlarmSendUtil;
-import org.withtime.be.withtimebe.domain.member.dto.AlarmRequestDTO;
-import org.withtime.be.withtimebe.domain.member.entity.Member;
 
-@Slf4j
-@Service
-@RequiredArgsConstructor
-public class FCMAlarmSender implements AlarmSender<Message> {
+@Component
+public class FCMAlarmSender extends AbstractAlarmSender<Message> {
 
-    private final AlarmMessageGenerator<Message> alarmMessageGenerator;
-    private final AlarmSendUtil<Message> alarmSendUtil;
+    private static final Class<Message> SUPPORTED_CLASS= Message.class;
 
-    @Override
-    public void send(Member member, AlarmRequestDTO.SendAlarm request) throws Exception {
-        try {
-            Message message = alarmMessageGenerator.generate(member, request);
-
-            alarmSendUtil.send(member, message);
-        } catch (Exception e) {
-            log.warn("FCM Alarm error", e);
-            throw e;
-        }
+    public FCMAlarmSender(AlarmMessageGenerator<Message> alarmMessageGenerator,
+                          AlarmSendUtil<Message> alarmSendUtil) {
+        super(alarmMessageGenerator, alarmSendUtil);
     }
 
+    @Override
+    public Class<Message> supportedClass() {
+        return SUPPORTED_CLASS;
+    }
 }

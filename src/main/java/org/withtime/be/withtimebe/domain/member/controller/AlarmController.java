@@ -11,6 +11,7 @@ import org.withtime.be.withtimebe.domain.member.dto.AlarmRequestDTO;
 import org.withtime.be.withtimebe.domain.member.dto.AlarmResponseDTO;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.member.service.AlarmCommandService;
+import org.withtime.be.withtimebe.domain.member.service.AlarmQueryService;
 import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember;
 
 @RestController
@@ -20,6 +21,7 @@ import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember
 public class AlarmController {
 
     private final AlarmCommandService alarmCommandService;
+    private final AlarmQueryService alarmQueryService;
 
     @Operation(summary = "알림 테스트용 API", description = "알림 테스트하기 위해 생성한 API")
     @ApiResponse(responseCode = "204", description = "알림 전송 성공, 해당 API는 일림 전송 실패로 따로 에러 메시지를 전송하지 않습니다.")
@@ -52,4 +54,11 @@ public class AlarmController {
         return DefaultResponse.ok(AlarmConverter.toSettingInfo(member));
     }
 
+    @Operation(summary = "알림 조회 API", description = "알림 조회 API")
+    @ApiResponse(responseCode = "200", description = "알림 조회에 성공했습니다.")
+    @GetMapping
+    public DefaultResponse<AlarmResponseDTO.FindAlarmList> findAlarms(@RequestParam(defaultValue = "10") Integer size,
+                                                                      @RequestParam(defaultValue = "0") Long cursor) {
+        return DefaultResponse.ok(alarmQueryService.findAlarms(cursor, size));
+    }
 }

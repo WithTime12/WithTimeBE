@@ -55,15 +55,15 @@ public class Member extends BaseEntity {
     @Column(name = "device_token")
     private String deviceToken;
 
-    @Column(name = "push_alarm")
+    @Column(name = "push_alarm", nullable = false)
     @Builder.Default
     private Boolean pushAlarm = true;
 
-    @Column(name = "email_alarm")
+    @Column(name = "email_alarm", nullable = false)
     @Builder.Default
     private Boolean emailAlarm = true;
 
-    @Column(name = "sms_alarm")
+    @Column(name = "sms_alarm", nullable = false)
     @Builder.Default
     private Boolean smsAlarm = true;
 

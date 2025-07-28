@@ -23,7 +23,7 @@ public class AlarmController {
     private final AlarmCommandService alarmCommandService;
     private final AlarmQueryService alarmQueryService;
 
-    @Operation(summary = "알림 테스트용 API", description = "알림 테스트하기 위해 생성한 API")
+    @Operation(summary = "알림 테스트용 API by 요시", description = "알림 테스트하기 위해 생성한 API")
     @ApiResponse(responseCode = "204", description = "알림 전송 성공, 해당 API는 일림 전송 실패로 따로 에러 메시지를 전송하지 않습니다.")
     @PostMapping
     public DefaultResponse<Void> alarm(@AuthenticatedMember Member member, @RequestBody AlarmRequestDTO.SendAlarm request) {
@@ -31,7 +31,7 @@ public class AlarmController {
         return DefaultResponse.noContent();
     }
 
-    @Operation(summary = "푸시알림 기기 업데이트 API", description = "푸시 알림 받을 기기에서 얻은 토큰을 적용하여 해당 기기로 받도록 하는 API")
+    @Operation(summary = "푸시알림 기기 업데이트 API by 요시", description = "푸시 알림 받을 기기에서 얻은 토큰을 적용하여 해당 기기로 받도록 하는 API")
     @ApiResponse(responseCode = "204", description = "알림 받을 기기 변경에 성공했습니다.")
     @PostMapping("/device-tokens")
     public DefaultResponse<Void> updateDeviceToken(@AuthenticatedMember Member member, @RequestBody AlarmRequestDTO.UpdateDeviceToken request) {
@@ -39,7 +39,7 @@ public class AlarmController {
         return DefaultResponse.noContent();
     }
 
-    @Operation(summary = "알림 설정 업데이트 API", description = "사용자의 알림 설정을 변경하는 API")
+    @Operation(summary = "알림 설정 업데이트 API by 요시", description = "사용자의 알림 설정을 변경하는 API")
     @ApiResponse(responseCode = "200", description = "알림 설정 변경에 성공하였습니다.")
     @PatchMapping("/settings")
     public DefaultResponse<AlarmResponseDTO.UpdateSetting> updateAlarmSetting(@AuthenticatedMember Member member, @RequestBody AlarmRequestDTO.UpdateSetting request) {
@@ -47,14 +47,14 @@ public class AlarmController {
         return DefaultResponse.ok(response);
     }
 
-    @Operation(summary = "알림 설정 조회 API", description = "사용자 알림 설정 상태를 조회합니다.")
+    @Operation(summary = "알림 설정 조회 API by 요시", description = "사용자 알림 설정 상태를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "알림 설정 조회에 성공하였습니다.")
     @GetMapping("/settings")
     public DefaultResponse<AlarmResponseDTO.SettingInfo> findSettingInfo(@AuthenticatedMember Member member) {
         return DefaultResponse.ok(AlarmConverter.toSettingInfo(member));
     }
 
-    @Operation(summary = "알림 조회 API", description = "알림 조회 API")
+    @Operation(summary = "알림 조회 API by 요시", description = "알림 조회 API")
     @ApiResponse(responseCode = "200", description = "알림 조회에 성공했습니다.")
     @GetMapping
     public DefaultResponse<AlarmResponseDTO.FindAlarmList> findAlarms(@RequestParam(defaultValue = "10") Integer size,

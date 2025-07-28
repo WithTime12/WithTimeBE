@@ -10,4 +10,18 @@ public record AlarmRequestDTO() {
     ) {
 
     }
+
+    public record UpdateDeviceToken(
+            String deviceToken
+    ) {
+
+    }
+
+    public record UpdateSetting(
+            Boolean emailAlarm,
+            Boolean pushAlarm,
+            Boolean smsAlarm
+    ) {
+
+    }
 }

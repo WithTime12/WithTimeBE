@@ -7,9 +7,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.member.alarm.factory.AlarmSenderFactory;
 import org.withtime.be.withtimebe.domain.member.converter.AlarmConverter;
 import org.withtime.be.withtimebe.domain.member.dto.AlarmRequestDTO;
+import org.withtime.be.withtimebe.domain.member.dto.AlarmResponseDTO;
 import org.withtime.be.withtimebe.domain.member.entity.Alarm;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.member.repository.AlarmRepository;
+import org.withtime.be.withtimebe.domain.member.repository.MemberRepository;
 import org.withtime.be.withtimebe.global.error.code.AlarmErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.AlarmException;
 
@@ -23,6 +25,7 @@ public class AlarmCommandServiceImpl implements AlarmCommandService {
 
     private final AlarmSenderFactory alarmSenderFactory;
     private final AlarmRepository alarmRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public void send(Member member, AlarmRequestDTO.SendAlarm... request) {
@@ -36,6 +39,23 @@ public class AlarmCommandServiceImpl implements AlarmCommandService {
             } catch (Exception ignored){}
         }
         alarmRepository.saveAll(alarms);
+    }
+
+    @Override
+    public void updateDeviceToken(Member member, AlarmRequestDTO.UpdateDeviceToken request) {
+        member.updateDeviceToken(request.deviceToken());
+        memberRepository.save(member);
+    }
+
+    @Override
+    public AlarmResponseDTO.UpdateSetting updateAlarmSetting(Member member, AlarmRequestDTO.UpdateSetting request) {
+        member.updateAlarmSetting(
+                request.pushAlarm(),
+                request.emailAlarm(),
+                request.smsAlarm()
+        );
+        memberRepository.save(member);
+        return AlarmConverter.toUpdateSetting(member);
     }
 
     private List<Class<?>> getScope(Member member) {

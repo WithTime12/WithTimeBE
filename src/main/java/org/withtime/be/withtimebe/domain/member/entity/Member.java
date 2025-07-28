@@ -73,4 +73,14 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    public void updateDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
+    public void updateAlarmSetting(Boolean pushAlarm, Boolean emailAlarm, Boolean smsAlarm) {
+        this.pushAlarm = pushAlarm;
+        this.emailAlarm = emailAlarm;
+        this.smsAlarm = smsAlarm;
+    }
 }

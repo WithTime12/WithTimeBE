@@ -22,9 +22,11 @@ public class DatePlaceLogConverter {
 
 	public static DatePlaceLogResponseDTO.MonthlyDatePlaceLog toMonthlyDatePlaceLog(DatePlaceLog datePlaceLog) {
 
+		Long year = (long)datePlaceLog.getDate().getYear();
 		Long month = (long)datePlaceLog.getDate().getMonthValue();
 
 		return DatePlaceLogResponseDTO.MonthlyDatePlaceLog.builder()
+			.year(year)
 			.month(month)
 			.count(datePlaceLog.getCount())
 			.build();

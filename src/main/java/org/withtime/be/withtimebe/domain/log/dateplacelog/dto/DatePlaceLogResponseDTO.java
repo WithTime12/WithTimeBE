@@ -13,6 +13,7 @@ public class DatePlaceLogResponseDTO {
 
 	@Builder
 	public record MonthlyDatePlaceLog(
+		Long year,
 		Long month,
 		Long count
 	) {}

@@ -109,7 +109,7 @@ public class LogPlaceCategoryAspect {
 
 		// TTL - 이번 주까지로 설정
 		Long expire = redisTemplate.getExpire(redisKey, TimeUnit.SECONDS);
-		if (expire == null || expire == 0) {
+		if (expire == null || expire <= 0) {
 			LocalDateTime endOfWeek = now.with(DayOfWeek.SUNDAY).with(LocalTime.MAX);
 			Duration duration = Duration.between(now, endOfWeek);
 			redisTemplate.expire(redisKey, duration.getSeconds(), TimeUnit.SECONDS);

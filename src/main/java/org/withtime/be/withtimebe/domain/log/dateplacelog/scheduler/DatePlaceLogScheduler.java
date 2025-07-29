@@ -1,6 +1,7 @@
 package org.withtime.be.withtimebe.domain.log.dateplacelog.scheduler;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,7 +28,7 @@ public class DatePlaceLogScheduler {
 	@Transactional(readOnly = true)
 	public void syncPlaceCategoryLogsToDB() {
 
-		LocalDate now = LocalDate.now();
+		LocalDate now = LocalDate.from(LocalDateTime.now().minusMinutes(1));
 		Long count = datePlaceRepository.count();
 
 		DatePlaceLog datePlaceLog = DatePlaceLogConverter.toDatePlaceLog(now, count);

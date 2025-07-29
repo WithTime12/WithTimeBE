@@ -1,6 +1,7 @@
 package org.withtime.be.withtimebe.domain.log.placecategorylog.scheduler;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class PlaceCategoryLogScheduler {
 	public void syncPlaceCategoryLogsToDB() {
 
 		// 현재 날짜 및 레디스 키 생성
-		LocalDate now = LocalDate.now();
+		LocalDate now = LocalDate.from(LocalDateTime.now().minusMinutes(1));
 		String formattedDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 		String redisKey = "log:place-category:" + formattedDate;
 

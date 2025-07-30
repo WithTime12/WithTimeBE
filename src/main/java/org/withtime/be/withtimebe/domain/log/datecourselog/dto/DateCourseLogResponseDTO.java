@@ -9,4 +9,9 @@ public class DateCourseLogResponseDTO {
 		Double averageDateCount,
 		Long myDateCount
 	) {}
+
+	@Builder
+	public record FindSavedDateCourseCount(
+		Long count
+	) {}
 }

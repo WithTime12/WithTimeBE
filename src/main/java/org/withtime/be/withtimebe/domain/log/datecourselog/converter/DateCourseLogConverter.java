@@ -10,4 +10,10 @@ public class DateCourseLogConverter {
 			.myDateCount(myDateCount)
 			.build();
 	}
+
+	public static DateCourseLogResponseDTO.FindSavedDateCourseCount toFindSavedDateCourseCount(Long count) {
+		return DateCourseLogResponseDTO.FindSavedDateCourseCount.builder()
+			.count(count)
+			.build();
+	}
 }

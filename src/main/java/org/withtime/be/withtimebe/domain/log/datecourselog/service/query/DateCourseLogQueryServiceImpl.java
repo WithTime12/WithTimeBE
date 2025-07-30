@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.date.repository.DateCourseRepository;
+import org.withtime.be.withtimebe.domain.date.repository.DatePlaceDateCourseRepository;
 import org.withtime.be.withtimebe.domain.log.datecourselog.converter.DateCourseLogConverter;
 import org.withtime.be.withtimebe.domain.log.datecourselog.dto.DateCourseLogResponseDTO;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
@@ -19,6 +20,7 @@ public class DateCourseLogQueryServiceImpl implements DateCourseLogQueryService 
 
 	private final DateCourseRepository dateCourseRepository;
 	private final MemberRepository memberRepository;
+	private final DatePlaceDateCourseRepository datePlaceDateCourseRepository;
 
 	@Override
 	public DateCourseLogResponseDTO.FindAverageDateCourseCount findAverageDateCourseCount(Member member) {
@@ -40,5 +42,11 @@ public class DateCourseLogQueryServiceImpl implements DateCourseLogQueryService 
 		Long myDateCount = (member == null) ? 0L : dateCourseRepository.countByMemberId(member.getId());
 
 		return DateCourseLogConverter.toFindAverageDateCourseCount(averageDateCount, myDateCount);
+	}
+
+	@Override
+	public DateCourseLogResponseDTO.FindSavedDateCourseCount findSavedDateCourseCount(Member member) {
+		Long savedCount = (member == null) ? 0L : datePlaceDateCourseRepository.countByCreatorMemberId(member.getId());
+		return DateCourseLogConverter.toFindSavedDateCourseCount(savedCount);
 	}
 }

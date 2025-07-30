@@ -33,4 +33,16 @@ public class DateCourseLogQueryController {
 		DateCourseLogResponseDTO.FindAverageDateCourseCount response = dateCourseLogQueryService.findAverageDateCourseCount(member);
 		return DefaultResponse.ok(response);
 	}
+
+	@Operation(summary = "다른 사람의 내 데이트 코스 저장 횟수 조회 API by 피우", description = "나의 데이트 코스를 다른 사람이 얼마나 저장했는지 조회하는 API입니다.")
+	@ApiResponses(value = {
+		@ApiResponse(responseCode = "200", description = "성공입니다.")
+	})
+	@GetMapping("/saved-count")
+	public DefaultResponse<DateCourseLogResponseDTO.FindAverageDateCourseCount> findSavedDateCourseCount(
+		@AuthenticatedMember Member member
+	) {
+		DateCourseLogResponseDTO.FindSavedDateCourseCount response = dateCourseLogQueryService.findSavedDateCourseCount(member);
+		return DefaultResponse.ok(response);
+	}
 }

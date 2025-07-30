@@ -42,9 +42,6 @@ public class Member extends BaseEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "nickname")
-    private String nickname;
-
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -58,4 +55,12 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    public void changeUsername(String newUsername) {
+        this.username= newUsername;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }

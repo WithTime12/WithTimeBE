@@ -28,7 +28,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
-import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
+import org.withtime.be.withtimebe.domain.member.service.query.MemberQueryService;
 import org.withtime.be.withtimebe.global.security.filter.JsonLoginFilter;
 import org.withtime.be.withtimebe.global.security.filter.JwtFilter;
 import org.withtime.be.withtimebe.global.security.handler.CustomAccessDeniedHandler;

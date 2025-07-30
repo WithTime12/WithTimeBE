@@ -124,4 +124,36 @@ public class AuthController {
         emailCommandService.checkEmail(request);
         return DefaultResponse.noContent();
     }
+
+    @Operation(summary = "비밀번호 찾기 API", description = "이메일 인증 이후 이메일과 새로운 비밀번호로 비밀번호 변경")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "비밀번호 변경 성공"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - AUTH400_2: 소셜 로그인으로 가입된 사용자입니다.
+                            - MEMBER400_1: 이전 비밀번호와 동일합니다.
+                            """
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - EMAIL401_2: 비밀번호 재설정에 이메일 인증을 하지 않았습니다.
+                            """
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - MEMBER404_1: 사용자를 찾지 못했습니다.
+                            """
+            ),
+    })
+    @PostMapping("/passwords")
+    public DefaultResponse<Void> findPassword(@RequestBody AuthRequestDTO.FindPassword request) {
+        authCommandService.findPassword(request);
+        return DefaultResponse.noContent();
+    }
 }

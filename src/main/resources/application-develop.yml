@@ -15,6 +15,8 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: 6379
+    mongodb:
+      uri: ${MONGO_URI}
   mail:
     host: ${MAIL_SENDER_HOST}
     port: 587
@@ -122,3 +124,11 @@ scheduler:
       short-term-days: 7   # 단기 예보 보관 기간
       medium-term-days: 7  # 중기 예보 보관 기간
       recommendation-days: 30  # 추천 정보 보관 기간
+
+  logs:
+    place-category:
+      enabled: true
+      sync-cron: "0 */5 * * * *"  # 5분마다 Redis -> Mongo 동기화
+    date-place:
+      enabled: true
+      sync-cron: "0 0 0 * * *"  # 매일 자정마다 동기화

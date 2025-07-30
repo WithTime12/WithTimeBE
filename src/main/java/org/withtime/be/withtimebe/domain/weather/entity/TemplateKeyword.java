@@ -17,10 +17,10 @@ public class TemplateKeyword {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "weather_id")
-    private Keyword weather;
+    @JoinColumn(name = "weather_template_id", nullable = false)
+    private WeatherTemplate weatherTemplate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "weather_template_id")
-    private WeatherTemplate weatherTemplate;
+    @JoinColumn(name = "keyword_id", nullable = false)
+    private Keyword keyword;
 }

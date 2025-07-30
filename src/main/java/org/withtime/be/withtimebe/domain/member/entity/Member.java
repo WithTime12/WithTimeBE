@@ -42,9 +42,6 @@ public class Member extends BaseEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "nickname")
-    private String nickname;
-
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -52,10 +49,43 @@ public class Member extends BaseEntity {
     @Column(name = "birth")
     private LocalDate birth;
 
+    @Column(name = "device_token")
+    private String deviceToken;
+
+    @Column(name = "push_alarm", nullable = false)
+    @Builder.Default
+    private Boolean pushAlarm = true;
+
+    @Column(name = "email_alarm", nullable = false)
+    @Builder.Default
+    private Boolean emailAlarm = true;
+
+    @Column(name = "sms_alarm", nullable = false)
+    @Builder.Default
+    private Boolean smsAlarm = true;
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+
+    public void changeUsername(String newUsername) {
+        this.username= newUsername;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public void updateDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+    }
+
+    public void updateAlarmSetting(Boolean pushAlarm, Boolean emailAlarm, Boolean smsAlarm) {
+        this.pushAlarm = pushAlarm;
+        this.emailAlarm = emailAlarm;
+        this.smsAlarm = smsAlarm;
+    }
 }

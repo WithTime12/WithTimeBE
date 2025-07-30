@@ -38,7 +38,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
     // 응답 통일
-    implementation 'org.namul:api-payload:0.5.1'
+    implementation 'org.namul:api-payload:0.6.0'
 
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -70,6 +70,9 @@ dependencies {
 
     // MongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
+    // firebase
+    implementation 'com.google.firebase:firebase-admin:9.1.0'
 }
 
 tasks.named('test') {

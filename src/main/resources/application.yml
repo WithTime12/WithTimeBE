@@ -67,6 +67,9 @@ spring:
             authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/userinfo/v2/me
+  firebase:
+    enabled: true
+    config: ${FIREBASE_CONFIG}
 
 jwt:
   secret: ${JWT_SECRET}
@@ -97,7 +100,7 @@ weather:
     # API 타임아웃 설정
     timeout:
       connect: 5000
-      read: 15000
+      read: 20000
 
     # 재시도 설정
     retry:

@@ -3,6 +3,7 @@ package org.withtime.be.withtimebe.domain.date.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
+import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 @Entity
 @Getter
@@ -10,7 +11,7 @@ import org.withtime.be.withtimebe.domain.member.entity.Member;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "date_course")
-public class DateCourse {
+public class DateCourse extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

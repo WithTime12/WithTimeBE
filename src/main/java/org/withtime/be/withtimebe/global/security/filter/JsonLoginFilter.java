@@ -8,7 +8,10 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.namul.api.payload.code.BaseErrorCode;
+import org.namul.api.payload.code.DefaultResponseErrorCode;
 import org.namul.api.payload.code.dto.supports.DefaultResponseErrorReasonDTO;
+import org.namul.api.payload.error.exception.ServerApplicationException;
 import org.namul.api.payload.writer.FailureResponseWriter;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -51,6 +54,8 @@ public class JsonLoginFilter extends OncePerRequestFilter {
                     return;
                 }
                 this.successfulAuthentication(request, response, authentication);
+            } catch (ServerApplicationException e) {
+                handleServerApplicationException(response, e);
             } catch (Exception e) {
                 handleException(response, e);
             }
@@ -70,7 +75,8 @@ public class JsonLoginFilter extends OncePerRequestFilter {
         } catch (IOException e) {
             throw new AuthenticationServiceException("Json Parsing Error In Json Filter");
         } catch (Exception e) {
-            throw new AuthenticationServiceException("CustomJsonUsernamePasswordLoginFilter(" + e.getClass() + "): " + e.getMessage());
+            Throwable throwable = e.getCause();
+            throw throwable instanceof ServerApplicationException serverApplicationException ? serverApplicationException : new AuthenticationServiceException("CustomJsonUsernamePasswordLoginFilter(" + e.getClass() + "): " + e.getMessage());
         }
     }
 
@@ -91,6 +97,14 @@ public class JsonLoginFilter extends OncePerRequestFilter {
         String content = new String((new HttpServletRequestWrapper(request)).getInputStream().readAllBytes());
         ObjectMapper om = new ObjectMapper();
         return om.readValue(content, AuthRequestDTO.Login.class);
+    }
+
+    private void handleServerApplicationException(HttpServletResponse response, ServerApplicationException e) throws IOException {
+        ObjectMapper om = new ObjectMapper();
+        DefaultResponseErrorReasonDTO reasonDTO = e.getCode().getReason() instanceof DefaultResponseErrorReasonDTO defaultResponseErrorReasonDTO ? defaultResponseErrorReasonDTO : DefaultResponseErrorCode._UNAUTHORIZED.getReason();
+        response.setStatus(reasonDTO.getHttpStatus().value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        om.writeValue(response.getOutputStream(), failureResponseWriter.onFailure(reasonDTO, e.getMessage()));
     }
 
     private void handleException(HttpServletResponse response, Exception e) throws IOException {

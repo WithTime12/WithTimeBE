@@ -39,7 +39,7 @@ public class DateCourseLogQueryController {
 		@ApiResponse(responseCode = "200", description = "성공입니다.")
 	})
 	@GetMapping("/saved-count")
-	public DefaultResponse<DateCourseLogResponseDTO.FindAverageDateCourseCount> findSavedDateCourseCount(
+	public DefaultResponse<DateCourseLogResponseDTO.FindSavedDateCourseCount> findSavedDateCourseCount(
 		@AuthenticatedMember Member member
 	) {
 		DateCourseLogResponseDTO.FindSavedDateCourseCount response = dateCourseLogQueryService.findSavedDateCourseCount(member);

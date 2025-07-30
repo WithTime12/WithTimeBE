@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.member.service;
+package org.withtime.be.withtimebe.domain.member.service.query;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

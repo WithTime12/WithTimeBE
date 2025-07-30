@@ -27,4 +27,11 @@ public record AuthRequestDTO() {
     ) {
 
     }
+
+    public record FindPassword(
+            String email,
+            String newPassword
+    ) {
+
+    }
 }

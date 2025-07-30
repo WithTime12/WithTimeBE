@@ -8,7 +8,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.withtime.be.withtimebe.domain.weather.entity.Region;
 import org.withtime.be.withtimebe.global.error.code.WeatherErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.WeatherException;
+import reactor.util.retry.Retry;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -54,6 +56,11 @@ public class WeatherApiClientImpl implements WeatherApiClient {
                             .build())
                     .retrieve()
                     .bodyToMono(String.class)
+                    .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                            .onRetryExhaustedThrow((retryBackoffSpec, signal) -> {
+                                log.error("단기예보 API 3회 재시도 실패", signal.failure());
+                                return new WeatherException(WeatherErrorCode.SHORT_TERM_FORECAST_ERROR);
+                            }))
                     .block();
 
             if (response == null || response.trim().isEmpty()) {
@@ -89,6 +96,11 @@ public class WeatherApiClientImpl implements WeatherApiClient {
                             .build())
                     .retrieve()
                     .bodyToMono(String.class)
+                    .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                            .onRetryExhaustedThrow((retryBackoffSpec, signal) -> {
+                                log.error("중기 육상예보 API 3회 재시도 실패", signal.failure());
+                                return new WeatherException(WeatherErrorCode.MEDIUM_TERM_FORECAST_ERROR);
+                            }))
                     .block();
 
             if (response == null || response.trim().isEmpty()) {
@@ -124,6 +136,11 @@ public class WeatherApiClientImpl implements WeatherApiClient {
                             .build())
                     .retrieve()
                     .bodyToMono(String.class)
+                    .retryWhen(Retry.backoff(3, Duration.ofSeconds(2))
+                            .onRetryExhaustedThrow((retryBackoffSpec, signal) -> {
+                                log.error("중기 기온예보 API 3회 재시도 실패", signal.failure());
+                                return new WeatherException(WeatherErrorCode.MEDIUM_TERM_FORECAST_ERROR);
+                            }))
                     .block();
 
             if (response == null || response.trim().isEmpty()) {
@@ -139,5 +156,4 @@ public class WeatherApiClientImpl implements WeatherApiClient {
             throw new WeatherException(WeatherErrorCode.MEDIUM_TERM_FORECAST_ERROR);
         }
     }
-
 }

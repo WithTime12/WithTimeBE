@@ -14,11 +14,13 @@ import org.withtime.be.withtimebe.domain.log.placecategorylog.service.query.Plac
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/logs/keyword")
+@Tag(name = "키워드 통계 관련 API")
 public class PlaceCategoryLogQueryController {
 
 	private final PlaceCategoryLogQueryService placeCategoryLogQueryService;

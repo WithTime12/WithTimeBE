@@ -14,11 +14,13 @@ import org.withtime.be.withtimebe.domain.log.dateplacelog.service.query.DatePlac
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/logs/dateplaces")
+@Tag(name = "데이트 장소 통계 관련 API")
 public class DatePlaceLogQueryController {
 
 	private final DatePlaceLogQueryService datePlaceLogQueryService;

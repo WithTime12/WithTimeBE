@@ -21,12 +21,14 @@ import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/admin/notices")
+@Tag(name = "공지사항 수정 관련 API")
 public class NoticeCommandController {
 
 	private final NoticeCommandService noticeCommandService;

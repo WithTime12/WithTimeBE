@@ -1,4 +1,4 @@
-package org.withtime.be.withtimebe.domain.log.dateplacelog.entity;
+package org.withtime.be.withtimebe.domain.log.dateplacelog.model;
 
 import java.time.LocalDate;
 

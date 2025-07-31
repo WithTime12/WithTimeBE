@@ -1,11 +1,10 @@
 package org.withtime.be.withtimebe.domain.log.dateplacelog.converter;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.withtime.be.withtimebe.domain.log.dateplacelog.dto.DatePlaceLogResponseDTO;
-import org.withtime.be.withtimebe.domain.log.dateplacelog.entity.DatePlaceLog;
+import org.withtime.be.withtimebe.domain.log.dateplacelog.model.DatePlaceLog;
 
 public class DatePlaceLogConverter {
 

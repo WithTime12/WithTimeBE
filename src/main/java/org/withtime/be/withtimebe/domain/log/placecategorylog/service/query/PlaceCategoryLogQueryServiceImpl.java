@@ -2,6 +2,7 @@ package org.withtime.be.withtimebe.domain.log.placecategorylog.service.query;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -23,8 +24,8 @@ public class PlaceCategoryLogQueryServiceImpl implements PlaceCategoryLogQuerySe
 
 		LocalDate now = LocalDate.now();
 
-		LocalDate startOfWeek = now.with(DayOfWeek.MONDAY);
-		LocalDate endOfWeek = now.with(DayOfWeek.SUNDAY);
+		LocalDate startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+		LocalDate endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
 
 		return placeCategoryLogRepository.findByDateBetween(startOfWeek, endOfWeek);
 	}

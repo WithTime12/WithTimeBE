@@ -71,6 +71,10 @@ public class Member extends BaseEntity {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Column(name = "point", nullable = false)
+    @Builder.Default
+    private Integer point;
+
     public void changeUsername(String newUsername) {
         this.username= newUsername;
     }

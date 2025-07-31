@@ -27,7 +27,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/admin/notices")
+@RequestMapping("/api/v1/notices")
 @Tag(name = "공지사항 수정 관련 API")
 public class NoticeCommandController {
 

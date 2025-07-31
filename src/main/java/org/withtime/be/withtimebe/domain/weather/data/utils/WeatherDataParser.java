@@ -188,17 +188,21 @@ public class WeatherDataParser {
                 for (String line : lines) {
                     if (line.trim().isEmpty() || line.startsWith("#")) continue;
 
-                    String[] parts = line.trim().split("\\s+");
+                    String[] parts = parseLineWithQuotes(line.trim());
+
                     if (parts.length >= 11) {
                         MediumTermLandData landData = new MediumTermLandData(
                                 parts[1],  // TM_FC
                                 parts[2],  // TM_EF
                                 parts[6],  // SKY
-                                parts[10]  // RN_ST
+                                parts[10]  // RN_ST (올바른 인덱스)
                         );
 
                         String key = parts[1] + "_" + parts[2];
                         result.put(key, landData);
+
+                        log.debug("중기 육상예보 라인 파싱: key={}, sky={}, rnSt={}",
+                                key, parts[6], parts[10]);
                     }
                 }
             }
@@ -208,6 +212,48 @@ public class WeatherDataParser {
 
         log.debug("중기 육상예보 파싱 완료: {} 건", result.size());
         return result;
+    }
+
+    /**
+     * 띄어쓰기 문자열을 고려하여 라인을 파싱
+     */
+    private String[] parseLineWithQuotes(String line) {
+        List<String> parts = new ArrayList<>();
+        StringBuilder currentPart = new StringBuilder();
+        boolean inQuotes = false;
+
+        String[] tokens = line.split("\\s+");
+
+        for (String token : tokens) {
+            if (token.startsWith("\"") && token.endsWith("\"") && token.length() > 1) {
+                // 하나의 토큰이 완전한 쌍따옴표 문자열인 경우
+                parts.add(token.substring(1, token.length() - 1)); // 쌍따옴표 제거
+            } else if (token.startsWith("\"")) {
+                // 쌍따옴표 시작
+                inQuotes = true;
+                currentPart.append(token.substring(1)); // 시작 쌍따옴표 제거
+            } else if (token.endsWith("\"") && inQuotes) {
+                // 쌍따옴표 끝
+                if (currentPart.length() > 0) {
+                    currentPart.append(" ");
+                }
+                currentPart.append(token.substring(0, token.length() - 1)); // 끝 쌍따옴표 제거
+                parts.add(currentPart.toString());
+                currentPart.setLength(0);
+                inQuotes = false;
+            } else if (inQuotes) {
+                // 쌍따옴표 안의 중간 토큰
+                if (currentPart.length() > 0) {
+                    currentPart.append(" ");
+                }
+                currentPart.append(token);
+            } else {
+                // 일반 토큰
+                parts.add(token);
+            }
+        }
+
+        return parts.toArray(new String[0]);
     }
 
     private Map<String, MediumTermTempData> parseMediumTermTempData(String response) {

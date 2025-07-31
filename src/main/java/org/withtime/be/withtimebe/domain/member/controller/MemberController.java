@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import org.withtime.be.withtimebe.domain.member.dto.MemberRequestDTO;
 import org.withtime.be.withtimebe.domain.member.dto.MemberResponseDTO;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.member.service.command.MemberCommandService;
+import org.withtime.be.withtimebe.domain.member.service.query.MemberQueryService;
 import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember;
 
 @RestController
@@ -24,6 +26,7 @@ import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember
 public class MemberController {
 
     private final MemberCommandService memberCommandService;
+    private final MemberQueryService memberQueryService;
 
     @Operation(summary = "비밀번호 변경 API", description = "현재 비밀번호가 맞으면 새로운 비밀번호로 변경")
     @ApiResponses({
@@ -74,5 +77,14 @@ public class MemberController {
                                                          @RequestBody MemberRequestDTO.ChangeInfo request) {
         Member updatedMember = memberCommandService.changeInfo(member.getId(), request);
         return DefaultResponse.ok(MemberConverter.toChangeInfo(updatedMember));
+    }
+
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "등급 반환 성공"),
+    })
+    @GetMapping("/grade")
+    public DefaultResponse<MemberResponseDTO.FindMyGrade> findMyGrade(@AuthenticatedMember Member member) {
+        MemberResponseDTO.FindMyGrade response = MemberConverter.toFindMyGrade(member);
+        return DefaultResponse.ok(response);
     }
 }

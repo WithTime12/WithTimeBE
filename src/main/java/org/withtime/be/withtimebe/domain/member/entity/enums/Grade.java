@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Grade {
 
-	GUEST("Lv.0", "게스트", -1),
 	FLIRT("Lv.1", "첫 탐색을 시작한 유저. 데이트의 세계에 발을 디딘 입문자", 0),
 	EXPLORER("Lv.2", "다양한 코스를 둘러보며 취향을 탐색하는 단계", 50),
 	SEEKER("Lv.3", "키워드로 나만의 데이트를 계획하고 시도해 본 유저", 150),
@@ -31,6 +30,16 @@ public enum Grade {
 				return grades[i];
 			}
 		}
-		return GUEST;
+		return FLIRT;
+	}
+
+	public static Integer nextRequiredPoint(int currentPoint) {
+		Grade[] grades = Grade.values();
+		for (int i = 0; i < grades.length - 1; i++) {
+			if (currentPoint < grades[i + 1].requiredPoint && currentPoint >= grades[i].requiredPoint) {
+				return grades[i + 1].requiredPoint - currentPoint;
+			}
+		}
+		return 0;
 	}
 }

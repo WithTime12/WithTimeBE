@@ -6,7 +6,12 @@ public record MemberResponseDTO() {
     @Builder
     public record ChangeInfo(
             String username
-    ) {
+    ) {}
 
-    }
+    @Builder
+    public record FindMyGrade(
+        String level,
+        String description,
+        Integer nextRequiredPoint
+    ) {}
 }

@@ -17,6 +17,7 @@ public class MemberConverter {
         Integer nextRequiredPoint = Grade.nextRequiredPoint(member.getPoint());
 
         return MemberResponseDTO.FindMyGrade.builder()
+            .username(member.getUsername())
             .level(grade.getLevel())
             .description(grade.getDescription())
             .nextRequiredPoint(nextRequiredPoint)

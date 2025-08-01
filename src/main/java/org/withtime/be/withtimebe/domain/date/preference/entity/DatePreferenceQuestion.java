@@ -13,7 +13,7 @@ public class DatePreferenceQuestion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "date_preference_question")
+    @Column(name = "date_preference_question_id")
     private Long id;
 
     @Column(name = "question")

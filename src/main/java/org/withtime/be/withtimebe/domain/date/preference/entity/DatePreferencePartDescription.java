@@ -14,7 +14,7 @@ public class DatePreferencePartDescription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "date_preference_description_id")
+    @Column(name = "date_preference_part_description_id")
     private Long id;
 
     @Enumerated(EnumType.STRING)

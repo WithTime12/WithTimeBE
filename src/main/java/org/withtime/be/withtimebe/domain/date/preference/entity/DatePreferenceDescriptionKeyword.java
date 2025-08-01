@@ -13,6 +13,7 @@ public class DatePreferenceDescriptionKeyword {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "date_preference_description_keyword_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

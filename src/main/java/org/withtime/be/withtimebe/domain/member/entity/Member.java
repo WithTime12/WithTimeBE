@@ -92,4 +92,8 @@ public class Member extends BaseEntity {
         this.emailAlarm = emailAlarm;
         this.smsAlarm = smsAlarm;
     }
+
+    public void addPoint(Integer point) {
+        this.point += point;
+    }
 }

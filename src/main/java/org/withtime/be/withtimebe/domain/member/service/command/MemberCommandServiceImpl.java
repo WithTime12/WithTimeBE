@@ -46,6 +46,13 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         return member;
     }
 
+    @Override
+    public void addPoint(Long memberId, Integer point) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() ->
+            new MemberException(MemberErrorCode.NOT_FOUND));
+        member.addPoint(point);
+    }
+
     public void validateChangePassword(Member member, String password) throws ServerApplicationException {
         String memberPassword = member.getPassword();
         if (memberPassword == null) {

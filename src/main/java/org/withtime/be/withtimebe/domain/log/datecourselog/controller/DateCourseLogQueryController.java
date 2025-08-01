@@ -22,7 +22,7 @@ public class DateCourseLogQueryController {
 
 	private final DateCourseLogQueryService dateCourseLogQueryService;
 
-	@Operation(summary = "최근 1개월 WithTime 사용자의 데이트 평균 횟수와 나의 데이트 횟수 조회 API by 피우", description = "메인 페이지의 데이트 나침반에 해당하는 API입니다. 최근 1개월 WithTime 사용자의 데이트 평균 횟수와 나의 데이트 횟수 조회하는 API입니다.")
+	@Operation(summary = "최근 1개월 WithTime 사용자의 데이트 평균 횟수와 나의 데이트 횟수 조회 API by 피우", description = "메인 페이지의 데이트 나침반에 해당하는 API입니다. 최근 1개월 WithTime 사용자의 데이트 평균 횟수와 나의 데이트 횟수 조회하는 API입니다. 비회원은 나의 데이트 횟수가 0회로 표시됩니다.")
 	@ApiResponses(value = {
 		@ApiResponse(responseCode = "200", description = "성공입니다.")
 	})

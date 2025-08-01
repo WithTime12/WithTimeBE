@@ -55,6 +55,7 @@ public class SecurityConfig {
             API_PREFIX + "/faqs/**",
             API_PREFIX + "/logs/keyword/**",
             API_PREFIX + "/logs/dateplaces/**",
+            API_PREFIX + "/logs/datecourses/**",
             "/oauth2/authorization/**",
             "/swagger-ui/**",
             "/swagger-resources/**",

@@ -79,7 +79,7 @@ public class MemberController {
         return DefaultResponse.ok(MemberConverter.toChangeInfo(updatedMember));
     }
 
-    @Operation(summary = "나의 등급 조회 by 피우", description = "나의 등급을 조회하는 API 입니다. 로그인 사용자만 조회 가능합니다.")
+    @Operation(summary = "나의 등급 조회 API by 피우", description = "나의 등급을 조회하는 API 입니다. 로그인 사용자만 조회 가능합니다.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "등급 반환 성공"),
     })

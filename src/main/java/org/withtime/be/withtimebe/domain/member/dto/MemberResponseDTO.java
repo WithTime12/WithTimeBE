@@ -11,6 +11,7 @@ public record MemberResponseDTO() {
     @Builder
     public record FindMyGrade(
         String username,
+        String grade,
         String level,
         String description,
         Integer nextRequiredPoint

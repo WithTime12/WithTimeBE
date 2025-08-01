@@ -73,7 +73,7 @@ public class Member extends BaseEntity {
 
     @Column(name = "point", nullable = false)
     @Builder.Default
-    private Integer point;
+    private Integer point = 0;
 
     public void changeUsername(String newUsername) {
         this.username= newUsername;

@@ -39,4 +39,8 @@ public class DatePreferenceTestResult extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public void mappingMember(Member member) {
+        this.member = member;
+    }
+
 }

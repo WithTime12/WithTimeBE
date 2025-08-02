@@ -2,6 +2,7 @@ package org.withtime.be.withtimebe.domain.date.preference.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
@@ -40,6 +41,16 @@ public class DatePreferenceController {
     }
 
     @Operation(summary = "데이트 취향 테스트 API", description = "질문에 대한 답변으로 결과 생성하는 API 1, 2 둘 중 하나로 40개로 채워 배열 형태로 전송")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "테스트에 성공했습니다."),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - DATE_PREFERENCE400_1: 질문에 대한 형식이 잘못되었습니다.
+                            """
+            ),
+    })
     @PostMapping("/tests")
     public DefaultResponse<DatePreferenceResponseDTO.TestResult> test(@AuthenticatedMember Member member, @RequestBody DatePreferenceRequestDTO.Test request) {
         return DefaultResponse.ok(datePreferenceTestCommandService.test(member, request));

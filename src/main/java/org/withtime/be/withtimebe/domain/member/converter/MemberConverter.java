@@ -2,7 +2,7 @@ package org.withtime.be.withtimebe.domain.member.converter;
 
 import org.withtime.be.withtimebe.domain.member.dto.MemberResponseDTO;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
-import org.withtime.be.withtimebe.domain.member.entity.enums.Grade;
+import org.withtime.be.withtimebe.domain.member.entity.enums.GradeType;
 
 public class MemberConverter {
 
@@ -13,14 +13,14 @@ public class MemberConverter {
     }
 
     public static MemberResponseDTO.FindMyGrade toFindMyGrade(Member member) {
-        Grade grade = Grade.fromPoint(member.getPoint());
-        Integer nextRequiredPoint = Grade.nextRequiredPoint(member.getPoint());
+        GradeType gradeType = GradeType.fromPoint(member.getPoint());
+        Integer nextRequiredPoint = GradeType.nextRequiredPoint(member.getPoint());
 
         return MemberResponseDTO.FindMyGrade.builder()
             .username(member.getUsername())
-            .grade(grade.name())
-            .level(grade.getLevel())
-            .description(grade.getDescription())
+            .grade(gradeType.name())
+            .level(gradeType.getLevel())
+            .description(gradeType.getDescription())
             .nextRequiredPoint(nextRequiredPoint)
             .build();
     }

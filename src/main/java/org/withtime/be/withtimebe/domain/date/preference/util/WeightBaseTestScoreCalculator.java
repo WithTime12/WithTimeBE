@@ -49,10 +49,16 @@ public class WeightBaseTestScoreCalculator implements DatePreferenceTestScoreCal
     }
 
     private String calculatePartType(List<Integer> list, Double[] percentages, int start, int size) {
-        double score = calculateScore(list, start, size);
+        double score = Math.floor((calculateScore(list, start, size) - 1) * 1000) / 10;
         int index = start / size;
-        percentages[index] = Math.floor((score - 1) * 1000) / 10;
-        return score < 1.5 ? types[index][0].name() : types[index][1].name();
+        if (score < 50.0) {
+            percentages[index] = 100.0 - score;
+            return types[index][0].name();
+        }
+        else {
+            percentages[index] = score;
+            return types[index][1].name();
+        }
     }
 
     // return value between 1, 2

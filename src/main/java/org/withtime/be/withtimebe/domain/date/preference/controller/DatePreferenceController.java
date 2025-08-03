@@ -26,21 +26,21 @@ public class DatePreferenceController {
     private final DatePreferenceDescriptionQueryService datePreferenceDescriptionQueryService;
     private final DatePreferenceQuestionQueryService datePreferenceQuestionQueryService;
 
-    @Operation(summary = "데이트 취향 조회 API", description = "데이트 취향 종류 조회")
+    @Operation(summary = "데이트 취향 조회 API by 요시", description = "데이트 취향 종류 조회")
     @ApiResponse(responseCode = "COMMON200", description = "성공적으로 정보를 가져왔습니다.")
     @GetMapping
     public DefaultResponse<DatePreferenceResponseDTO.FindTypes> findTypes() {
         return DefaultResponse.ok(DatePreferenceConverter.toFindTypes(datePreferenceDescriptionQueryService.findTypes()));
     }
 
-    @Operation(summary = "데이트 취향 테스트 질문 조회 API", description = "데이트 취향 테스트에 사용되는 질문 조회하는 API")
+    @Operation(summary = "데이트 취향 테스트 질문 조회 API by 요시", description = "데이트 취향 테스트에 사용되는 질문 조회하는 API")
     @ApiResponse(responseCode = "COMMON200", description = "성공적으로 정보를 가져왔습니다.")
     @GetMapping("/questions")
     public DefaultResponse<DatePreferenceResponseDTO.FindQuestions> findQuestions() {
         return DefaultResponse.ok(DatePreferenceConverter.toFindQuestions(datePreferenceQuestionQueryService.findQuestions()));
     }
 
-    @Operation(summary = "데이트 취향 테스트 API", description = "질문에 대한 답변으로 결과 생성하는 API 1, 2 둘 중 하나로 40개로 채워 배열 형태로 전송")
+    @Operation(summary = "데이트 취향 테스트 API by 요시", description = "질문에 대한 답변으로 결과 생성하는 API 1, 2 둘 중 하나로 40개로 채워 배열 형태로 전송")
     @ApiResponses({
             @ApiResponse(responseCode = "COMMON200", description = "테스트에 성공했습니다."),
             @ApiResponse(

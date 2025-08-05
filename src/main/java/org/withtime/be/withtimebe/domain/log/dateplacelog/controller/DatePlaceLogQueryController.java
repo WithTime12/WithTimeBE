@@ -8,17 +8,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.withtime.be.withtimebe.domain.log.dateplacelog.converter.DatePlaceLogConverter;
 import org.withtime.be.withtimebe.domain.log.dateplacelog.dto.DatePlaceLogResponseDTO;
-import org.withtime.be.withtimebe.domain.log.dateplacelog.entity.DatePlaceLog;
+import org.withtime.be.withtimebe.domain.log.dateplacelog.model.DatePlaceLog;
 import org.withtime.be.withtimebe.domain.log.dateplacelog.service.query.DatePlaceLogQueryService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/logs/dateplaces")
+@Tag(name = "데이트 장소 통계 관련 API")
 public class DatePlaceLogQueryController {
 
 	private final DatePlaceLogQueryService datePlaceLogQueryService;

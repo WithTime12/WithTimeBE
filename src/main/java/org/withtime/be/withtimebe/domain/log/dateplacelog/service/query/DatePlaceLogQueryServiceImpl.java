@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.withtime.be.withtimebe.domain.log.dateplacelog.entity.DatePlaceLog;
+import org.withtime.be.withtimebe.domain.log.dateplacelog.model.DatePlaceLog;
 
 import lombok.RequiredArgsConstructor;
 

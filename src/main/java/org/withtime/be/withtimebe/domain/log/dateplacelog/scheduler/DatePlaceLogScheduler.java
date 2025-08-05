@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.date.repository.DatePlaceRepository;
 import org.withtime.be.withtimebe.domain.log.dateplacelog.converter.DatePlaceLogConverter;
-import org.withtime.be.withtimebe.domain.log.dateplacelog.entity.DatePlaceLog;
+import org.withtime.be.withtimebe.domain.log.dateplacelog.model.DatePlaceLog;
 import org.withtime.be.withtimebe.domain.log.dateplacelog.repository.DatePlaceLogRepository;
 
 import lombok.RequiredArgsConstructor;

@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,7 +37,15 @@ public class PlaceCategoryLogScheduler {
 	private final PlaceCategoryRepository placeCategoryRepository;
 
 	@Scheduled(cron = "${scheduler.logs.place-category.sync-cron}") // 매 5분마다
+	@CacheEvict(
+		value = "place-category-log",
+		key = "'weekly:' + T(java.time.LocalDate).now().getYear() + '-' + T(java.time.temporal.WeekFields).ISO.weekOfYear().getFrom(T(java.time.LocalDate).now())",
+		cacheManager = "redisCacheManager",
+		beforeInvocation = false
+	)
 	public void syncPlaceCategoryLogsToDB() {
+
+		log.info("[PlaceCategoryLogScheduler] 동기화 스케쥴러 동작");
 
 		// 현재 날짜 및 레디스 키 생성
 		LocalDate now = LocalDate.from(LocalDateTime.now().minusMinutes(1));

@@ -4,6 +4,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.log.placecategorylog.model.PlaceCategoryLog;
@@ -19,6 +20,11 @@ public class PlaceCategoryLogQueryServiceImpl implements PlaceCategoryLogQuerySe
 	private final PlaceCategoryLogRepository placeCategoryLogRepository;
 
 	@Override
+	@Cacheable(
+		value = "place-category-log",
+		key = "'weekly:' + T(java.time.LocalDate).now().getYear() + '-' + T(java.time.temporal.WeekFields).ISO.weekOfYear().getFrom(T(java.time.LocalDate).now())",
+		cacheManager = "redisCacheManager"
+	)
 	public List<PlaceCategoryLog> findWeeklyPlaceCategoryLogList() {
 
 		LocalDate now = LocalDate.now();

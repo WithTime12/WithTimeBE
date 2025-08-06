@@ -46,6 +46,11 @@ public class MemberCommandServiceImpl implements MemberCommandService {
         return member;
     }
 
+    @Override
+    public void deleteMember(Long memberId) {
+        memberRepository.deleteById(memberId);
+    }
+
     public void validateChangePassword(Member member, String password) throws ServerApplicationException {
         String memberPassword = member.getPassword();
         if (memberPassword == null) {

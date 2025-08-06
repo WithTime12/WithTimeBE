@@ -7,4 +7,5 @@ public interface MemberCommandService {
     void changePassword(Member member, MemberRequestDTO.ChangePassword request);
     void changePassword(String email, String password);
     Member changeInfo(Long memberId, MemberRequestDTO.ChangeInfo request);
+    void deleteMember(Long memberId);
 }

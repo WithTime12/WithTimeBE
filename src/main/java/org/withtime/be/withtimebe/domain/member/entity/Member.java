@@ -2,6 +2,8 @@ package org.withtime.be.withtimebe.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.withtime.be.withtimebe.domain.member.entity.enums.Gender;
 import org.withtime.be.withtimebe.domain.member.entity.enums.Role;
 import org.withtime.be.withtimebe.domain.member.entity.enums.UserRank;
@@ -16,6 +18,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "member")
+@SQLDelete(sql = "UPDATE member SET deleted_at = NOW() WHERE member_id = ?")
+@SQLRestriction(value = "deleted_at IS NULL")
 public class Member extends BaseEntity {
 
     @Id

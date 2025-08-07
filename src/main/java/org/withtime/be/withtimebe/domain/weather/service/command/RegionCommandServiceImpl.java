@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.withtime.be.withtimebe.domain.member.entity.Member;
+import org.withtime.be.withtimebe.domain.member.repository.MemberRepository;
 import org.withtime.be.withtimebe.domain.weather.converter.RegionConverter;
 import org.withtime.be.withtimebe.domain.weather.dto.request.RegionReqDTO;
 import org.withtime.be.withtimebe.domain.weather.dto.response.RegionResDTO;
@@ -12,7 +15,11 @@ import org.withtime.be.withtimebe.domain.weather.entity.Region;
 import org.withtime.be.withtimebe.domain.weather.entity.RegionCode;
 import org.withtime.be.withtimebe.domain.weather.repository.RegionCodeRepository;
 import org.withtime.be.withtimebe.domain.weather.repository.RegionRepository;
+import org.withtime.be.withtimebe.global.error.code.MemberErrorCode;
+import org.withtime.be.withtimebe.global.error.code.RegionErrorCode;
 import org.withtime.be.withtimebe.global.error.code.WeatherErrorCode;
+import org.withtime.be.withtimebe.global.error.exception.MemberException;
+import org.withtime.be.withtimebe.global.error.exception.RegionException;
 import org.withtime.be.withtimebe.global.error.exception.WeatherException;
 
 import java.math.BigDecimal;
@@ -29,6 +36,7 @@ public class RegionCommandServiceImpl implements RegionCommandService {
 
     private final RegionRepository regionRepository;
     private final RegionCodeRepository regionCodeRepository;
+    private final MemberRepository memberRepository;
 
     @Value("${weather.api.key}")
     private String apiKey;
@@ -126,6 +134,21 @@ public class RegionCommandServiceImpl implements RegionCommandService {
         regionRepository.delete(region);
 
         return RegionConverter.toDeleteRegion(region);
+    }
+
+    @Override
+    @Transactional
+    public RegionResDTO.UserRegionWithMessage updateUserRegion(RegionReqDTO.UpdateUserRegion reqDTO, Member member) {
+        Member currentMember = memberRepository.findByEmail(member.getEmail())
+                .orElseThrow(() -> new MemberException(MemberErrorCode.NOT_FOUND));
+
+        Region region = regionRepository.findByIdWithRegionCode(reqDTO.regionId())
+                .orElseThrow(() -> new RegionException(RegionErrorCode.REGION_NOT_FOUND));
+
+        currentMember.updateRegion(region);
+
+        String message = "지역이 성공적으로 변경되었습니다.";
+        return RegionConverter.toUserRegionWithMessage(region, message);
     }
 
     // ==== 내부 유틸리티 메서드들 ====

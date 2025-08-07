@@ -7,6 +7,7 @@ import org.hibernate.annotations.SQLRestriction;
 import org.withtime.be.withtimebe.domain.member.entity.enums.Gender;
 import org.withtime.be.withtimebe.domain.member.entity.enums.Role;
 import org.withtime.be.withtimebe.domain.member.entity.enums.UserRank;
+import org.withtime.be.withtimebe.domain.weather.entity.Region;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 import java.time.LocalDate;
@@ -75,6 +76,10 @@ public class Member extends BaseEntity {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    private Region region;
+
     public void changeUsername(String newUsername) {
         this.username= newUsername;
     }
@@ -91,5 +96,9 @@ public class Member extends BaseEntity {
         this.pushAlarm = pushAlarm;
         this.emailAlarm = emailAlarm;
         this.smsAlarm = smsAlarm;
+    }
+
+    public void updateRegion(Region region) {
+        this.region = region;
     }
 }

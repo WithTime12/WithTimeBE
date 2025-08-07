@@ -11,10 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.weather.dto.request.RegionReqDTO;
 import org.withtime.be.withtimebe.domain.weather.dto.response.RegionResDTO;
 import org.withtime.be.withtimebe.domain.weather.service.command.RegionCommandService;
 import org.withtime.be.withtimebe.domain.weather.service.query.RegionQueryService;
+import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember;
 
 @Slf4j
 @RestController
@@ -187,6 +189,21 @@ public class RegionController {
     public DefaultResponse<RegionResDTO.RegionSearchResult> searchRegions(
             @RequestParam String keyword) {
         RegionResDTO.RegionSearchResult response = regionQueryService.searchRegions(keyword);
+        return DefaultResponse.ok(response);
+    }
+
+    @GetMapping("/user/current")
+    @Operation(summary = "현재 사용자 지역 조회 API by 지미",
+            description = "로그인한 사용자의 현재 지역 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "404", description = "사용자 또는 지역을 찾을 수 없습니다.")
+    })
+    public DefaultResponse<RegionResDTO.UserRegion> getCurrentUserRegion(@AuthenticatedMember Member member) {
+        log.info("현재 사용자 지역 조회 API 호출");
+
+        RegionResDTO.UserRegion response = regionQueryService.getCurrentUserRegion(member);
         return DefaultResponse.ok(response);
     }
 

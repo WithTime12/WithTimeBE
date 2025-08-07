@@ -168,4 +168,13 @@ public class RegionConverter {
                 .regionCode(toRegionCodeInfo(region.getRegionCode()))
                 .build();
     }
+
+    public static RegionResDTO.UserRegionWithMessage toUserRegionWithMessage(Region region, String message) {
+        return RegionResDTO.UserRegionWithMessage.builder()
+                .regionId(region.getId())
+                .name(region.getName())
+                .regionCode(toRegionCodeInfo(region.getRegionCode()))
+                .message(message)
+                .build();
+    }
 }

@@ -115,4 +115,13 @@ public class RegionResDTO {
             RegionCodeInfo regionCode
     ) {
     }
+
+    @Builder
+    public record UserRegionWithMessage(
+            Long regionId,
+            String name,
+            RegionCodeInfo regionCode,
+            String message
+    ) {
+    }
 }

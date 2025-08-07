@@ -192,7 +192,7 @@ public class RegionController {
         return DefaultResponse.ok(response);
     }
 
-    @GetMapping("/user/current")
+    @GetMapping("/users/current")
     @Operation(summary = "현재 사용자 지역 조회 API by 지미",
             description = "로그인한 사용자의 현재 지역 정보를 조회합니다.")
     @ApiResponses(value = {
@@ -204,6 +204,28 @@ public class RegionController {
         log.info("현재 사용자 지역 조회 API 호출");
 
         RegionResDTO.UserRegion response = regionQueryService.getCurrentUserRegion(member);
+        return DefaultResponse.ok(response);
+    }
+
+    @PatchMapping("/users")
+    @Operation(summary = "사용자 지역 변경 API by 지미",
+            description = "로그인한 사용자의 지역을 설정/변경합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "변경 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터"),
+            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "404",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - MEMBER404_0: 사용자를 찾을 수 없습니다.
+                            - WEATHER404_0: 지역을 찾을 수 없습니다.
+                            """)
+    })
+    public DefaultResponse<RegionResDTO.UserRegionWithMessage> updateUserRegion(
+            @Valid @RequestBody RegionReqDTO.UpdateUserRegion reqDTO, @AuthenticatedMember Member member) {
+        log.info("사용자 지역 변경 API 호출: regionId={}", reqDTO.regionId());
+
+        RegionResDTO.UserRegionWithMessage response = regionCommandService.updateUserRegion(reqDTO, member);
         return DefaultResponse.ok(response);
     }
 

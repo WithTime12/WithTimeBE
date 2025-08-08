@@ -5,6 +5,8 @@ import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +30,7 @@ public class Grade extends BaseEntity {
 	@Column(name = "grade_id")
 	private Long id;
 
+	@Enumerated(EnumType.STRING)g
 	@Column(nullable = false, unique = true)
 	private GradeType gradeType;
 

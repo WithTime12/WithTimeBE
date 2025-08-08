@@ -30,7 +30,7 @@ public class Grade extends BaseEntity {
 	@Column(name = "grade_id")
 	private Long id;
 
-	@Enumerated(EnumType.STRING)g
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false, unique = true)
 	private GradeType gradeType;
 

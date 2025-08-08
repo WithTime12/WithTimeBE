@@ -7,13 +7,4 @@ public record MemberResponseDTO() {
     public record ChangeInfo(
             String username
     ) {}
-
-    @Builder
-    public record FindMyGrade(
-        String username,
-        String grade,
-        String level,
-        String description,
-        Integer nextRequiredPoint
-    ) {}
 }

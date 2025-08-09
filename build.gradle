@@ -73,6 +73,9 @@ dependencies {
 
     // firebase
     implementation 'com.google.firebase:firebase-admin:9.1.0'
+
+    // jackson LocalDateTime 직렬화
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 tasks.named('test') {

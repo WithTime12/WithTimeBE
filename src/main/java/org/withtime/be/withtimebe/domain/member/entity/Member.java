@@ -76,6 +76,10 @@ public class Member extends BaseEntity {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Column(name = "point", nullable = false)
+    @Builder.Default
+    private Integer point = 0;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;
@@ -96,6 +100,10 @@ public class Member extends BaseEntity {
         this.pushAlarm = pushAlarm;
         this.emailAlarm = emailAlarm;
         this.smsAlarm = smsAlarm;
+    }
+
+    public void addPoint(Integer point) {
+        this.point += point;
     }
 
     public void updateRegion(Region region) {

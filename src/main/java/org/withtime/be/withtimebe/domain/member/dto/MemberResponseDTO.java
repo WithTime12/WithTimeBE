@@ -6,7 +6,5 @@ public record MemberResponseDTO() {
     @Builder
     public record ChangeInfo(
             String username
-    ) {
-
-    }
+    ) {}
 }

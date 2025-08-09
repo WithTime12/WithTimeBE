@@ -47,6 +47,12 @@ public class MemberCommandServiceImpl implements MemberCommandService {
     }
 
     @Override
+    public void addPoint(Long memberId, Integer point) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() ->
+            new MemberException(MemberErrorCode.NOT_FOUND));
+        member.addPoint(point);
+    }
+  
     public void deleteMember(Long memberId) {
         memberRepository.deleteById(memberId);
     }

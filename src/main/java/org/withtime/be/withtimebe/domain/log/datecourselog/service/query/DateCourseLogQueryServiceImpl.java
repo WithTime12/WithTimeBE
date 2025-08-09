@@ -1,6 +1,7 @@
 package org.withtime.be.withtimebe.domain.log.datecourselog.service.query;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +30,10 @@ public class DateCourseLogQueryServiceImpl implements DateCourseLogQueryService 
 		LocalDate oneMonthAgo = now.minusDays(30);
 
 		// 최근 1개월동안 생성된 데이트 코스
-		Long dateCourseCount = dateCourseRepository.countByCreatedAtBetween(oneMonthAgo, now);
+		Long dateCourseCount = dateCourseRepository.countByCreatedAtBetween(
+			oneMonthAgo.atStartOfDay(),
+			now.plusDays(1).atStartOfDay()
+		);
 
 		// 전체 멤버 수
 		Long memberCount = memberRepository.count();

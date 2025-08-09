@@ -72,7 +72,7 @@ public class WeatherController {
 
     @GetMapping("/{regionId}/weekly")
     @Operation(
-            summary = "지역별 주간 날씨 기반 추천 조회",
+            summary = "지역별 주간 날씨 기반 추천 조회 by 지미",
             description = """
         특정 지역의 7일치(오늘 기준) 날씨 데이터를 바탕으로 한 데이트 추천 정보를 제공합니다.
 
@@ -100,7 +100,7 @@ public class WeatherController {
 
     @GetMapping("/{regionId}/precipitation")
     @Operation(
-            summary = "지역별 7일간 강수확률 조회",
+            summary = "지역별 7일간 강수확률 조회 by 지미",
             description = """
     특정 지역의 7일간 강수확률 정보만 간단하게 조회합니다.
     

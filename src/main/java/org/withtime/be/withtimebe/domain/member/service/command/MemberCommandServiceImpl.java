@@ -52,6 +52,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             new MemberException(MemberErrorCode.NOT_FOUND));
         member.addPoint(point);
     }
+  
+    public void deleteMember(Long memberId) {
+        memberRepository.deleteById(memberId);
+    }
 
     public void validateChangePassword(Member member, String password) throws ServerApplicationException {
         String memberPassword = member.getPassword();

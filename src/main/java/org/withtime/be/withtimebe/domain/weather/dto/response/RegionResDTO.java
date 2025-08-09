@@ -103,4 +103,25 @@ public class RegionResDTO {
             String message
     ) {
     }
+
+    @Builder
+    public record UserRegion(
+            Long regionId,
+            String name,
+            BigDecimal latitude,
+            BigDecimal longitude,
+            BigDecimal gridX,
+            BigDecimal gridY,
+            RegionCodeInfo regionCode
+    ) {
+    }
+
+    @Builder
+    public record UserRegionWithMessage(
+            Long regionId,
+            String name,
+            RegionCodeInfo regionCode,
+            String message
+    ) {
+    }
 }

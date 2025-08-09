@@ -56,4 +56,10 @@ public class RegionReqDTO {
             String regionCodeName
     ) {
     }
+
+    public record UpdateUserRegion(
+            @NotNull(message = "지역 ID는 필수 입력값입니다.")
+            Long regionId
+    ) {
+    }
 }

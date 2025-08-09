@@ -13,11 +13,13 @@ import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/logs/datecourses")
+@Tag(name = "데이트 코스 통계 관련 API")
 public class DateCourseLogQueryController {
 
 	private final DateCourseLogQueryService dateCourseLogQueryService;

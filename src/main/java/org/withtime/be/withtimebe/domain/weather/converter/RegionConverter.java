@@ -156,4 +156,25 @@ public class RegionConverter {
                 .message("지역이 성공적으로 삭제되었습니다.")
                 .build();
     }
+
+    public static RegionResDTO.UserRegion toUserRegion(Region region) {
+        return RegionResDTO.UserRegion.builder()
+                .regionId(region.getId())
+                .name(region.getName())
+                .latitude(region.getLatitude())
+                .longitude(region.getLongitude())
+                .gridX(region.getGridX())
+                .gridY(region.getGridY())
+                .regionCode(toRegionCodeInfo(region.getRegionCode()))
+                .build();
+    }
+
+    public static RegionResDTO.UserRegionWithMessage toUserRegionWithMessage(Region region, String message) {
+        return RegionResDTO.UserRegionWithMessage.builder()
+                .regionId(region.getId())
+                .name(region.getName())
+                .regionCode(toRegionCodeInfo(region.getRegionCode()))
+                .message(message)
+                .build();
+    }
 }

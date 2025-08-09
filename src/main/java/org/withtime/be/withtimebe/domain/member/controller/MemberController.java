@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -77,5 +78,13 @@ public class MemberController {
                                                          @RequestBody MemberRequestDTO.ChangeInfo request) {
         Member updatedMember = memberCommandService.changeInfo(member.getId(), request);
         return DefaultResponse.ok(MemberConverter.toChangeInfo(updatedMember));
+    }
+
+    @Operation(summary = "회원 탈퇴하기 API", description = "로그인된 토큰을 이용하여 회원 탈퇴하는 API")
+    @ApiResponse(responseCode = "204", description = "회원 탈퇴 성공 (soft delete)")
+    @DeleteMapping
+    public DefaultResponse<Void> deleteMember(@AuthenticatedMember Member member) {
+        memberCommandService.deleteMember(member.getId());
+        return DefaultResponse.noContent();
     }
 }

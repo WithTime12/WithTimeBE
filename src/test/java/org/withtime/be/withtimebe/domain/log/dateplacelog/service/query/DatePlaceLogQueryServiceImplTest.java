@@ -1,7 +1,6 @@
 package org.withtime.be.withtimebe.domain.log.dateplacelog.service.query;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
@@ -19,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.withtime.be.withtimebe.domain.log.dateplacelog.entity.DatePlaceLog;
+import org.withtime.be.withtimebe.domain.log.dateplacelog.model.DatePlaceLog;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("[DatePlaceLogQueryService] 단위 테스트")

@@ -29,6 +29,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
 import org.withtime.be.withtimebe.domain.member.service.query.MemberQueryService;
+import org.withtime.be.withtimebe.global.data.CorsConfigData;
 import org.withtime.be.withtimebe.global.security.filter.JsonLoginFilter;
 import org.withtime.be.withtimebe.global.security.filter.JwtFilter;
 import org.withtime.be.withtimebe.global.security.handler.CustomAccessDeniedHandler;
@@ -47,6 +48,7 @@ public class SecurityConfig {
     private final MemberQueryService memberQueryService;
     private final JwtUtil jwtUtil;
     private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
+    private final CorsConfigData corsConfigData;
 
     private String[] allowUrl = {
             API_PREFIX + "/auth/**",
@@ -145,9 +147,9 @@ public class SecurityConfig {
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOriginPattern("http://localhost:5173"); // 실배포 주소 나중에 추가
+        corsConfigData.getUrls().forEach(configuration::addAllowedOrigin); // 실배포 주소 나중에 추가
+        corsConfigData.getMethods().forEach(configuration::addAllowedMethod);
         configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

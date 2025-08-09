@@ -36,7 +36,7 @@ public class GradeController {
                           """
 		)
 	})
-	@GetMapping("/grade")
+	@GetMapping
 	public DefaultResponse<GradeResponseDTO.FindMyGrade> findMyGrade(@AuthenticatedMember Member member) {
 		GradeResponseDTO.FindMyGrade response = gradeQueryService.findMyGrade(member);
 		return DefaultResponse.ok(response);

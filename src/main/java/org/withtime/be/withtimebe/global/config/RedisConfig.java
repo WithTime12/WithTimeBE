@@ -29,7 +29,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 public class RedisConfig {
 
     private final RedisConfigData redisConfigData;
-    private final ObjectMapper objectMapper;
 
     @Bean
     RedisConnectionFactory redisConnectionFactory() {
@@ -49,10 +48,23 @@ public class RedisConfig {
     public RedisCacheManager redisCacheManager() {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
             .serializeKeysWith(fromSerializer(new StringRedisSerializer()))
-            .serializeValuesWith(fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper)))
+            .serializeValuesWith(fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper())))
             .entryTtl(Duration.ofDays(1L));
 
         return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory())
             .cacheDefaults(redisCacheConfiguration).build();
+    }
+
+    private ObjectMapper objectMapper() {
+
+        PolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
+            .allowIfSubType(Object.class)
+            .build();
+
+        return new ObjectMapper()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+            .registerModule(new JavaTimeModule())   // LocalDateTime 지원 모듈 추가
+            .activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.NON_FINAL);  // 클래스 정보를 포함하여 직렬/역직렬화 하도록 설정
     }
 }

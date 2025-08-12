@@ -20,10 +20,10 @@ public class WeightBaseTestScoreCalculator implements DatePreferenceTestScoreCal
     };
 
     private static final double[] weights = {
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            1, 1, 1, 1, 1.1, 1, 1.1, 1, 1.1, 1,
+            1, 1.1, 1.1, 1, 1, 1, 1.1, 1, 1, 1,
+            1.1, 1, 1, 1, 1.1, 1, 1, 1, 1.1, 1,
+            1.1, 1, 1, 1.1, 1, 1, 1, 1, 1.1, 1
     };
 
     @Override

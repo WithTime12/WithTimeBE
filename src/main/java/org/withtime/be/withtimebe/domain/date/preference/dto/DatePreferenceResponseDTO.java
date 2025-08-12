@@ -83,4 +83,16 @@ public record DatePreferenceResponseDTO() {
 
     }
 
+    @Builder
+    public record FindRelationType(
+            PreferenceType bestType,
+            String bestReason,
+            PreferenceType worstType,
+            String worstReason,
+            TypeDescription bestTypeDescription,
+            TypeDescription worstTypeDescription
+    ) {
+
+    }
+
 }

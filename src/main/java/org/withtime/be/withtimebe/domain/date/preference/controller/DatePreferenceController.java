@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import org.withtime.be.withtimebe.domain.date.preference.converter.DatePreferenceConverter;
 import org.withtime.be.withtimebe.domain.date.preference.dto.DatePreferenceRequestDTO;
 import org.withtime.be.withtimebe.domain.date.preference.dto.DatePreferenceResponseDTO;
+import org.withtime.be.withtimebe.domain.date.preference.entity.enums.PreferenceType;
 import org.withtime.be.withtimebe.domain.date.preference.service.command.DatePreferenceTestCommandService;
 import org.withtime.be.withtimebe.domain.date.preference.service.query.DatePreferenceDescriptionQueryService;
 import org.withtime.be.withtimebe.domain.date.preference.service.query.DatePreferenceQuestionQueryService;
+import org.withtime.be.withtimebe.domain.date.preference.service.query.DatePreferenceTypeRelationQueryService;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember;
 
@@ -23,6 +25,7 @@ import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember
 public class DatePreferenceController {
 
     private final DatePreferenceTestCommandService datePreferenceTestCommandService;
+    private final DatePreferenceTypeRelationQueryService datePreferenceTypeRelationQueryService;
     private final DatePreferenceDescriptionQueryService datePreferenceDescriptionQueryService;
     private final DatePreferenceQuestionQueryService datePreferenceQuestionQueryService;
 
@@ -54,6 +57,23 @@ public class DatePreferenceController {
     @PostMapping("/tests")
     public DefaultResponse<DatePreferenceResponseDTO.TestResult> test(@AuthenticatedMember Member member, @RequestBody DatePreferenceRequestDTO.Test request) {
         return DefaultResponse.ok(datePreferenceTestCommandService.test(member, request));
+    }
+
+    @Operation(summary = "잘 맞는 유형, 안 맞는 유형 검색 API by 요시", description = "잘 맞는 유형과 안 맞는 유형을 검색하는 API")
+    @ApiResponses({
+            @ApiResponse(responseCode = "COMMON200", description = "테스트에 성공했습니다."),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - DATE_PREFERENCE404_1: 설명을 찾지 못했습니다.
+                            - DATE_PREFERENCE404_2: 잘 맞는 혹은 안 맞는 유형을 찾지 못했습니다.
+                            """
+            ),
+    })
+    @GetMapping("/relations")
+    public DefaultResponse<DatePreferenceResponseDTO.FindRelationType> findRelationType(@RequestParam("type") PreferenceType type) {
+        return DefaultResponse.ok(datePreferenceTypeRelationQueryService.findTypeRelations(type));
     }
 
 }

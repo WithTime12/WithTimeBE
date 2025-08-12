@@ -9,6 +9,8 @@ import org.withtime.be.withtimebe.domain.weather.data.service.WeatherRecommendat
 import org.withtime.be.withtimebe.domain.weather.data.utils.WeatherDataHelper;
 import org.withtime.be.withtimebe.domain.weather.dto.request.WeatherSyncReqDTO;
 import org.withtime.be.withtimebe.domain.weather.dto.response.WeatherSyncResDTO;
+import org.withtime.be.withtimebe.global.error.code.WeatherErrorCode;
+import org.withtime.be.withtimebe.global.error.exception.WeatherException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -109,7 +111,7 @@ public class WeatherTriggerServiceImpl implements WeatherTriggerService{
                         .build();
             }
 
-            default -> throw new IllegalArgumentException("지원하지 않는 작업 타입: " + request.jobType());
+            default -> throw new WeatherException(WeatherErrorCode.UNSUPPORTED_TASK_TYPE);
         };
     }
 }

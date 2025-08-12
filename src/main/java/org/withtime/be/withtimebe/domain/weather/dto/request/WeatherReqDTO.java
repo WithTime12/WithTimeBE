@@ -2,6 +2,8 @@ package org.withtime.be.withtimebe.domain.weather.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import org.withtime.be.withtimebe.global.error.code.WeatherErrorCode;
+import org.withtime.be.withtimebe.global.error.exception.WeatherException;
 
 import java.time.LocalDate;
 
@@ -26,8 +28,7 @@ public class WeatherReqDTO {
                 LocalDate maxDate = now.plusDays(7);
 
                 if (startDate.isBefore(minDate) || startDate.isAfter(maxDate)) {
-                    throw new IllegalArgumentException(
-                            "조회 가능한 시작 날짜 범위를 벗어났습니다. (7일 전 ~ 7일 후)");
+                    throw new WeatherException(WeatherErrorCode.INVALID_DATE_RANGE);
                 }
             }
 
@@ -57,8 +58,7 @@ public class WeatherReqDTO {
                 LocalDate maxDate = now.plusDays(10);
 
                 if (startDate.isBefore(minDate) || startDate.isAfter(maxDate)) {
-                    throw new IllegalArgumentException(
-                            "조회 가능한 시작 날짜 범위를 벗어났습니다. (7일 전 ~ 10일 후)");
+                    throw new WeatherException(WeatherErrorCode.INVALID_DATE_RANGE);
                 }
             }
 

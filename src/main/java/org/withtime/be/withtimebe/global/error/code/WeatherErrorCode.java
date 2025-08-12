@@ -21,10 +21,11 @@ public enum WeatherErrorCode implements BaseErrorCode {
     REGION_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "WEATHER400_0", "이미 존재하는 지역입니다."),
     WEATHER_TEMPLATE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "WEATHER400_1", "이미 존재하는 날씨 템플릿입니다."),
     INVALID_COORDINATES(HttpStatus.BAD_REQUEST, "WEATHER400_2", "올바르지 않은 좌표입니다."),
-    INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, "WEATHER400_3", "올바르지 않은 날짜 범위입니다."),
+    INVALID_DATE_RANGE(HttpStatus.BAD_REQUEST, "WEATHER400_3", "올바르지 않은 날짜 범위입니다. 조회 가능한 시작 날짜 범위를 벗어났습니다. (7일 전 ~ 7일 후)"),
     INVALID_WEATHER_DATA(HttpStatus.BAD_REQUEST, "WEATHER400_4", "올바르지 않은 날씨 데이터입니다."),
     INVALID_REGION_CODE(HttpStatus.BAD_REQUEST, "WEATHER400_5", "올바르지 않은 지역코드입니다."),
     INVALID_ENUM_VALUE(HttpStatus.BAD_REQUEST, "WEATHER400_6", "올바르지 않은 열거형 값입니다."),
+    UNSUPPORTED_TASK_TYPE(HttpStatus.BAD_REQUEST, "WEATHER400_7", "지원하지 않는 작업 타입입니다."),
 
     // ==== 권한/인증 에러 (403) ====
     ACCESS_DENIED(HttpStatus.FORBIDDEN, "WEATHER403_0", "접근 권한이 없습니다."),

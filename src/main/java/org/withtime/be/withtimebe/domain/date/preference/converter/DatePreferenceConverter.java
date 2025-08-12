@@ -1,10 +1,7 @@
 package org.withtime.be.withtimebe.domain.date.preference.converter;
 
 import org.withtime.be.withtimebe.domain.date.preference.dto.DatePreferenceResponseDTO;
-import org.withtime.be.withtimebe.domain.date.preference.entity.DatePreferenceDescription;
-import org.withtime.be.withtimebe.domain.date.preference.entity.DatePreferencePartDescription;
-import org.withtime.be.withtimebe.domain.date.preference.entity.DatePreferenceQuestion;
-import org.withtime.be.withtimebe.domain.date.preference.entity.DatePreferenceTestResult;
+import org.withtime.be.withtimebe.domain.date.preference.entity.*;
 import org.withtime.be.withtimebe.domain.date.preference.entity.enums.PreferenceType;
 
 import java.util.List;
@@ -90,6 +87,17 @@ public class DatePreferenceConverter {
                 .type(description.getType())
                 .typeEng(description.getTypeEng())
                 .description(description.getDescription())
+                .build();
+    }
+
+    public static DatePreferenceResponseDTO.FindRelationType toFindRelationType(DatePreferenceTypeRelation best, DatePreferenceTypeRelation worst, DatePreferenceDescription bestDescription, DatePreferenceDescription worstDescription) {
+        return DatePreferenceResponseDTO.FindRelationType.builder()
+                .bestType(best.getType())
+                .bestReason(best.getReason())
+                .worstType(worst.getType())
+                .worstReason(worst.getReason())
+                .bestTypeDescription(toTypeDescription(bestDescription))
+                .worstTypeDescription(toTypeDescription(worstDescription))
                 .build();
     }
 }

@@ -10,4 +10,19 @@ public class MemberConverter {
                 .username(member.getUsername())
                 .build();
     }
+
+    public static MemberResponseDTO.MemberInfo toMemberInfo(Member member) {
+        return MemberResponseDTO.MemberInfo.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .username(member.getUsername())
+                .userRank(member.getUserRank())
+                .phoneNumber(member.getPhoneNumber())
+                .isAuthPayment(member.getIsAutoPayment())
+                .gender(member.getGender())
+                .birth(member.getBirth())
+                .role(member.getRole())
+                .point(member.getPoint())
+                .build();
+    }
 }

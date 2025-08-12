@@ -7,11 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.withtime.be.withtimebe.domain.member.converter.MemberConverter;
 import org.withtime.be.withtimebe.domain.member.dto.MemberRequestDTO;
 import org.withtime.be.withtimebe.domain.member.dto.MemberResponseDTO;
@@ -86,5 +82,12 @@ public class MemberController {
     public DefaultResponse<Void> deleteMember(@AuthenticatedMember Member member) {
         memberCommandService.deleteMember(member.getId());
         return DefaultResponse.noContent();
+    }
+
+    @Operation(summary = "사용자 정보 가져오는 API", description = "로그인된 사용자 정보 가져오는 API")
+    @ApiResponse(responseCode = "200", description = "사용자 정보를 가져왔습니다.")
+    @GetMapping("/infos")
+    public DefaultResponse<MemberResponseDTO.MemberInfo> getMemberInfo(@AuthenticatedMember Member member) {
+        return DefaultResponse.ok(MemberConverter.toMemberInfo(member));
     }
 }

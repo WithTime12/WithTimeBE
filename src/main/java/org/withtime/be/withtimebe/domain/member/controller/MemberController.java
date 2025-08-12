@@ -25,7 +25,7 @@ public class MemberController {
     private final MemberCommandService memberCommandService;
     private final MemberQueryService memberQueryService;
 
-    @Operation(summary = "비밀번호 변경 API", description = "현재 비밀번호가 맞으면 새로운 비밀번호로 변경")
+    @Operation(summary = "비밀번호 변경 API by 요시", description = "현재 비밀번호가 맞으면 새로운 비밀번호로 변경")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "비밀번호 변경 성공"),
             @ApiResponse(
@@ -58,7 +58,7 @@ public class MemberController {
         return DefaultResponse.noContent();
     }
 
-    @Operation(summary = "사용자 정보 변경 API", description = "사용자 정보 변경, 사용자를 쿠키로 인식하여 정보를 변경")
+    @Operation(summary = "사용자 정보 변경 API by 요시", description = "사용자 정보 변경, 사용자를 쿠키로 인식하여 정보를 변경")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "정보 변경 성공"),
             @ApiResponse(
@@ -76,7 +76,7 @@ public class MemberController {
         return DefaultResponse.ok(MemberConverter.toChangeInfo(updatedMember));
     }
 
-    @Operation(summary = "회원 탈퇴하기 API", description = "로그인된 토큰을 이용하여 회원 탈퇴하는 API")
+    @Operation(summary = "회원 탈퇴하기 API by 요시", description = "로그인된 토큰을 이용하여 회원 탈퇴하는 API")
     @ApiResponse(responseCode = "204", description = "회원 탈퇴 성공 (soft delete)")
     @DeleteMapping
     public DefaultResponse<Void> deleteMember(@AuthenticatedMember Member member) {
@@ -84,7 +84,7 @@ public class MemberController {
         return DefaultResponse.noContent();
     }
 
-    @Operation(summary = "사용자 정보 가져오는 API", description = "로그인된 사용자 정보 가져오는 API")
+    @Operation(summary = "사용자 정보 가져오는 API by 요시", description = "로그인된 사용자 정보 가져오는 API")
     @ApiResponse(responseCode = "200", description = "사용자 정보를 가져왔습니다.")
     @GetMapping("/infos")
     public DefaultResponse<MemberResponseDTO.MemberInfo> getMemberInfo(@AuthenticatedMember Member member) {

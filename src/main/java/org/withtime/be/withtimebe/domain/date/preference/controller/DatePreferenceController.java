@@ -12,6 +12,7 @@ import org.withtime.be.withtimebe.domain.date.preference.dto.DatePreferenceReque
 import org.withtime.be.withtimebe.domain.date.preference.dto.DatePreferenceResponseDTO;
 import org.withtime.be.withtimebe.domain.date.preference.entity.enums.PreferenceType;
 import org.withtime.be.withtimebe.domain.date.preference.service.command.DatePreferenceTestCommandService;
+import org.withtime.be.withtimebe.domain.date.preference.service.command.DatePreferenceTestResultCommandService;
 import org.withtime.be.withtimebe.domain.date.preference.service.query.DatePreferenceDescriptionQueryService;
 import org.withtime.be.withtimebe.domain.date.preference.service.query.DatePreferenceQuestionQueryService;
 import org.withtime.be.withtimebe.domain.date.preference.service.query.DatePreferenceTypeRelationQueryService;
@@ -25,6 +26,7 @@ import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember
 public class DatePreferenceController {
 
     private final DatePreferenceTestCommandService datePreferenceTestCommandService;
+    private final DatePreferenceTestResultCommandService datePreferenceTestResultCommandService;
     private final DatePreferenceTypeRelationQueryService datePreferenceTypeRelationQueryService;
     private final DatePreferenceDescriptionQueryService datePreferenceDescriptionQueryService;
     private final DatePreferenceQuestionQueryService datePreferenceQuestionQueryService;
@@ -74,6 +76,13 @@ public class DatePreferenceController {
     @GetMapping("/relations")
     public DefaultResponse<DatePreferenceResponseDTO.FindRelationType> findRelationType(@RequestParam("type") PreferenceType type) {
         return DefaultResponse.ok(datePreferenceTypeRelationQueryService.findTypeRelations(type));
+    }
+
+    @Operation(summary = "유형 데이터 초기화 API by 요시", description = "로그인된 사용자의 취향 데이터를 초기화하는 API")
+    @DeleteMapping
+    public DefaultResponse<Void> resetDatePreferenceData(@AuthenticatedMember Member member) {
+        datePreferenceTestResultCommandService.resetDatePreferenceData(member);
+        return DefaultResponse.noContent();
     }
 
 }

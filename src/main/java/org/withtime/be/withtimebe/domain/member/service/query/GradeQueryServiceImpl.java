@@ -1,5 +1,8 @@
 package org.withtime.be.withtimebe.domain.member.service.query;
 
+import java.util.Comparator;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.ErrorResponseException;
 import org.withtime.be.withtimebe.domain.member.converter.GradeConverter;
@@ -23,10 +26,21 @@ public class GradeQueryServiceImpl implements GradeQueryService {
 
 		int currentPoint = member.getPoint();
 
-		Grade currentGrade = gradeRepository.findCurrentGrade(currentPoint)
+		List<Grade> gradeList = gradeRepository.findAll();
+
+		// 필요 포인트 기준 오름차순 정렬
+		gradeList.sort(Comparator.comparingInt(Grade::getRequiredPoint));
+
+		// 현재 Grade
+		Grade currentGrade = gradeList.stream()
+			.filter(g -> g.getRequiredPoint() <= currentPoint)
+			.max(Comparator.comparingInt(Grade::getRequiredPoint))
 			.orElseThrow(() -> new GradeException(GradeErrorCode.GRADE_NOT_FOUND));
 
-		Grade nextGrade = gradeRepository.findNextGrade(currentPoint)
+		// 다음 Grade
+		Grade nextGrade = gradeList.stream()
+			.filter(g -> g.getRequiredPoint() > currentPoint)
+			.findFirst()
 			.orElse(null);
 
 		return GradeConverter.toFindMyGrade(member, currentGrade, nextGrade);

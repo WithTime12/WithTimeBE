@@ -6,6 +6,8 @@ import lombok.*;
 import org.withtime.be.withtimebe.domain.date.entity.enums.PlaceType;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
+import java.util.List;
+
 @Entity
 @Getter
 @Builder
@@ -49,4 +51,7 @@ public class DatePlace extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "place_type")
     private PlaceType placeType;
+
+    @OneToMany(mappedBy = "datePlace", cascade = CascadeType.ALL)
+    private List<DatePlacePlaceCategory> placeCategories;
 }

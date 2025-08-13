@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum PlaceCategoryType {
+public enum     PlaceCategoryType {
     MOOD("분위기"),
     ACTIVITY_TYPE("활동량"),
     PLACE_STYLE("장소 스타일"),

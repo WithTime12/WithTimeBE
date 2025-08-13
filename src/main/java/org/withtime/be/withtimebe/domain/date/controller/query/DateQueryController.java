@@ -20,7 +20,7 @@ import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/date/query")
+@RequestMapping("/api/v1/date-courses")
 public class DateQueryController {
 
     private final DateQueryService dateQueryService;
@@ -31,7 +31,7 @@ public class DateQueryController {
             @ApiResponse(responseCode = "404", description = "DATE_COURSE404_1 : 해당하는 데이트 코스를 찾을 수 없습니다.")
     })
     @SwaggerPageable
-    @PostMapping("/course")
+    @PostMapping("/")
     public DefaultResponse<DateResponseDTO.DateCourseList> findDateCourses(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestBody DateRequestDTO.DateCourseSearchCond dateCourseSearchCond
@@ -48,7 +48,7 @@ public class DateQueryController {
                     description = "해당 코스를 찾을 수 없습니다")
     })
     @SwaggerPageable
-    @PostMapping("/bookmark")
+    @PostMapping("/bookmarks")
     public DefaultResponse<DateResponseDTO.DateCourseList> findDateCourseBookmark(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @RequestBody DateRequestDTO.DateCourseSearchCond dateCourseSearchCond,

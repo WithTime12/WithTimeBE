@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/date")
+@RequestMapping("/api/v1/date-courses")
 public class DateCommandController {
 
     private final DateCommandService dateCommandService;
@@ -46,7 +46,7 @@ public class DateCommandController {
             @ApiResponse(responseCode = "DATE_COURSE404_1",
                     description = "해당 코스를 찾을 수 없습니다")
     })
-    @PostMapping("/bookmark/{dateCourseId}")
+    @PostMapping("/{dateCourseId}/bookmarks")
     public DefaultResponse<DateResponseDTO.DateCourseBookmark> createDateCourseBookmark(
             @PathVariable Long dateCourseId,
             @AuthenticatedMember Member member
@@ -63,7 +63,7 @@ public class DateCommandController {
             @ApiResponse(responseCode = "DATE_COURSE404_1",
                     description = "해당 코스를 찾을 수 없습니다")
     })
-    @DeleteMapping("/bookmark/{dateCourseId}")
+    @DeleteMapping("/{dateCourseId}/bookmarks")
     public DefaultResponse<String> deleteDateCourseBookmark(
             @PathVariable Long dateCourseId,
             @AuthenticatedMember Member member
@@ -79,7 +79,7 @@ public class DateCommandController {
             @ApiResponse(responseCode = "DATE_COURSE404_1",
                     description = "해당 코스를 찾을 수 없습니다")
     })
-    @PostMapping("/bookmark")
+    @PostMapping("/bookmarks")
     public DefaultResponse<DateResponseDTO.DateCourseBookmark> createDateCourseBookmarkWithGeneratedCourse(
             @RequestBody DateRequestDTO.SaveDateCourse request,
             @AuthenticatedMember Member member

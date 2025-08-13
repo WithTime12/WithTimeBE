@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.withtime.be.withtimebe.global.common.BaseEntity;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Builder
@@ -17,6 +19,7 @@ public class DatePlaceDateCourse extends BaseEntity {
     @Column(name = "date_place_date_course_id")
     private Long id;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "date_course_id", nullable = false)
     private DateCourse dateCourse;
@@ -24,4 +27,12 @@ public class DatePlaceDateCourse extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "date_place_id", nullable = false)
     private DatePlace datePlace;
+
+    @Setter
+    @Column(name = "start_time")
+    private LocalDateTime startTime;
+
+    @Setter
+    @Column(name = "end_time")
+    private LocalDateTime endTime;
 }

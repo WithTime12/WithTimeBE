@@ -16,7 +16,7 @@ import org.withtime.be.withtimebe.domain.member.entity.Member;
 import java.util.List;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class DateQueryServiceImpl implements DateQueryService {
 

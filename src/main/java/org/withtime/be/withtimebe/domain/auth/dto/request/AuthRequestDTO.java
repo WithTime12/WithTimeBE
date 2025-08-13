@@ -22,7 +22,15 @@ public record AuthRequestDTO() {
             String password,
             Gender gender,
             String phoneNumber,
-            LocalDate birth
+            LocalDate birth,
+            Long socialId
+    ) {
+
+    }
+
+    public record FindPassword(
+            String email,
+            String newPassword
     ) {
 
     }

@@ -8,7 +8,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,7 +28,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
-import org.withtime.be.withtimebe.domain.member.service.MemberQueryService;
+import org.withtime.be.withtimebe.domain.member.service.query.MemberQueryService;
+import org.withtime.be.withtimebe.global.data.CorsConfigData;
 import org.withtime.be.withtimebe.global.security.filter.JsonLoginFilter;
 import org.withtime.be.withtimebe.global.security.filter.JwtFilter;
 import org.withtime.be.withtimebe.global.security.handler.CustomAccessDeniedHandler;
@@ -35,6 +38,7 @@ import org.withtime.be.withtimebe.global.util.JwtUtil;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String API_PREFIX = "/api/v1";
@@ -44,26 +48,41 @@ public class SecurityConfig {
     private final MemberQueryService memberQueryService;
     private final JwtUtil jwtUtil;
     private final FailureResponseWriter<DefaultResponseErrorReasonDTO> failureResponseWriter;
+    private final CorsConfigData corsConfigData;
 
     private String[] allowUrl = {
             API_PREFIX + "/auth/**",
             API_PREFIX + "/notices/**",
+            API_PREFIX + "/oauth2/**",
             API_PREFIX + "/faqs/**",
+            API_PREFIX + "/logs/keyword/**",
+            API_PREFIX + "/logs/dateplaces/**",
+            API_PREFIX + "/logs/datecourses/**",
+            "/oauth2/authorization/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**"
     };
 
     private RequestMatcher[] admin = {
-        requestMatcher(HttpMethod.GET, API_PREFIX + "/notices/trash"),
-        requestMatcher(HttpMethod.POST, API_PREFIX + "/notices/**"),
-        requestMatcher(HttpMethod.PUT, API_PREFIX + "/notices/**"),
-        requestMatcher(HttpMethod.PATCH, API_PREFIX + "/notices/**"),
-        requestMatcher(HttpMethod.DELETE, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/notices/trash"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.PUT, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.PATCH, API_PREFIX + "/notices/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/notices/**"),
 
-        requestMatcher(HttpMethod.POST, API_PREFIX + "/faqs/**"),
-        requestMatcher(HttpMethod.PUT, API_PREFIX + "/faqs/**"),
-        requestMatcher(HttpMethod.DELETE, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.PUT, API_PREFIX + "/faqs/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/faqs/**"),
+
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions/codes"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions"),
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/regions/bundle"),
+            requestMatcher(HttpMethod.GET, API_PREFIX + "/regions/codes"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/regions/codes/**"),
+            requestMatcher(HttpMethod.DELETE, API_PREFIX + "/regions/**"),
+
+            requestMatcher(HttpMethod.POST, API_PREFIX + "/weather/trigger"),
     };
 
     @Bean
@@ -79,6 +98,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                .oauth2Login(Customizer.withDefaults())
                 .exceptionHandling(exception -> exception
                         .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint(authenticationEntryPoint())
@@ -127,9 +147,9 @@ public class SecurityConfig {
     private CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.addAllowedOriginPattern("http://localhost:5173"); // 실배포 주소 나중에 추가
+        corsConfigData.getUrls().forEach(configuration::addAllowedOrigin); // 실배포 주소 나중에 추가
+        corsConfigData.getMethods().forEach(configuration::addAllowedMethod);
         configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("*");
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

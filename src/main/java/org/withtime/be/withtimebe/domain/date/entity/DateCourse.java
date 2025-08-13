@@ -7,6 +7,7 @@ import org.withtime.be.withtimebe.domain.date.entity.enums.DateTime;
 import org.withtime.be.withtimebe.domain.date.entity.enums.MealType;
 import org.withtime.be.withtimebe.domain.date.entity.enums.Transportation;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
+import org.withtime.be.withtimebe.global.common.BaseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "date_course")
-public class DateCourse {
+public class DateCourse extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

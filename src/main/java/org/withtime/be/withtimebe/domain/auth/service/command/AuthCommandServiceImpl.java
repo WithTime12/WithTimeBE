@@ -12,15 +12,12 @@ import org.withtime.be.withtimebe.domain.auth.service.query.EmailVerificationCod
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenQueryService;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
+import org.withtime.be.withtimebe.domain.member.entity.Social;
 import org.withtime.be.withtimebe.domain.member.repository.MemberRepository;
-import org.withtime.be.withtimebe.global.error.code.AuthErrorCode;
-import org.withtime.be.withtimebe.global.error.code.EmailErrorCode;
-import org.withtime.be.withtimebe.global.error.code.MemberErrorCode;
-import org.withtime.be.withtimebe.global.error.code.TokenErrorCode;
-import org.withtime.be.withtimebe.global.error.exception.AuthException;
-import org.withtime.be.withtimebe.global.error.exception.EmailException;
-import org.withtime.be.withtimebe.global.error.exception.MemberException;
-import org.withtime.be.withtimebe.global.error.exception.TokenException;
+import org.withtime.be.withtimebe.domain.member.repository.SocialRepository;
+import org.withtime.be.withtimebe.domain.member.service.command.MemberCommandService;
+import org.withtime.be.withtimebe.global.error.code.*;
+import org.withtime.be.withtimebe.global.error.exception.*;
 import org.withtime.be.withtimebe.global.security.constants.AuthenticationConstants;
 import org.withtime.be.withtimebe.global.security.domain.CustomUserDetails;
 import org.withtime.be.withtimebe.global.util.CookieUtil;
@@ -32,6 +29,8 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final SocialRepository socialRepository;
+    private final MemberCommandService memberCommandService;
     private final TokenCommandService tokenCommandService;
     private final TokenStorageCommandService tokenStorageCommandService;
     private final TokenQueryService tokenQueryService;
@@ -42,8 +41,12 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     public void signUp(AuthRequestDTO.SignUp request) {
         validateSignUp(request);
 
-        Member member = AuthConverter.toLocalMember(request.email(), request.username(), passwordEncoder.encode(request.password()), request.phoneNumber(), request.gender(), request.birth());
-        memberRepository.save(member);
+        Member member = memberRepository.save(AuthConverter.toLocalMember(request.email(), request.username(), request.socialId() != null ? null : passwordEncoder.encode(request.password()), request.phoneNumber(), request.gender(), request.birth()));
+        if (request.socialId() != null) {
+            Social social = socialRepository.findById(request.socialId()).orElseThrow(() ->
+                    new SocialException(SocialErrorCode.NOT_FOUND_SOCIAL));
+            social.addMember(member);
+        }
     }
 
     @Override
@@ -79,6 +82,14 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
         CookieUtil.deleteCookie(request, response, AuthenticationConstants.ACCESS_TOKEN_NAME);
         CookieUtil.deleteCookie(request, response, AuthenticationConstants.REFRESH_TOKEN_NAME);
+    }
+
+    @Override
+    public void findPassword(AuthRequestDTO.FindPassword request) {
+        if (!emailVerificationCodeStorageQueryService.isVerified(request.email())) {
+            throw new EmailException(EmailErrorCode.UNVERIFIED_EMAIL);
+        }
+        memberCommandService.changePassword(request.email(), request.newPassword());
     }
 
     private void reissueTokenInCookie(HttpServletRequest request, HttpServletResponse response, Long userId) {

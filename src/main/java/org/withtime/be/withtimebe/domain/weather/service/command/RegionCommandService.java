@@ -1,0 +1,20 @@
+package org.withtime.be.withtimebe.domain.weather.service.command;
+
+import org.withtime.be.withtimebe.domain.member.entity.Member;
+import org.withtime.be.withtimebe.domain.weather.dto.request.RegionReqDTO;
+import org.withtime.be.withtimebe.domain.weather.dto.response.RegionResDTO;
+
+public interface RegionCommandService {
+
+    RegionResDTO.CreateRegionCode createRegionCode(RegionReqDTO.CreateRegionCode request);
+
+    RegionResDTO.CreateRegion createRegion(RegionReqDTO.CreateRegion request);
+
+    RegionResDTO.CreateRegion createRegionWithNewCode(RegionReqDTO.CreateRegionWithNewCode request);
+
+    RegionResDTO.DeleteRegionCode deleteRegionCode(Long regionCodeId);
+
+    RegionResDTO.DeleteRegion deleteRegion(Long regionId);
+
+    RegionResDTO.UserRegionWithMessage updateUserRegion(RegionReqDTO.UpdateUserRegion reqDTO, Member member);
+}

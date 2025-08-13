@@ -24,7 +24,7 @@ public class AuthController {
     private final AuthCommandService authCommandService;
     private final EmailCommandService emailCommandService;
 
-    @Operation(summary = "회원가입 API by 요시", description = "최초 회원가입 시 필요한 정보를 포함하여 회원가입 진행")
+    @Operation(summary = "회원가입 API by 요시", description = "최초 회원가입 시 필요한 정보를 포함하여 회원가입 진행, 소셜 로그인인 경우에만 socialId 포함하고 아닌 경우 제거하거나 null")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "회원가입 성공"),
             @ApiResponse(
@@ -32,6 +32,13 @@ public class AuthController {
                     description = """
                             다음과 같은 이유로 실패할 수 있습니다:
                             - AUTH400_1: 이미 존재하는 이메일입니다.
+                            """
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - SOCIAL404_1: 소셜을 찾을 수 없습니다.
                             """
             )
     })
@@ -115,6 +122,38 @@ public class AuthController {
     @PostMapping("/check-email-verifications")
     public DefaultResponse<String> checkVerificationCode(@Valid @RequestBody EmailRequestDTO.Check request) {
         emailCommandService.checkEmail(request);
+        return DefaultResponse.noContent();
+    }
+
+    @Operation(summary = "비밀번호 찾기 API", description = "이메일 인증 이후 이메일과 새로운 비밀번호로 비밀번호 변경")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "비밀번호 변경 성공"),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - AUTH400_2: 소셜 로그인으로 가입된 사용자입니다.
+                            - MEMBER400_1: 이전 비밀번호와 동일합니다.
+                            """
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - EMAIL401_2: 비밀번호 재설정에 이메일 인증을 하지 않았습니다.
+                            """
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = """
+                            다음과 같은 이유로 실패할 수 있습니다:
+                            - MEMBER404_1: 사용자를 찾지 못했습니다.
+                            """
+            ),
+    })
+    @PostMapping("/passwords")
+    public DefaultResponse<Void> findPassword(@RequestBody AuthRequestDTO.FindPassword request) {
+        authCommandService.findPassword(request);
         return DefaultResponse.noContent();
     }
 }

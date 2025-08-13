@@ -20,12 +20,14 @@ import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1/faqs")
+@Tag(name = "자주 묻는 질문 수정 관련 API")
 public class FaqCommandController {
 
 	private final FaqCommandService faqCommandService;

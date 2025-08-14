@@ -1,15 +1,15 @@
 package org.withtime.be.withtimebe.global.common;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Tag(name = "헬스 체킹 API")
 public class HealthCheckController {
 
 //    @Operation(summary = "회원가입 API", description = "새로운 사용자를 추가합니다")

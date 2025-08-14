@@ -14,6 +14,7 @@ public record DateResponseDTO() {
 
     @Builder
     public record DatePlace(
+        Long datePlaceId,
         String name,
         String image,
         String tel,

@@ -56,6 +56,7 @@ public class DateConverter {
     // DatePlace -> DateResponseDTO.DatePlace
     public static DateResponseDTO.DatePlace createDatePlace(DatePlace datePlace) {
         return DateResponseDTO.DatePlace.builder()
+                .datePlaceId(datePlace.getId())
                 .name(datePlace.getName())
                 .image(datePlace.getImage())
                 .tel(datePlace.getTel())

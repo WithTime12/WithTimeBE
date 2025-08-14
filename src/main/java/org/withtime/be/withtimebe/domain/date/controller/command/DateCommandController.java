@@ -12,6 +12,7 @@ import org.withtime.be.withtimebe.domain.date.dto.response.DateResponseDTO;
 import org.withtime.be.withtimebe.domain.date.entity.DateCourseBookmark;
 import org.withtime.be.withtimebe.domain.date.entity.DatePlace;
 import org.withtime.be.withtimebe.domain.date.service.command.DateCommandService;
+import org.withtime.be.withtimebe.domain.date.service.command.DateCommandServiceImpl;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember;
 
@@ -32,10 +33,9 @@ public class DateCommandController {
     @PostMapping("/")
     public DefaultResponse<DateResponseDTO.DateCourse> createDateCourse(
             @RequestBody DateRequestDTO.CreateDateCourse request
-//            @AuthenticatedMember Member member
     ){
-        List<DatePlace> datePlaces = dateCommandService.createDateCourse(request);
-        DateResponseDTO.DateCourse dateCourse = DateConverter.createDateCourseInfo(datePlaces);
+        DateCommandServiceImpl.RecommendedCourseResult datePlaces = dateCommandService.createDateCourse(request);
+        DateResponseDTO.DateCourse dateCourse = DateConverter.createDateCourseInfo(datePlaces.places(), datePlaces.signature());
         return DefaultResponse.created(dateCourse);
     }
 

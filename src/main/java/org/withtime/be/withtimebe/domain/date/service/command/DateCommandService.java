@@ -13,5 +13,5 @@ public interface DateCommandService {
     public DateCourseBookmark createDateCourseBookmark(Long dateCourseId, Member member);
     public DateCourse deleteDateCourseBookmark(Long dateCourseId, Member member);
     public DateCourseBookmark createDateCourseBookmarkWithGeneratedCourse(DateRequestDTO.SaveDateCourse request, Member members);
-    public List<DatePlace> createDateCourse(DateRequestDTO.CreateDateCourse request);
+    DateCommandServiceImpl.RecommendedCourseResult createDateCourse(DateRequestDTO.CreateDateCourse request);
 }

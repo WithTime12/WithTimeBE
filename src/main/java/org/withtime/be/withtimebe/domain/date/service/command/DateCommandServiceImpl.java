@@ -24,10 +24,9 @@ import org.withtime.be.withtimebe.global.error.exception.DateCourseException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
@@ -39,173 +38,195 @@ public class DateCommandServiceImpl implements DateCommandService{
     private final DateCourseRepository dateCourseRepository;
     private final DatePlaceRepository datePlaceRepository;
 
-    // 사용자 맞춤형 데이트 코스 생성
-    public List<DatePlace> createDateCourse(
-            DateRequestDTO.CreateDateCourse request
-    ) {
-        // 데이트 장소 장소로 필터링
-        List<DatePlace> datePlaces = new ArrayList<>();
-        for (String datePlace : request.datePlaces()) {
-            String[] dateKeywords = datePlace.split(" ");
-            String placeKeyword1 = dateKeywords[0];
-            String placeKeyword2 = dateKeywords[1];
-            datePlaces = datePlaceRepository.findByAddressContainingAll(placeKeyword1,  placeKeyword2);
+    /** 컨트롤러로 전달할 단일 추천 결과 (코스 + 중복 방지 시그니처) */
+    public record RecommendedCourseResult(
+            List<DatePlace> places,   // 최종 코스 장소들(순서 유지)
+            String signature          // "장소ID-장소ID-..." (중복 방지용)
+    ) {}
+
+    @Transactional(readOnly = true)
+    /** 단일 코스 생성 (저장/북마크/attemptCount 없음, excludedCourseSignatures로 중복 제외) */
+    public RecommendedCourseResult createDateCourse(DateRequestDTO.CreateDateCourse request) {
+        if (request == null || request.dateDurationTime() == null) {
+            return new RecommendedCourseResult(List.of(), null);
         }
-        int placeCountByTime = request.dateDurationTime().getValue();
-        Optional<MealType> mealType = MealType.getMealTypeByTime(request.startTime());
-        List<ScheduledDateCourse> scheduledDateCourses = switch (request.budget()) {
-            case UNDER_10K ->
-                // 패턴 만들어줌
-                    getScheduledDateCourses(
-                            request, mealType, placeCountByTime, datePlaces, BudgetLevel.FREE, request.mealPlan());
-            case FROM_10K_TO_20K -> getScheduledDateCourses(
-                    request, mealType, placeCountByTime, datePlaces, BudgetLevel.LOW, request.mealPlan());
-            case FROM_20K_TO_30K -> getScheduledDateCourses(
-                    request, mealType, placeCountByTime, datePlaces, BudgetLevel.MEDIUM, request.mealPlan());
-            case OVER_30K -> getScheduledDateCourses(
-                    request, mealType, placeCountByTime, datePlaces, BudgetLevel.HIGH, request.mealPlan());
+
+        // 1) 후보 장소 수집 (주소 토큰 기반) + ID 기준 중복 제거(순서 보존)
+        List<DatePlace> candidates = collectCandidatesByAddressTokens(request.datePlaces());
+        if (candidates.isEmpty()) return new RecommendedCourseResult(List.of(), null);
+
+        // 2) 코스 길이/식사/예산 레벨 산정
+        int courseCount = request.dateDurationTime().getValue();
+        Optional<MealType> mealType = (request.startTime() == null)
+                ? Optional.empty()
+                : MealType.getMealTypeByTime(request.startTime());
+
+        BudgetLevel budgetLevel = switch (request.budget()) {
+            case UNDER_10K -> BudgetLevel.FREE;
+            case FROM_10K_TO_20K -> BudgetLevel.LOW;
+            case FROM_20K_TO_30K -> BudgetLevel.MEDIUM;
+            case OVER_30K -> BudgetLevel.HIGH;
+            default -> BudgetLevel.LOW;
         };
 
-        List<List<DatePlace>> courses = scheduledDateCourses.stream()
-                .sorted()
-                .map(dateCourse -> dateCourse.getScheduledDatePlaces().stream()
-                        .map(ScheduledDatePlace::getDatePlace).toList())
-                .limit(4)
-                .toList();
+        // 3) place_type 패턴 결정 (정책 반영)
+        List<PlaceType> pattern = buildPattern(mealType, request.startTime(), courseCount, request.mealPlan(), budgetLevel);
 
-        if (request.attemptCount() == 3){
-            DateCourse dateCourse = DateCourse.builder().build();
-            for (List<DatePlace> datePlacesTop3 : courses) {
-                List<DatePlaceDateCourse> datePlaceDateCourses = datePlacesTop3.stream()
-                        .map(datePlace -> DatePlaceDateCourse.builder()
-                                .datePlace(datePlace).build())
+        // 4) 스코어링 (사용자/예산 키워드 일치 시 +1)
+        Set<String> budgetKw = KeywordForBudget.getKeywordsByBudget(budgetLevel).stream()
+                .map(KeywordForBudget::getLabel)
+                .collect(Collectors.toSet());
+        Set<String> userKw = (request.userPreferredKeywords() == null)
+                ? Collections.emptySet()
+                : new HashSet<>(request.userPreferredKeywords());
+
+        List<ScheduledDatePlace> scored = scorePlacesDto(candidates, userKw, budgetKw);
+
+        // (선택) 타입별 상위 N만 남겨 조합 폭발 방지 — 필요시 주석 해제
+        // final int TOP_N = 10;
+        // Map<PlaceType, List<ScheduledDatePlace>> byType = scored.stream()
+        //         .collect(Collectors.groupingBy(sp -> sp.getDatePlace().getPlaceType()));
+        // List<ScheduledDatePlace> trimmed = byType.values().stream()
+        //         .flatMap(list -> list.stream().limit(TOP_N))
+        //         .toList();
+        // List<ScheduledDateCourse> combos = new ArrayList<>(generateCombination(pattern, trimmed));
+
+        // 5) 모든 조합 생성 → 동점 무작위화 후 점수 내림차순 정렬
+        List<ScheduledDateCourse> combos = new ArrayList<>(generateCombination(pattern, scored));
+        if (combos.isEmpty()) return new RecommendedCourseResult(List.of(), null);
+        Collections.shuffle(combos); // 동점 집합 무작위 섞기
+        combos.sort(ScheduledDateCourse.BY_WEIGHT_DESC);
+
+        // 6) 이미 본 코스(시그니처) 제외하고 첫 코스 반환
+        Set<String> excluded = (request.excludedCourseSignatures() == null)
+                ? Collections.emptySet()
+                : new HashSet<>(request.excludedCourseSignatures());
+
+        for (ScheduledDateCourse c : combos) {
+            String sig = courseSignature(c.getScheduledDatePlaces());
+            if (!excluded.contains(sig)) {
+                List<DatePlace> places = c.getScheduledDatePlaces().stream()
+                        .map(ScheduledDatePlace::getDatePlace)
                         .toList();
-                assignScheduleTimes(datePlaceDateCourses, request.startTime());
-                dateCourse.addDatePlaceDateCourses(datePlaceDateCourses);
-                dateCourseRepository.save(dateCourse);
+                return new RecommendedCourseResult(places, sig);
             }
         }
-        return !courses.isEmpty() ? courses.get(request.attemptCount()) : new ArrayList<>();
-    }
 
-    private void assignScheduleTimes(List<DatePlaceDateCourse> datePlaceDateCourse, LocalDateTime startedAt){
-        LocalDateTime cursor = startedAt;
-
-        for (DatePlaceDateCourse placeDateCourse : datePlaceDateCourse) {
-            placeDateCourse.setStartTime(cursor);
-            PlaceType placeType = placeDateCourse.getDatePlace().getPlaceType();
-            Duration duration = placeType.getDuration();
-
-            LocalDateTime end = cursor.plus(duration);
-            placeDateCourse.setEndTime(end);
-
-            cursor = end;
-        }
-    }
-
-    private List<ScheduledDateCourse> getScheduledDateCourses(
-            DateRequestDTO.CreateDateCourse request, Optional<MealType> mealType,
-            int placeCountByTime, List<DatePlace> datePlaces, BudgetLevel budgetLevel, List<MealType> mealPlan
-    ) {
-        List<PlaceType> patterns = buildPattern(mealType, request.startTime(), placeCountByTime, mealPlan);
-        // 예산 키워드
-        List<String> keywordsForBudget = KeywordForBudget.getKeywordsByBudget(budgetLevel).stream()
-                .map(KeywordForBudget::getLabel)
+        // 전부 이미 본 코스면, 최고점 코스라도 반환
+        ScheduledDateCourse top = combos.get(0);
+        String sig = courseSignature(top.getScheduledDatePlaces());
+        List<DatePlace> places = top.getScheduledDatePlaces().stream()
+                .map(ScheduledDatePlace::getDatePlace)
                 .toList();
-        // 사용자 맞춤 & 예산 키워드 맞춤 장소 가중치 계산
-        List<ScheduledDatePlace> scheduledDatePlaces = scorePlacesDto(datePlaces, request.userPreferredKeywords(), keywordsForBudget);
-        // 위에 있는 패턴과 장소로 조합을 만들어서 코스 반환(조합)
-        return generateCombination(patterns, scheduledDatePlaces);
+        return new RecommendedCourseResult(places, sig);
     }
 
-    // 데이트코스 북마크 생성 - 직접 데이트 코스 찾아보기
-    public DateCourseBookmark createDateCourseBookmark(Long dateCourseId, Member member) {
-        DateCourse dateCourse = dateCourseRepository.findById(dateCourseId)
-                .orElseThrow(() -> new DateCourseException(DateCourseErrorCode.DateCourse_NOT_FOUND));
-        DateCourseBookmark dateCourseBookmark = DateConverter.createDateCourseBookmark(dateCourse, member);
-        return dateCourseBookmarkRepository.save(dateCourseBookmark);
-    }
+    // ───────────────────────── 내부 로직 ─────────────────────────
 
-    // 데이트코스 북마크 삭제
-    public DateCourse deleteDateCourseBookmark(Long dateCourseId, Member member){
-        DateCourse dateCourse = dateCourseRepository.findById(dateCourseId)
-                .orElseThrow(() -> new DateCourseException(DateCourseErrorCode.DateCourse_NOT_FOUND));
-        DateCourseBookmark dateCourseBookmark = dateCourseBookmarkRepository.findByMemberAndDateCourse(member, dateCourse)
-                .orElseThrow(() -> new DateCourseException(DateCourseErrorCode.DateCourseBookMark_NOT_FOUND));
-        dateCourseBookmarkRepository.delete(dateCourseBookmark);
-        return dateCourse;
-    }
+    /** 주소 키워드 토큰으로 후보 조회 + ID 기준 중복 제거(순서 보존) */
+    private List<DatePlace> collectCandidatesByAddressTokens(List<String> tokens) {
+        if (tokens == null || tokens.isEmpty()) return List.of();
 
-    // 데이트코스 북마크 생성 - AI 기반 데이트 코스 만들기
-    public DateCourseBookmark createDateCourseBookmarkWithGeneratedCourse(
-            DateRequestDTO.SaveDateCourse request,
-            Member member
-    ){
-        DateCourse dateCourse = DateConverter.createDateCourse(request);
-        List<DatePlace> datePlaces = datePlaceRepository.findAllById(request.datePlaceIds());
-        List<DatePlaceDateCourse> datePlaceDateCourses = datePlaces.stream()
-                .map(datePlace -> DatePlaceDateCourse.builder().datePlace(datePlace).build())
-                .toList();
-        dateCourse.addDatePlaceDateCourses(datePlaceDateCourses);
-        dateCourseRepository.save(dateCourse);
+        Map<Long, DatePlace> byId = new LinkedHashMap<>();
+        // id 없는 엔티티 중복 방지(레퍼런스 기준)
+        Set<DatePlace> noIdSet = new LinkedHashSet<>();
 
-        DateCourseBookmark dateCourseBookmark = DateConverter.createDateCourseBookmark(dateCourse, member);
-        return dateCourseBookmarkRepository.save(dateCourseBookmark);
-    }
-
-    private List<PlaceType> buildPattern(Optional<MealType> mealType, LocalDateTime startTime
-            , int placeCountByTime, List<MealType> mealPlan) {
-        List<PlaceType> pattern = new ArrayList<>();
-        while (pattern.size() < placeCountByTime) {
-            if (mealType.isPresent() && mealPlan.contains(mealType.get())) {
-                pattern.add(PlaceType.TIME_EAT);
-            } else {
-                if (pattern.size() + 2 <= placeCountByTime) {
-                    pattern.add(PlaceType.TIME_SEE);
-                    pattern.add(PlaceType.TIME_CAFE);
+        for (String token : tokens) {
+            if (token == null || token.isBlank()) continue;
+            String[] parts = token.trim().split("\\s+");
+            String k1 = parts.length >= 1 ? parts[0] : "";
+            String k2 = parts.length >= 2 ? parts[1] : "";
+            List<DatePlace> found = datePlaceRepository.findByAddressContainingAll(k1, k2);
+            for (DatePlace p : found) {
+                Long id = p.getId();
+                if (id != null) {
+                    byId.putIfAbsent(id, p);
                 } else {
-                    pattern.add(PlaceType.TIME_SEE);
+                    noIdSet.add(p);
                 }
             }
+        }
+        List<DatePlace> result = new ArrayList<>(byId.values());
+        result.addAll(noIdSet);
+        return result;
+    }
+
+    /** 정책 기반 place_type 분배 (유효성 검사는 제외) */
+    private List<PlaceType> buildPattern(
+            Optional<MealType> mealType, LocalDateTime startTime,
+            int courseCount, List<MealType> mealPlan, BudgetLevel budgetLevel
+    ) {
+        int eat = 0, see = 0, cafe = 0;
+        switch (courseCount) {
+            case 2 -> { see = 1; cafe = 1; }
+            case 3 -> { eat = 1; see = 1; cafe = 1; }
+            case 4 -> { eat = 1; see = 2; cafe = 1; }
+            default -> { eat = 1; see = Math.max(1, courseCount - 2); cafe = 1; }
+        }
+        // 저예산 → 구경 위주
+        if (budgetLevel == BudgetLevel.FREE || budgetLevel == BudgetLevel.LOW) {
+            eat = Math.min(eat, 1);
+            see = Math.max(1, courseCount - eat - 1);
+            cafe = courseCount - eat - see;
+        }
+        // 시작 시간의 식사타입이 mealPlan에 없으면 식사 제외
+        if (mealType.isEmpty() || mealPlan == null || !mealPlan.contains(mealType.get())) {
+            eat = 0;
+            see = Math.max(1, courseCount - 1);
+            cafe = courseCount - see;
+        }
+
+        List<PlaceType> pattern = new ArrayList<>();
+        if (eat > 0) { pattern.add(PlaceType.TIME_EAT); eat--; }
+        while (see > 0 || cafe > 0) {
+            if (see > 0) { pattern.add(PlaceType.TIME_SEE); see--; }
+            if (cafe > 0) { pattern.add(PlaceType.TIME_CAFE); cafe--; }
         }
         return pattern;
     }
 
+    /** 점수 계산(사용자 + 예산 키워드 모두 +1) — null-safe */
     private List<ScheduledDatePlace> scorePlacesDto(
             List<DatePlace> datePlaces,
-            List<String> userPreferredKeywords,
-            List<String> budgetKeywords
-    ){
-        return datePlaces.stream()
-                .map(place ->
-                        {
-                            List<String> labels = place.getPlaceCategories().stream()
-                                    .map(dp -> dp.getPlaceCategory().getLabel())
+            Set<String> userPreferredKeywords,
+            Set<String> budgetKeywords
+    ) {
+        List<DatePlace> safePlaces = (datePlaces == null) ? List.of() : datePlaces;
+        Set<String> userKws = (userPreferredKeywords == null) ? Set.of() : userPreferredKeywords;
+        Set<String> budgetKws = (budgetKeywords == null) ? Set.of() : budgetKeywords;
+
+        return safePlaces.stream()
+                .map(place -> {
+                    List<String> labels =
+                            (place.getPlaceCategories() == null) ? List.of()
+                                    : place.getPlaceCategories().stream()
+                                    .map(dp -> dp.getPlaceCategory())
+                                    .filter(Objects::nonNull)
+                                    .map(pc -> pc.getLabel())
+                                    .filter(Objects::nonNull)
                                     .toList();
-                            double score = 0.0;
 
+                    double score = 0.0;
+                    if (!labels.isEmpty()) {
+                        if (!budgetKws.isEmpty()) {
                             for (String label : labels) {
-                                if (budgetKeywords.contains(label)){
-                                    score += 1.0;
-                                }
+                                if (budgetKws.contains(label)) score += 1.0;
                             }
-
-                            for (String userPreferredKeyword : userPreferredKeywords) {
-                                if (labels.contains(userPreferredKeyword)){
-                                    score += 1.0;
-                                }
+                        }
+                        if (!userKws.isEmpty()) {
+                            for (String kw : userKws) {
+                                if (labels.contains(kw)) score += 1.0;
                             }
+                        }
+                    }
 
-                            return ScheduledDatePlace.builder()
-                                    .datePlace(place)
-                                    .score(score)
-                                    .build();
-                        })
+                    return ScheduledDatePlace.ofScoreOnly(place, score);
+                })
                 .sorted(Comparator.comparingDouble(ScheduledDatePlace::getScore).reversed())
                 .toList();
     }
 
-    // 조합 생성
+    /** 패턴 순서에 맞춰 모든 조합 생성 */
     private List<ScheduledDateCourse> generateCombination(List<PlaceType> pattern, List<ScheduledDatePlace> datePlaces){
         List<List<ScheduledDatePlace>> result = new ArrayList<>();
         generateByRecur(pattern, datePlaces, 0, new ArrayList<>(), result);
@@ -237,11 +258,60 @@ public class DateCommandServiceImpl implements DateCommandService{
 
         for (ScheduledDatePlace candidate : allCandidates) {
             if (candidate.getDatePlace().getPlaceType() != neededType) continue;
-            if (current.contains(candidate)) continue;
+            if (current.contains(candidate)) continue; // 동일 장소 중복 방지
 
             current.add(candidate);
             generateByRecur(pattern, allCandidates, index + 1, current, result);
             current.remove(current.size() - 1);
         }
+    }
+
+    /** 코스 시그니처(장소ID 순서대로, ID 없으면 name 대체) */
+    private String courseSignature(List<ScheduledDatePlace> list) {
+        return list.stream()
+                .map(s -> {
+                    DatePlace p = s.getDatePlace();
+                    Long id = (p != null) ? p.getId() : null;
+                    if (id != null) return String.valueOf(id);
+                    String name = (p != null) ? p.getName() : "unknown";
+                    return name != null ? name : "unknown";
+                })
+                .collect(Collectors.joining("-"));
+    }
+
+
+    // 데이트코스 북마크 삭제
+    public DateCourse deleteDateCourseBookmark(Long dateCourseId, Member member){
+        DateCourse dateCourse = dateCourseRepository.findById(dateCourseId)
+                .orElseThrow(() -> new DateCourseException(DateCourseErrorCode.DateCourse_NOT_FOUND));
+        DateCourseBookmark dateCourseBookmark = dateCourseBookmarkRepository.findByMemberAndDateCourse(member, dateCourse)
+                .orElseThrow(() -> new DateCourseException(DateCourseErrorCode.DateCourseBookMark_NOT_FOUND));
+        dateCourseBookmarkRepository.delete(dateCourseBookmark);
+        return dateCourse;
+    }
+
+    // 데이트코스 북마크 생성 - AI 기반 데이트 코스 만들기
+    public DateCourseBookmark createDateCourseBookmarkWithGeneratedCourse(
+            DateRequestDTO.SaveDateCourse request,
+            Member member
+    ){
+        DateCourse dateCourse = DateConverter.createDateCourse(request);
+        List<DatePlace> datePlaces = datePlaceRepository.findAllById(request.datePlaceIds());
+        List<DatePlaceDateCourse> datePlaceDateCourses = datePlaces.stream()
+                .map(datePlace -> DatePlaceDateCourse.builder().datePlace(datePlace).build())
+                .toList();
+        dateCourse.addDatePlaceDateCourses(datePlaceDateCourses);
+        dateCourseRepository.save(dateCourse);
+
+        DateCourseBookmark dateCourseBookmark = DateConverter.createDateCourseBookmark(dateCourse, member);
+        return dateCourseBookmarkRepository.save(dateCourseBookmark);
+    }
+
+    // 데이트코스 북마크 생성 - 직접 데이트 코스 찾아보기
+    public DateCourseBookmark createDateCourseBookmark(Long dateCourseId, Member member) {
+        DateCourse dateCourse = dateCourseRepository.findById(dateCourseId)
+                .orElseThrow(() -> new DateCourseException(DateCourseErrorCode.DateCourse_NOT_FOUND));
+        DateCourseBookmark dateCourseBookmark = DateConverter.createDateCourseBookmark(dateCourse, member);
+        return dateCourseBookmarkRepository.save(dateCourseBookmark);
     }
 }

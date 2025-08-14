@@ -28,9 +28,9 @@ public record DateResponseDTO() {
 
     @Builder
     public record DateCourse(
-        Long dateCourseId,
         String name,
-        List<DateResponseDTO.DatePlace> datePlaces
+        List<DateResponseDTO.DatePlace> datePlaces,
+        String signature
     ){}
 
     @Builder

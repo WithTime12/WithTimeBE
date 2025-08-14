@@ -40,13 +40,16 @@ public class DateConverter {
     // 나중에 생성한 정보를 리턴하는 데 사용,,? 근데 애초에 그 뭐야
     // builder()로 만들 때 잘 만들어주면 안되냐
     // List<DatePlace> -> DateResponseDTO.DateCourseInfo
-    public static DateResponseDTO.DateCourse createDateCourseInfo(List<DatePlace> datePlaces){
+    // 단일 추천 코스를 응답으로 구성(시그니처 포함)
+    public static DateResponseDTO.DateCourse createDateCourseInfo(List<DatePlace> datePlaces, String signature){
         List<DateResponseDTO.DatePlace> datePlaceDtos = datePlaces.stream()
                 .map(DateConverter::createDatePlace)
                 .toList();
 
         return DateResponseDTO.DateCourse.builder()
                 .name(LocalDateTime.now().toLocalDate().toString())
+                .datePlaces(datePlaceDtos)
+                .signature(signature) // ← 추가
                 .build();
     }
 
@@ -75,7 +78,6 @@ public class DateConverter {
                 .toList();
 
         return DateResponseDTO.DateCourse.builder()
-                .dateCourseId(dateCourse.getId())
                 .name(dateCourse.getName())
                 .datePlaces(datePlaces)
                 .build();

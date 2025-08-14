@@ -3,6 +3,7 @@ package org.withtime.be.withtimebe.domain.date.controller.query;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/date-courses")
+@Tag(name = "데이트 조회 API")
 public class DateQueryController {
 
     private final DateQueryService dateQueryService;

@@ -3,6 +3,7 @@ package org.withtime.be.withtimebe.domain.date.controller.command;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springframework.web.bind.annotation.*;
@@ -10,17 +11,16 @@ import org.withtime.be.withtimebe.domain.date.converter.DateConverter;
 import org.withtime.be.withtimebe.domain.date.dto.request.DateRequestDTO;
 import org.withtime.be.withtimebe.domain.date.dto.response.DateResponseDTO;
 import org.withtime.be.withtimebe.domain.date.entity.DateCourseBookmark;
-import org.withtime.be.withtimebe.domain.date.entity.DatePlace;
 import org.withtime.be.withtimebe.domain.date.service.command.DateCommandService;
+import org.withtime.be.withtimebe.domain.date.service.command.dto.RecommendedCourseResult;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember;
-
-import java.util.List;
 
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/date-courses")
+@Tag(name = "데이트 생성 API")
 public class DateCommandController {
 
     private final DateCommandService dateCommandService;
@@ -32,10 +32,9 @@ public class DateCommandController {
     @PostMapping("/")
     public DefaultResponse<DateResponseDTO.DateCourse> createDateCourse(
             @RequestBody DateRequestDTO.CreateDateCourse request
-//            @AuthenticatedMember Member member
     ){
-        List<DatePlace> datePlaces = dateCommandService.createDateCourse(request);
-        DateResponseDTO.DateCourse dateCourse = DateConverter.createDateCourseInfo(datePlaces);
+        RecommendedCourseResult datePlaces = dateCommandService.createDateCourse(request);
+        DateResponseDTO.DateCourse dateCourse = DateConverter.createDateCourseInfo(datePlaces.places(), datePlaces.signature());
         return DefaultResponse.created(dateCourse);
     }
 

@@ -30,9 +30,9 @@ public class PlaceCategoryLogQueryController {
 		@ApiResponse(responseCode = "200", description = "성공입니다.")
 	})
 	@GetMapping("/weekly")
-	public DefaultResponse<PlaceCategoryLogResponseDTO.WeeklyPlaceCategoryLogList> findWeeklyPlaceCategoryLogList() {
+	public DefaultResponse<PlaceCategoryLogResponseDTO.PlaceCategoryLogList> findWeeklyPlaceCategoryLogList() {
 		List<PlaceCategoryLog> result = placeCategoryLogQueryService.findWeeklyPlaceCategoryLogList();
-		PlaceCategoryLogResponseDTO.WeeklyPlaceCategoryLogList response = PlaceCategoryLogConverter.toWeeklyPlaceCategoryLogList(result);
+		PlaceCategoryLogResponseDTO.PlaceCategoryLogList response = PlaceCategoryLogConverter.toWeeklyPlaceCategoryLogList(result);
 		return DefaultResponse.ok(response);
 	}
 }

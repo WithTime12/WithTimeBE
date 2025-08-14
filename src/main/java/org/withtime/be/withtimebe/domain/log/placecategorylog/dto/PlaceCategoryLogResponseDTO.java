@@ -7,12 +7,12 @@ import lombok.Builder;
 public class PlaceCategoryLogResponseDTO {
 
 	@Builder
-	public record WeeklyPlaceCategoryLogList(
-		List<WeeklyPlaceCategoryLog> placeCategoryLogList
+	public record PlaceCategoryLogList(
+		List<PlaceCategoryLog> placeCategoryLogList
 	) {}
 
 	@Builder
-	public record WeeklyPlaceCategoryLog(
+	public record PlaceCategoryLog(
 		String placeCategoryLabel,
 		Integer count
 	) {}

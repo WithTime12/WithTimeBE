@@ -72,7 +72,7 @@ public class PlaceCategoryLogScheduler {
 		List<String> keywords = new ArrayList<>(keywordScoreMap.keySet());
 		List<PlaceCategoryLog> existingLogs = placeCategoryLogRepository.findByDateAndPlaceCategoryLabelIn(now, keywords);
 
-		// for문에서 
+		// for문에서 빠른 분기 처리를 위한 Map 생성
 		Map<String, PlaceCategoryLog> logMap = existingLogs.stream()
 			.collect(Collectors.toMap(PlaceCategoryLog::getPlaceCategoryLabel, Function.identity()));
 
@@ -85,11 +85,7 @@ public class PlaceCategoryLogScheduler {
 			if (logMap.containsKey(keyword)) {
 				logMap.get(keyword).incrementCount(score);
 			} else {
-				PlaceCategoryLog log = PlaceCategoryLog.builder()
-					.placeCategoryLabel(keyword)
-					.count(score)
-					.date(now)
-					.build();
+				PlaceCategoryLog log = PlaceCategoryLogConverter.toPlaceCategoryLog(keyword, score, now);
 				logsToSave.add(log);
 			}
 		}

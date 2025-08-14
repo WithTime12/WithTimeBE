@@ -66,10 +66,13 @@ public record DateRequestDTO() {
 
     public record DateCourseSearchCond(
             DatePriceRange budget,
+            @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
             List<String> datePlaces,
             DateTime dateDurationTime,
+            @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
             List<MealType> mealTypes,
             Transportation transportation,
+            @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
             List<String> userPreferredKeywords
     ){}
 }

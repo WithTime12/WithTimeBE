@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.withtime.be.withtimebe.domain.date.converter.DateConverter;
 import org.withtime.be.withtimebe.domain.date.dto.request.DateRequestDTO;
 import org.withtime.be.withtimebe.domain.date.dto.response.DateResponseDTO;
 import org.withtime.be.withtimebe.domain.date.entity.DateCourse;
@@ -41,9 +42,9 @@ public class DateQueryServiceImpl implements DateQueryService {
   
     @LogPlaceCategory
     @GetPoint(action = PointAction.VIEW_DATE_COURSE)
-    public Page<DateCourse> findDateCourses(DateRequestDTO.DateCourseSearchCond dateCourseSearchCond, Pageable pageable){
+    public Page<DateCourse> findDateCourses(DateRequestDTO.DateCourseSearchCond dateCourseSearchCond, Pageable pageable) {
         return dateCourseRepository.searchDateCourseByApplyPage(dateCourseSearchCond, pageable);
-
+    }
 
     @LogPlaceCategory
     @GetPoint(action = PointAction.VIEW_DATE_COURSE)

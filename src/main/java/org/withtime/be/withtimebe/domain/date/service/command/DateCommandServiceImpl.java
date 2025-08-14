@@ -18,6 +18,8 @@ import org.withtime.be.withtimebe.domain.date.entity.model.ScheduledDatePlace;
 import org.withtime.be.withtimebe.domain.date.repository.DateCourseBookmarkRepository;
 import org.withtime.be.withtimebe.domain.date.repository.DateCourseRepository;
 import org.withtime.be.withtimebe.domain.date.repository.DatePlaceRepository;
+import org.withtime.be.withtimebe.domain.member.annotation.GetPoint;
+import org.withtime.be.withtimebe.domain.member.annotation.enums.PointAction;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.error.code.DateCourseErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.DateCourseException;
@@ -40,6 +42,7 @@ public class DateCommandServiceImpl implements DateCommandService{
     private final DatePlaceRepository datePlaceRepository;
 
     // 사용자 맞춤형 데이트 코스 생성
+    @GetPoint(action = PointAction.CREATE_DATE_COURSE)
     public List<DatePlace> createDateCourse(
             DateRequestDTO.CreateDateCourse request
     ) {
@@ -119,6 +122,7 @@ public class DateCommandServiceImpl implements DateCommandService{
     }
 
     // 데이트코스 북마크 생성 - 직접 데이트 코스 찾아보기
+    @GetPoint(action = PointAction.SAVE_DATE_COURSE)
     public DateCourseBookmark createDateCourseBookmark(Long dateCourseId, Member member) {
         DateCourse dateCourse = dateCourseRepository.findById(dateCourseId)
                 .orElseThrow(() -> new DateCourseException(DateCourseErrorCode.DateCourse_NOT_FOUND));
@@ -137,6 +141,7 @@ public class DateCommandServiceImpl implements DateCommandService{
     }
 
     // 데이트코스 북마크 생성 - AI 기반 데이트 코스 만들기
+    @GetPoint(action = PointAction.CREATE_DATE_COURSE)
     public DateCourseBookmark createDateCourseBookmarkWithGeneratedCourse(
             DateRequestDTO.SaveDateCourse request,
             Member member

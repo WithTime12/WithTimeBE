@@ -19,6 +19,8 @@ import org.withtime.be.withtimebe.domain.date.repository.DateCourseBookmarkRepos
 import org.withtime.be.withtimebe.domain.date.repository.DateCourseRepository;
 import org.withtime.be.withtimebe.domain.date.repository.DatePlaceRepository;
 import org.withtime.be.withtimebe.domain.date.service.command.dto.RecommendedCourseResult;
+import org.withtime.be.withtimebe.domain.member.annotation.GetPoint;
+import org.withtime.be.withtimebe.domain.member.annotation.enums.PointAction;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.error.code.DateCourseErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.DateCourseException;
@@ -37,8 +39,9 @@ public class DateCommandServiceImpl implements DateCommandService{
     private final DateCourseRepository dateCourseRepository;
     private final DatePlaceRepository datePlaceRepository;
 
-    @Transactional(readOnly = true)
     /** 단일 코스 생성 (저장/북마크/attemptCount 없음, excludedCourseSignatures로 중복 제외) */
+    @Transactional(readOnly = true)
+    @GetPoint(action = PointAction.CREATE_DATE_COURSE)
     public RecommendedCourseResult createDateCourse(DateRequestDTO.CreateDateCourse request) {
         if (request == null || request.dateDurationTime() == null) {
             return new RecommendedCourseResult(List.of(), null);
@@ -283,6 +286,7 @@ public class DateCommandServiceImpl implements DateCommandService{
     }
 
     // 데이트코스 북마크 생성 - AI 기반 데이트 코스 만들기
+    @GetPoint(action = PointAction.SAVE_DATE_COURSE)
     public DateCourseBookmark createDateCourseBookmarkWithGeneratedCourse(
             DateRequestDTO.SaveDateCourse request,
             Member member
@@ -300,6 +304,7 @@ public class DateCommandServiceImpl implements DateCommandService{
     }
 
     // 데이트코스 북마크 생성 - 직접 데이트 코스 찾아보기
+    @GetPoint(action = PointAction.SAVE_DATE_COURSE)
     public DateCourseBookmark createDateCourseBookmark(Long dateCourseId, Member member) {
         DateCourse dateCourse = dateCourseRepository.findById(dateCourseId)
                 .orElseThrow(() -> new DateCourseException(DateCourseErrorCode.DateCourse_NOT_FOUND));

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -33,13 +34,13 @@ public class DateQueryController {
             @ApiResponse(responseCode = "404", description = "DATE_COURSE404_1 : 해당하는 데이트 코스를 찾을 수 없습니다.")
     })
     @SwaggerPageable
-    @PostMapping("/search")
+    @GetMapping
     public DefaultResponse<DateResponseDTO.DateCourseList> findDateCourses(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @RequestBody DateRequestDTO.DateCourseSearchCond dateCourseSearchCond
+            @ParameterObject DateRequestDTO.DateCourseSearchCond dateCourseSearchCond,
+            @AuthenticatedMember Member member
             ) {
-        Page<DateCourse> dateCourses = dateQueryService.findDateCourses(dateCourseSearchCond, pageable);
-        DateResponseDTO.DateCourseList response = DateConverter.createDateCourseList(dateCourses);
+        DateResponseDTO.DateCourseList response = dateQueryService.findDateCourses(dateCourseSearchCond, pageable, member);
         return DefaultResponse.ok(response);
     }
 
@@ -53,11 +54,11 @@ public class DateQueryController {
     @PostMapping("/bookmarks/search")
     public DefaultResponse<DateResponseDTO.DateCourseList> findDateCourseBookmark(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @RequestBody DateRequestDTO.DateCourseSearchCond dateCourseSearchCond,
+            @ModelAttribute DateRequestDTO.DateCourseSearchCond dateCourseSearchCond,
             @AuthenticatedMember Member member
     ){
         Page<DateCourse> bookmarkedDateCourses = dateQueryService.findDateCourseBookmarks(dateCourseSearchCond, pageable, member);
-        DateResponseDTO.DateCourseList response = DateConverter.createDateCourseList(bookmarkedDateCourses);
+        DateResponseDTO.DateCourseList response = DateConverter.createDateCourseList(bookmarkedDateCourses, null, dateCourseSearchCond);
         return DefaultResponse.ok(response);
     }
 }

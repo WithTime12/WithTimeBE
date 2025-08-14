@@ -18,13 +18,12 @@ import org.withtime.be.withtimebe.domain.date.entity.model.ScheduledDatePlace;
 import org.withtime.be.withtimebe.domain.date.repository.DateCourseBookmarkRepository;
 import org.withtime.be.withtimebe.domain.date.repository.DateCourseRepository;
 import org.withtime.be.withtimebe.domain.date.repository.DatePlaceRepository;
+import org.withtime.be.withtimebe.domain.date.service.command.dto.RecommendedCourseResult;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.error.code.DateCourseErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.DateCourseException;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,10 +38,7 @@ public class DateCommandServiceImpl implements DateCommandService{
     private final DatePlaceRepository datePlaceRepository;
 
     /** 컨트롤러로 전달할 단일 추천 결과 (코스 + 중복 방지 시그니처) */
-    public record RecommendedCourseResult(
-            List<DatePlace> places,   // 최종 코스 장소들(순서 유지)
-            String signature          // "장소ID-장소ID-..." (중복 방지용)
-    ) {}
+
 
     @Transactional(readOnly = true)
     /** 단일 코스 생성 (저장/북마크/attemptCount 없음, excludedCourseSignatures로 중복 제외) */

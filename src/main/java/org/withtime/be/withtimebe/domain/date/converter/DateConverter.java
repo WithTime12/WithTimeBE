@@ -10,8 +10,9 @@ import org.withtime.be.withtimebe.domain.date.entity.DatePlaceDateCourse;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class DateConverter {
 
@@ -37,12 +38,10 @@ public class DateConverter {
                 .build();
     }
 
-    // 나중에 생성한 정보를 리턴하는 데 사용,,? 근데 애초에 그 뭐야
-    // builder()로 만들 때 잘 만들어주면 안되냐
     // List<DatePlace> -> DateResponseDTO.DateCourseInfo
     public static DateResponseDTO.DateCourse createDateCourseInfo(List<DatePlace> datePlaces){
         List<DateResponseDTO.DatePlace> datePlaceDtos = datePlaces.stream()
-                .map(DateConverter::createDatePlace)
+                .map(dp -> DateConverter.createDatePlace(dp, null, null))
                 .toList();
 
         return DateResponseDTO.DateCourse.builder()
@@ -51,7 +50,9 @@ public class DateConverter {
     }
 
     // DatePlace -> DateResponseDTO.DatePlace
-    public static DateResponseDTO.DatePlace createDatePlace(DatePlace datePlace) {
+    public static DateResponseDTO.DatePlace createDatePlace(DatePlace datePlace,
+                                                            LocalDateTime startTime,
+                                                            LocalDateTime endTime) {
         return DateResponseDTO.DatePlace.builder()
                 .name(datePlace.getName())
                 .image(datePlace.getImage())
@@ -63,28 +64,49 @@ public class DateConverter {
                 .roadNameAddress(datePlace.getRoadNameAddress())
                 .lotNumberAddress(datePlace.getLotNumberAddress())
                 .placeType(datePlace.getPlaceType())
+                .startTime(startTime)
+                .endTime(endTime)
                 .build();
     }
 
     // DateResponseDTO.DateCourse -> DateResponseDTO.DateCourse
-    public static DateResponseDTO.DateCourse createDateCourse(DateCourse dateCourse){
-
+    public static DateResponseDTO.DateCourse createDateCourse(DateCourse dateCourse,
+                                                              Set<Long> bookmarkedIds,
+                                                              DateRequestDTO.DateCourseSearchCond cond){
+        Boolean bookmarked = null;
+        if (!bookmarkedIds.isEmpty()) bookmarked = bookmarkedIds.contains(dateCourse.getId());
         List<DateResponseDTO.DatePlace> datePlaces = dateCourse.getDatePlaceDateCourses().stream()
-                .map(DatePlaceDateCourse::getDatePlace)
-                .map(DateConverter::createDatePlace)
+                .map(dc -> DateConverter.createDatePlace(dc.getDatePlace(), dc.getStartTime(), dc.getEndTime()))
                 .toList();
 
         return DateResponseDTO.DateCourse.builder()
                 .dateCourseId(dateCourse.getId())
                 .name(dateCourse.getName())
                 .datePlaces(datePlaces)
+                .isBookmarked(bookmarked)
+                .dateCourseSearchCondInfo(createSearchCond(cond))
+                .build();
+    }
+
+    public static DateResponseDTO.DateCourseSearchCondInfo createSearchCond(DateRequestDTO.DateCourseSearchCond cond){
+        return DateResponseDTO.DateCourseSearchCondInfo.builder()
+                .budget(cond.budget())
+                .datePlaces(cond.datePlaces())
+                .mealTypes(cond.mealTypes())
+                .transportation(cond.transportation())
+                .dateDurationTime(cond.dateDurationTime())
+                .userPreferredKeywords(cond.userPreferredKeywords())
                 .build();
     }
 
     // Page<DateCourse> -> DateRequestDTO.DateCourseList
-    public static DateResponseDTO.DateCourseList createDateCourseList(Page<DateCourse> dateCourses){
+    public static DateResponseDTO.DateCourseList createDateCourseList(Page<DateCourse> dateCourses, Set<Long> bookmarkedIds,
+                                                                      DateRequestDTO.DateCourseSearchCond cond){
         List<DateResponseDTO.DateCourse> dateCourseList = dateCourses.stream()
-                .map(DateConverter::createDateCourse)
+                .map(dc ->{
+                        if (bookmarkedIds != null) return createDateCourse(dc, bookmarkedIds, cond);
+                        return createDateCourse(dc, Collections.emptySet(), cond);
+                })
                 .toList();
 
         return DateResponseDTO.DateCourseList.builder()
@@ -93,6 +115,7 @@ public class DateConverter {
                 .currentPage(dateCourses.getNumber())
                 .currentSize(dateCourses.getSize())
                 .hasNextPage(dateCourses.hasNext())
+                .totalCount(dateCourses.getTotalElements())
                 .build();
     }
 

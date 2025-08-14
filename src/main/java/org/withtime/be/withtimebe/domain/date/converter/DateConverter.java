@@ -39,13 +39,16 @@ public class DateConverter {
     }
 
     // List<DatePlace> -> DateResponseDTO.DateCourseInfo
-    public static DateResponseDTO.DateCourse createDateCourseInfo(List<DatePlace> datePlaces){
+    // 단일 추천 코스를 응답으로 구성(시그니처 포함)
+    public static DateResponseDTO.DateCourse createDateCourseInfo(List<DatePlace> datePlaces, String signature){
         List<DateResponseDTO.DatePlace> datePlaceDtos = datePlaces.stream()
                 .map(dp -> DateConverter.createDatePlace(dp, null, null))
                 .toList();
 
         return DateResponseDTO.DateCourse.builder()
                 .name(LocalDateTime.now().toLocalDate().toString())
+                .datePlaces(datePlaceDtos)
+                .signature(signature) // ← 추가
                 .build();
     }
 
@@ -54,6 +57,7 @@ public class DateConverter {
                                                             LocalDateTime startTime,
                                                             LocalDateTime endTime) {
         return DateResponseDTO.DatePlace.builder()
+                .datePlaceId(datePlace.getId())
                 .name(datePlace.getName())
                 .image(datePlace.getImage())
                 .tel(datePlace.getTel())
@@ -80,7 +84,6 @@ public class DateConverter {
                 .toList();
 
         return DateResponseDTO.DateCourse.builder()
-                .dateCourseId(dateCourse.getId())
                 .name(dateCourse.getName())
                 .datePlaces(datePlaces)
                 .isBookmarked(bookmarked)

@@ -15,6 +15,7 @@ public record DateResponseDTO() {
 
     @Builder
     public record DatePlace(
+        Long datePlaceId,
         String name,
         String image,
         String tel,
@@ -31,11 +32,11 @@ public record DateResponseDTO() {
 
     @Builder
     public record DateCourse(
-        Long dateCourseId,
         String name,
         List<DateResponseDTO.DatePlace> datePlaces,
         DateCourseSearchCondInfo dateCourseSearchCondInfo,
         Boolean isBookmarked
+        String signature
     ){}
 
     @Builder

@@ -14,6 +14,8 @@ import org.withtime.be.withtimebe.domain.date.preference.repository.DatePreferen
 import org.withtime.be.withtimebe.domain.date.preference.repository.DatePreferenceQuestionRepository;
 import org.withtime.be.withtimebe.domain.date.preference.repository.DatePreferenceTestResultRepository;
 import org.withtime.be.withtimebe.domain.date.preference.util.DatePreferenceTestScoreCalculator;
+import org.withtime.be.withtimebe.domain.member.annotation.GetPoint;
+import org.withtime.be.withtimebe.domain.member.annotation.enums.PointAction;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.error.code.DatePreferenceErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.DatePreferenceException;
@@ -33,6 +35,7 @@ public class DatePreferenceTestCommandServiceImpl implements DatePreferenceTestC
     private final DatePreferenceTestScoreCalculator datePreferenceTestScoreCalculator;
 
     @Override
+    @GetPoint(action = PointAction.COMPLETE_TEST)
     public DatePreferenceResponseDTO.TestResult test(Member member, DatePreferenceRequestDTO.Test request) {
         // valid 판단
         if (!validateRequest(request)) {

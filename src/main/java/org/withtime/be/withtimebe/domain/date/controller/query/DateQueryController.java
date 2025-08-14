@@ -3,6 +3,7 @@ package org.withtime.be.withtimebe.domain.date.controller.query;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
 import org.springdoc.core.annotations.ParameterObject;
@@ -22,6 +23,7 @@ import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/date-courses")
+@Tag(name = "데이트 조회 API")
 public class DateQueryController {
 
     private final DateQueryService dateQueryService;
@@ -49,7 +51,7 @@ public class DateQueryController {
                     description = "해당 코스를 찾을 수 없습니다")
     })
     @SwaggerPageable
-    @PostMapping("/bookmarks")
+    @PostMapping("/bookmarks/search")
     public DefaultResponse<DateResponseDTO.DateCourseList> findDateCourseBookmark(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
             @ModelAttribute DateRequestDTO.DateCourseSearchCond dateCourseSearchCond,

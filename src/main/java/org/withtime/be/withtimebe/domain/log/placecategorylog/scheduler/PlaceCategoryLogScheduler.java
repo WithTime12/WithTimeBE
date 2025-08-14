@@ -34,7 +34,6 @@ public class PlaceCategoryLogScheduler {
 
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final PlaceCategoryLogRepository placeCategoryLogRepository;
-	private final PlaceCategoryRepository placeCategoryRepository;
 
 	@Scheduled(cron = "${scheduler.logs.place-category.sync-cron}") // 매 5분마다
 	@CacheEvict(
@@ -43,64 +42,60 @@ public class PlaceCategoryLogScheduler {
 		cacheManager = "redisCacheManager",
 		beforeInvocation = false
 	)
-	public void syncPlaceCategoryLogsToDB() {
+	@Scheduled(cron = "${scheduler.logs.place-category.sync-cron}") // 매 5분마다
+	public void syncUserPreferredKeywordsToDB() {
 
 		log.info("[PlaceCategoryLogScheduler] 동기화 스케쥴러 동작");
 
 		// 현재 날짜 및 레디스 키 생성
-		LocalDate now = LocalDate.from(LocalDateTime.now().minusMinutes(1));
+		LocalDate now = LocalDate.now();
 		String formattedDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-		String redisKey = "log:place-category:" + formattedDate;
+		String redisKey = "log:user-preferred-keywords:" + formattedDate;
 
 		// ZSET 추출
 		Set<ZSetOperations.TypedTuple<Object>> zSet =
 			redisTemplate.opsForZSet().rangeWithScores(redisKey, 0, -1);
 
-		// 없는 경우 Skip
-		if (zSet == null || zSet.isEmpty())
+		if (zSet == null || zSet.isEmpty()) {
+			log.info("[PlaceCategoryLogScheduler] 저장된 로그가 없어 동기화 작업을 종료합니다.");
 			return;
+		}
 
-		// ZSET 데이터 가공
-		Map<Long, Integer> placeCategoryScoreMap = zSet.stream()
+		// 키워드별 점수 추출
+		Map<String, Integer> keywordScoreMap = zSet.stream()
 			.collect(Collectors.toMap(
-				tuple -> Long.valueOf(String.valueOf(tuple.getValue())),
+				tuple -> String.valueOf(tuple.getValue()),
 				tuple -> tuple.getScore().intValue()
 			));
 
-		// IN 쿼리로 이미 존재하는 PlaceCategoryLog 조회
-		List<Long> placeCategoryIds = new ArrayList<>(placeCategoryScoreMap.keySet());
-		List<PlaceCategoryLog> placeCategoryLogList = placeCategoryLogRepository.findByPlaceCategoryIdInAndDate(placeCategoryIds, now);
-		
-		// placeCategoryId - placeCategoryLog 매핑
-		Map<Long, PlaceCategoryLog> placeCategoryLogMap = placeCategoryLogList.stream()
-			.collect(Collectors.toMap(PlaceCategoryLog::getPlaceCategoryId, Function.identity()));
+		// 키워드를 통해 이미 저장되어 있던 로그 조회
+		List<String> keywords = new ArrayList<>(keywordScoreMap.keySet());
+		List<PlaceCategoryLog> existingLogs = placeCategoryLogRepository.findByDateAndPlaceCategoryLabelIn(now, keywords);
 
-		// 레디스 데이터를 다큐먼트에 반영
-		for (Map.Entry<Long, Integer> entry : placeCategoryScoreMap.entrySet()) {
-			Long placeCategoryId = entry.getKey();
+		// for문에서 빠른 분기 처리를 위한 Map 생성
+		Map<String, PlaceCategoryLog> logMap = existingLogs.stream()
+			.collect(Collectors.toMap(PlaceCategoryLog::getPlaceCategoryLabel, Function.identity()));
+
+		// saveAll로 저장될 로그 리스트
+		List<PlaceCategoryLog> logsToSave = new ArrayList<>();
+		for (Map.Entry<String, Integer> entry : keywordScoreMap.entrySet()) {
+			String keyword = entry.getKey();
 			Integer score = entry.getValue();
 
-			// 기존 로그가 존재하는 경우 count만 증가
-			if (placeCategoryLogMap.containsKey(placeCategoryId)) {
-				placeCategoryLogMap.get(placeCategoryId).incrementCount(score);
-			}
-			// 그렇지 않으면 새로 로그 생성
-			else {
-				Optional<PlaceCategory> placeCategoryOptional = placeCategoryRepository.findById(placeCategoryId);
-				if(placeCategoryOptional.isPresent()) {
-					PlaceCategory placeCategory = placeCategoryOptional.get();
-					PlaceCategoryLog newPlaceCategoryLog = PlaceCategoryLogConverter
-						.toPlaceCategoryLog(placeCategory, score, now);
-					placeCategoryLogList.add(newPlaceCategoryLog);
-				}
+			if (logMap.containsKey(keyword)) {
+				logMap.get(keyword).incrementCount(score);
+			} else {
+				PlaceCategoryLog log = PlaceCategoryLogConverter.toPlaceCategoryLog(keyword, score, now);
+				logsToSave.add(log);
 			}
 		}
-		
-		// 다큐먼트를 DB에 반영
-		if (!placeCategoryLogList.isEmpty()) {
-			placeCategoryLogRepository.saveAll(placeCategoryLogList);
+
+		// saveAll로 한번에 저장되도록
+		if (!logsToSave.isEmpty() || !existingLogs.isEmpty()) {
+			placeCategoryLogRepository.saveAll(existingLogs); // 기존 로그 count 증가 반영
+			placeCategoryLogRepository.saveAll(logsToSave);   // 신규 로그 저장
 			redisTemplate.delete(redisKey);
-			log.info("[PlaceCategoryLogScheduler] 카테고리 로그 저장 완료, 개수 : {}", placeCategoryLogList.size());
+			log.info("[PlaceCategoryLogScheduler] 키워드 로그 저장 완료, 개수 : {}", logsToSave.size() + existingLogs.size());
 		}
 	}
 }

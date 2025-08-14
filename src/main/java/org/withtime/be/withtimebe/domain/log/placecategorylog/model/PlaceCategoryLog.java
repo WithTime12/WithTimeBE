@@ -22,7 +22,6 @@ public class PlaceCategoryLog extends BaseEntity {
 	@Id
 	private String id;
 
-	private Long placeCategoryId;
 	private String placeCategoryLabel;
 	private LocalDate date;
 	private Integer count;

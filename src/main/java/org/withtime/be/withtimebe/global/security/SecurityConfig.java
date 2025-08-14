@@ -61,7 +61,8 @@ public class SecurityConfig {
             "/oauth2/authorization/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
-            "/v3/api-docs/**"
+            "/v3/api-docs/**",
+            "/health"
     };
 
     private RequestMatcher[] admin = {

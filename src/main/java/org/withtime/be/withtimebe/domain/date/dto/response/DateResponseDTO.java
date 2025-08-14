@@ -35,7 +35,7 @@ public record DateResponseDTO() {
         String name,
         List<DateResponseDTO.DatePlace> datePlaces,
         DateCourseSearchCondInfo dateCourseSearchCondInfo,
-        Boolean isBookmarked
+        Boolean isBookmarked,
         String signature
     ){}
 

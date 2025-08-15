@@ -67,7 +67,8 @@ public class DateCourse extends BaseEntity {
 
     // 연관 관계 맵핑 메소드
     public void addDatePlaceDateCourses(List<DatePlaceDateCourse> datePlaceDateCourseList) {
-        for (DatePlaceDateCourse datePlaceDateCourse : datePlaceDateCourses) {
+        if (datePlaceDateCourseList == null || datePlaceDateCourseList.isEmpty()) return;
+        for (DatePlaceDateCourse datePlaceDateCourse : datePlaceDateCourseList) {
             datePlaceDateCourse.setDateCourse(this);
         }
         datePlaceDateCourses.addAll(datePlaceDateCourseList);

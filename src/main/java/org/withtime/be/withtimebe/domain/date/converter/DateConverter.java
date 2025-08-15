@@ -103,6 +103,15 @@ public class DateConverter {
     public static DateResponseDTO.DatePlace createDatePlace(DatePlace datePlace,
                                                             LocalDateTime startTime,
                                                             LocalDateTime endTime) {
+        List<DateResponseDTO.PlaceCategoryResponse> placeCategoryResponseList = datePlace.getPlaceCategories().stream().map((d) ->
+            DateResponseDTO.PlaceCategoryResponse.builder()
+                    .placeCategoryType(d.getPlaceCategory().getCategoryType())
+                    .label(d.getPlaceCategory().getLabel())
+                    .code(d.getPlaceCategory().getCode())
+                    .description(d.getPlaceCategory().getDescription())
+                    .build()
+        ).toList();
+
         return DateResponseDTO.DatePlace.builder()
                 .datePlaceId(datePlace.getId())
                 .name(datePlace.getName())
@@ -118,6 +127,7 @@ public class DateConverter {
                 .startTime(LocalTime.from(startTime))
                 .endTime(LocalTime.from(endTime))
                 .signatureDish(toSignatureDish(datePlace.getItems() == null || datePlace.getItems().isEmpty() ? null : datePlace.getItems().get(0)))
+                .placeCategoryResponseList(placeCategoryResponseList)
                 .build();
     }
 

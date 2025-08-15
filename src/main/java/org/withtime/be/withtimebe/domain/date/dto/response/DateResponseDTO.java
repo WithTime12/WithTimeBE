@@ -30,7 +30,8 @@ public record DateResponseDTO() {
         PlaceType placeType,
         LocalTime startTime,
         LocalTime endTime,
-        SignatureDish signatureDish
+        SignatureDish signatureDish,
+        List<PlaceCategoryResponse> placeCategoryResponseList
     ){}
 
     @Builder
@@ -40,6 +41,14 @@ public record DateResponseDTO() {
         DateCourseSearchCondInfo dateCourseSearchCondInfo,
         Boolean isBookmarked,
         String signature
+    ){}
+
+    @Builder
+    public record PlaceCategoryResponse (
+            PlaceCategoryType placeCategoryType,
+            String description,
+            String code,
+            String label
     ){}
 
     @Builder

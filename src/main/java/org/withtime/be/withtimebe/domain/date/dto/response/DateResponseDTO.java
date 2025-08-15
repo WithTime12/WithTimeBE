@@ -36,6 +36,7 @@ public record DateResponseDTO() {
 
     @Builder
     public record DateCourse(
+        Long dateCourseId,
         String name,
         List<DateResponseDTO.DatePlace> datePlaces,
         DateCourseSearchCondInfo dateCourseSearchCondInfo,

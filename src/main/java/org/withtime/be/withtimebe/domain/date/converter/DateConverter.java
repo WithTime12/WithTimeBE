@@ -7,7 +7,6 @@ import org.withtime.be.withtimebe.domain.date.dto.response.DateResponseDTO;
 import org.withtime.be.withtimebe.domain.date.entity.*;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collections;
@@ -142,6 +141,7 @@ public class DateConverter {
                 .toList();
 
         return DateResponseDTO.DateCourse.builder()
+                .dateCourseId(dateCourse.getId())
                 .name(dateCourse.getName())
                 .datePlaces(datePlaces)
                 .isBookmarked(bookmarked)
@@ -151,7 +151,7 @@ public class DateConverter {
 
     public static DateResponseDTO.DateCourseSearchCondInfo createSearchCond(DateRequestDTO.DateCourseSearchCond cond){
         return DateResponseDTO.DateCourseSearchCondInfo.builder()
-                .budget(cond.budget())
+                .budget(cond.datePriceRange())
                 .datePlaces(cond.datePlaces())
                 .mealTypes(cond.mealTypes())
                 .transportation(cond.transportation())

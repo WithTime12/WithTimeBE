@@ -19,7 +19,6 @@ import org.withtime.be.withtimebe.domain.member.entity.Member;
 import java.util.Collection;
 import java.util.List;
 
-import static org.springframework.util.ObjectUtils.isEmpty;
 import static org.withtime.be.withtimebe.domain.date.entity.QDateCourse.dateCourse;
 
 
@@ -37,7 +36,7 @@ public class DateCourseRepositoryImpl implements DateCourseRepositoryCustom{
         boolean hasKeywords = dateCourseSearchCond.userPreferredKeywords() != null && !dateCourseSearchCond.userPreferredKeywords().isEmpty();
 
         List<DateCourse> content = queryFactory.selectFrom(dateCourse)
-                .where(datePriceRangeEq(dateCourseSearchCond.budget()),
+                .where(datePriceRangeEq(dateCourseSearchCond.datePriceRange()),
                         datePlacesEq(dateCourseSearchCond.datePlaces()),
                         dateTimeEq(dateCourseSearchCond.dateDurationTime()),
                         mealTypesEq(dateCourseSearchCond.mealTypes()),
@@ -51,7 +50,7 @@ public class DateCourseRepositoryImpl implements DateCourseRepositoryCustom{
 
         Long total = queryFactory.select(dateCourse.id.countDistinct())
                 .from(dateCourse)
-                .where(datePriceRangeEq(dateCourseSearchCond.budget()),
+                .where(datePriceRangeEq(dateCourseSearchCond.datePriceRange()),
                         datePlacesEq(dateCourseSearchCond.datePlaces()),
                         dateTimeEq(dateCourseSearchCond.dateDurationTime()),
                         mealTypesEq(dateCourseSearchCond.mealTypes()),
@@ -75,7 +74,7 @@ public class DateCourseRepositoryImpl implements DateCourseRepositoryCustom{
         List<DateCourse> content = queryFactory.selectFrom(dateCourse)
                 .join(dateCourseBookmark).on(dateCourseBookmark.dateCourse.eq(dateCourse))
                 .where(dateCourseBookmark.member.id.eq(member.getId()),
-                        datePriceRangeEq(dateCourseSearchCond.budget()),
+                        datePriceRangeEq(dateCourseSearchCond.datePriceRange()),
                         datePlacesEq(dateCourseSearchCond.datePlaces()),
                         dateTimeEq(dateCourseSearchCond.dateDurationTime()),
                         mealTypesEq(dateCourseSearchCond.mealTypes()),
@@ -91,7 +90,7 @@ public class DateCourseRepositoryImpl implements DateCourseRepositoryCustom{
                 .from(dateCourse)
                 .join(dateCourseBookmark).on(dateCourseBookmark.dateCourse.eq(dateCourse))
                 .where(dateCourseBookmark.member.id.eq(member.getId()),
-                        datePriceRangeEq(dateCourseSearchCond.budget()),
+                        datePriceRangeEq(dateCourseSearchCond.datePriceRange()),
                         datePlacesEq(dateCourseSearchCond.datePlaces()),
                         dateTimeEq(dateCourseSearchCond.dateDurationTime()),
                         mealTypesEq(dateCourseSearchCond.mealTypes()),
@@ -124,19 +123,19 @@ public class DateCourseRepositoryImpl implements DateCourseRepositoryCustom{
     }
 
     private BooleanExpression datePlacesEq(List<String> datePlaces){
-        return datePlaces.isEmpty() ? null : dateCourse.datePlaces.any().in(datePlaces);
+        return datePlaces == null ? null : dateCourse.datePlaces.any().in(datePlaces);
     }
 
     private BooleanExpression dateTimeEq(DateTime dateTime){
-        return isEmpty(dateTime) ? null : dateCourse.dateTime.eq(dateTime);
+        return dateTime == null ? null : dateCourse.dateTime.eq(dateTime);
     }
 
     private BooleanExpression mealTypesEq(List<MealType> mealTypes){
-        return mealTypes.isEmpty() ? null : dateCourse.mealTypes.any().in(mealTypes);
+        return mealTypes== null ? null : dateCourse.mealTypes.any().in(mealTypes);
     }
 
     private BooleanExpression transportationEq(Transportation transportation){
-        return isEmpty(transportation) ? null : dateCourse.transportation.eq(transportation);
+        return transportation == null ? null : dateCourse.transportation.eq(transportation);
     }
 
     private BooleanExpression allEq(DatePriceRange datePriceRange, List<String> datePlaces,

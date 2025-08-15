@@ -1,6 +1,5 @@
 package org.withtime.be.withtimebe.domain.date.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -65,11 +64,13 @@ public record DateRequestDTO() {
     ){}
 
     public record DateCourseSearchCond(
-            DatePriceRange budget,
+            DatePriceRange datePriceRange,
             List<String> datePlaces,
             DateTime dateDurationTime,
+            @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
             List<MealType> mealTypes,
             Transportation transportation,
+            @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, nullable = true)
             List<String> userPreferredKeywords
     ){}
 }

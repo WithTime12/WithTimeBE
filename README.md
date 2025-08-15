@@ -82,6 +82,7 @@ OpenAPI Spec: [https://api.withtime.cloud/v3/api-docs](https://api.withtime.clou
 ---
 
 ## 📡 아키텍처
+<img width="739" height="503" alt="스크린샷 2025-08-15 오후 2 01 49" src="https://github.com/user-attachments/assets/1a20a80f-c0ac-4a42-84c5-c4025f18207d" />
 
 ---
 

@@ -44,7 +44,8 @@ public class DateQueryController {
     @Parameters({
             @Parameter(name = "datePriceRange", in = ParameterIn.QUERY,
                     schema = @Schema(implementation = DatePriceRange.class)),
-            @Parameter(name = "datePlaces", in = ParameterIn.QUERY, description = "만날 장소",
+            @Parameter(name = "datePlaces", in = ParameterIn.QUERY,
+                    description = "만날 장소", required = false,
                     style = ParameterStyle.FORM, explode = Explode.TRUE,
                     array = @ArraySchema(schema = @Schema(type = "string"))),
             @Parameter(name = "dateDurationTime", in = ParameterIn.QUERY,
@@ -78,8 +79,8 @@ public class DateQueryController {
     @Parameters({
             @Parameter(name = "datePriceRange", in = ParameterIn.QUERY,
                     schema = @Schema(implementation = DatePriceRange.class)),
-            @Parameter(name = "datePlaces", in = ParameterIn.QUERY, description = "만날 장소",
-                    required = false, allowEmptyValue = true,
+            @Parameter(name = "datePlaces", in = ParameterIn.QUERY,
+                    description = "만날 장소", required = false,
                     style = ParameterStyle.FORM, explode = Explode.TRUE,
                     array = @ArraySchema(schema = @Schema(type = "string"))),
             @Parameter(name = "dateDurationTime", in = ParameterIn.QUERY,

@@ -34,7 +34,7 @@ public class DateCommandController {
             @RequestBody DateRequestDTO.CreateDateCourse request
     ){
         RecommendedCourseResult datePlaces = dateCommandService.createDateCourse(request);
-        DateResponseDTO.DateCourse dateCourse = DateConverter.createDateCourseInfo(datePlaces.places(), datePlaces.signature());
+        DateResponseDTO.DateCourse dateCourse = DateConverter.createDateCourseInfo(datePlaces.places(), datePlaces.signature(), request);
         return DefaultResponse.created(dateCourse);
     }
 

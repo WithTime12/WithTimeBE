@@ -54,4 +54,10 @@ public class DatePlace extends BaseEntity {
 
     @OneToMany(mappedBy = "datePlace", cascade = CascadeType.ALL)
     private List<DatePlacePlaceCategory> placeCategories;
+
+    @OneToMany(mappedBy = "datePlace", cascade = CascadeType.ALL)
+    private List<Item> items;
+
+    @OneToMany(mappedBy = "datePlace", cascade = CascadeType.ALL)
+    private List<BusinessTime> businessTimes;
 }

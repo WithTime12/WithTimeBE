@@ -3,7 +3,9 @@ package org.withtime.be.withtimebe.domain.date.dto.response;
 import lombok.Builder;
 import org.withtime.be.withtimebe.domain.date.entity.enums.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 public record DateResponseDTO() {
@@ -26,8 +28,9 @@ public record DateResponseDTO() {
         String roadNameAddress,
         String lotNumberAddress,
         PlaceType placeType,
-        LocalDateTime startTime,
-        LocalDateTime endTime
+        LocalTime startTime,
+        LocalTime endTime,
+        SignatureDish signatureDish
     ){}
 
     @Builder
@@ -57,5 +60,13 @@ public record DateResponseDTO() {
             List<MealType> mealTypes,
             Transportation transportation,
             List<String> userPreferredKeywords
+    ){}
+
+    @Builder
+    public record SignatureDish(
+            Long ItemId,
+            String imageUrl,
+            String name,
+            String price
     ){}
 }

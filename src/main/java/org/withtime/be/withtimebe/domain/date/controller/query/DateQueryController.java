@@ -22,10 +22,7 @@ import org.withtime.be.withtimebe.domain.date.converter.DateConverter;
 import org.withtime.be.withtimebe.domain.date.dto.request.DateRequestDTO;
 import org.withtime.be.withtimebe.domain.date.dto.response.DateResponseDTO;
 import org.withtime.be.withtimebe.domain.date.entity.DateCourse;
-import org.withtime.be.withtimebe.domain.date.entity.enums.BudgetLevel;
-import org.withtime.be.withtimebe.domain.date.entity.enums.DateTime;
-import org.withtime.be.withtimebe.domain.date.entity.enums.MealType;
-import org.withtime.be.withtimebe.domain.date.entity.enums.Transportation;
+import org.withtime.be.withtimebe.domain.date.entity.enums.*;
 import org.withtime.be.withtimebe.domain.date.service.query.DateQueryService;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.annotation.SwaggerPageable;
@@ -45,8 +42,8 @@ public class DateQueryController {
             @ApiResponse(responseCode = "404", description = "DATE_COURSE404_1 : 해당하는 데이트 코스를 찾을 수 없습니다.")
     })
     @Parameters({
-            @Parameter(name = "budget", in = ParameterIn.QUERY,
-                    schema = @Schema(implementation = BudgetLevel.class)),
+            @Parameter(name = "datePriceRange", in = ParameterIn.QUERY,
+                    schema = @Schema(implementation = DatePriceRange.class)),
             @Parameter(name = "datePlaces", in = ParameterIn.QUERY, description = "만날 장소",
                     style = ParameterStyle.FORM, explode = Explode.TRUE,
                     array = @ArraySchema(schema = @Schema(type = "string"))),
@@ -54,7 +51,7 @@ public class DateQueryController {
                     schema = @Schema(implementation = DateTime.class)),
             @Parameter(name = "mealTypes", in = ParameterIn.QUERY, description = "식사 타입",
                     style = ParameterStyle.FORM, explode = Explode.TRUE,
-                    array = @ArraySchema(schema = @Schema(implementation = MealType.class))),
+                    array = @ArraySchema(schema = @Schema(type = "string",allowableValues = { "BREAKFAST", "LUNCH", "DINNER" }))),
             @Parameter(name = "transportation", in = ParameterIn.QUERY,
                     schema = @Schema(implementation = Transportation.class)),
             @Parameter(name = "userPreferredKeywords", in = ParameterIn.QUERY, description = "키워드",
@@ -79,9 +76,10 @@ public class DateQueryController {
                     description = "해당 코스를 찾을 수 없습니다")
     })
     @Parameters({
-            @Parameter(name = "budget", in = ParameterIn.QUERY,
-                    schema = @Schema(implementation = BudgetLevel.class)),
+            @Parameter(name = "datePriceRange", in = ParameterIn.QUERY,
+                    schema = @Schema(implementation = DatePriceRange.class)),
             @Parameter(name = "datePlaces", in = ParameterIn.QUERY, description = "만날 장소",
+                    required = false, allowEmptyValue = true,
                     style = ParameterStyle.FORM, explode = Explode.TRUE,
                     array = @ArraySchema(schema = @Schema(type = "string"))),
             @Parameter(name = "dateDurationTime", in = ParameterIn.QUERY,

@@ -131,7 +131,10 @@ public class DateCommandServiceImpl implements DateCommandService{
             String[] parts = token.trim().split("\\s+");
             String k1 = parts.length >= 1 ? parts[0] : "";
             String k2 = parts.length >= 2 ? parts[1] : "";
-            List<DatePlace> found = datePlaceRepository.findByAddressContainingAll(k1, k2);
+            String k3 = (parts.length >= 3)
+                    ? (parts[2].length() >= 2 ? parts[2].substring(0, 2) : parts[2])
+                    : "";
+            List<DatePlace> found = datePlaceRepository.findByAddressContainingAll(k1, k2, k3);
             for (DatePlace p : found) {
                 Long id = p.getId();
                 if (id != null) {

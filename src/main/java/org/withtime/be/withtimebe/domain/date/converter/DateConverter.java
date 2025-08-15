@@ -78,7 +78,7 @@ public class DateConverter {
                                                             LocalTime startTime,
                                                             LocalTime endTime) {
         Item item = null;
-        if (!datePlace.getItems().isEmpty()) {
+        if (datePlace.getItems() != null && !datePlace.getItems().isEmpty()) {
             item = datePlace.getItems().get(0);
         }
 
@@ -117,7 +117,7 @@ public class DateConverter {
                 .placeType(datePlace.getPlaceType())
                 .startTime(LocalTime.from(startTime))
                 .endTime(LocalTime.from(endTime))
-                .signatureDish(toSignatureDish(datePlace.getItems().isEmpty() ? null : datePlace.getItems().get(0)))
+                .signatureDish(toSignatureDish(datePlace.getItems() == null || datePlace.getItems().isEmpty() ? null : datePlace.getItems().get(0)))
                 .build();
     }
 
@@ -126,7 +126,7 @@ public class DateConverter {
                                                               Set<Long> bookmarkedIds,
                                                               DateRequestDTO.DateCourseSearchCond cond){
         Boolean bookmarked = null;
-        if (!bookmarkedIds.isEmpty()) bookmarked = bookmarkedIds.contains(dateCourse.getId());
+        if (bookmarkedIds != null && !bookmarkedIds.isEmpty()) bookmarked = bookmarkedIds.contains(dateCourse.getId());
         List<DateResponseDTO.DatePlace> datePlaces = dateCourse.getDatePlaceDateCourses().stream()
                 .map(dc -> DateConverter.createDatePlace(dc.getDatePlace(), dc.getStartTime(), dc.getEndTime()))
                 .toList();

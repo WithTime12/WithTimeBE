@@ -20,6 +20,7 @@ import org.withtime.be.withtimebe.global.error.code.*;
 import org.withtime.be.withtimebe.global.error.exception.*;
 import org.withtime.be.withtimebe.global.security.constants.AuthenticationConstants;
 import org.withtime.be.withtimebe.global.security.domain.CustomUserDetails;
+import org.withtime.be.withtimebe.global.security.handler.CustomLogoutHandler;
 import org.withtime.be.withtimebe.global.util.CookieUtil;
 
 @Service
@@ -36,6 +37,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     private final TokenQueryService tokenQueryService;
     private final TokenStorageQueryService tokenStorageQueryService;
     private final EmailVerificationCodeStorageQueryService emailVerificationCodeStorageQueryService;
+    private final CustomLogoutHandler customLogoutHandler;
 
     @Override
     public void signUp(AuthRequestDTO.SignUp request) {
@@ -69,19 +71,7 @@ public class AuthCommandServiceImpl implements AuthCommandService {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response) {
-        String accessToken = getAccessToken(request);
-        String refreshToken = getRefreshToken(request);
-
-        tokenStorageCommandService.addBlackList(accessToken);
-        tokenStorageCommandService.addBlackList(refreshToken);
-
-        // 쿠키의 Refresh Token이 다른 경우를 대비해 Redis Refresh도 Black list 처리
-        Long userId = getUserId(refreshToken);
-        tokenStorageCommandService.addBlackList(tokenStorageQueryService.getRefreshToken(userId));
-        tokenStorageCommandService.deleteRefreshToken(userId);
-
-        CookieUtil.deleteCookie(request, response, AuthenticationConstants.ACCESS_TOKEN_NAME);
-        CookieUtil.deleteCookie(request, response, AuthenticationConstants.REFRESH_TOKEN_NAME);
+        customLogoutHandler.logout(request, response);
     }
 
     @Override

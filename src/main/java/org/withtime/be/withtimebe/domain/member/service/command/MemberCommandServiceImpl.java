@@ -1,10 +1,13 @@
 package org.withtime.be.withtimebe.domain.member.service.command;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.error.exception.ServerApplicationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.withtime.be.withtimebe.domain.auth.service.command.AuthCommandService;
 import org.withtime.be.withtimebe.domain.member.dto.MemberRequestDTO;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.domain.member.repository.MemberRepository;
@@ -12,6 +15,7 @@ import org.withtime.be.withtimebe.global.error.code.AuthErrorCode;
 import org.withtime.be.withtimebe.global.error.code.MemberErrorCode;
 import org.withtime.be.withtimebe.global.error.exception.AuthException;
 import org.withtime.be.withtimebe.global.error.exception.MemberException;
+import org.withtime.be.withtimebe.global.security.handler.CustomLogoutHandler;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +24,7 @@ public class MemberCommandServiceImpl implements MemberCommandService {
 
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final CustomLogoutHandler customLogoutHandler;
 
 
     @Override
@@ -52,8 +57,10 @@ public class MemberCommandServiceImpl implements MemberCommandService {
             new MemberException(MemberErrorCode.NOT_FOUND));
         member.addPoint(point);
     }
-  
-    public void deleteMember(Long memberId) {
+
+    @Override
+    public void deleteMember(HttpServletRequest request, HttpServletResponse response, Long memberId) {
+        customLogoutHandler.logout(request, response);
         memberRepository.deleteById(memberId);
     }
 

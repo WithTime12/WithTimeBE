@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.namul.api.payload.response.DefaultResponse;
 
@@ -79,8 +81,8 @@ public class MemberController {
     @Operation(summary = "회원 탈퇴하기 API by 요시", description = "로그인된 토큰을 이용하여 회원 탈퇴하는 API")
     @ApiResponse(responseCode = "204", description = "회원 탈퇴 성공 (soft delete)")
     @DeleteMapping
-    public DefaultResponse<Void> deleteMember(@AuthenticatedMember Member member) {
-        memberCommandService.deleteMember(member.getId());
+    public DefaultResponse<Void> deleteMember(HttpServletRequest request, HttpServletResponse response, @AuthenticatedMember Member member) {
+        memberCommandService.deleteMember(request, response, member.getId());
         return DefaultResponse.noContent();
     }
 

@@ -26,7 +26,7 @@ public class DateConverter {
     // DateCourseBookmark -> DateCourseBookmark ResponseDTO 생성
     public static DateResponseDTO.DateCourseBookmark createDateCourseBookmarkResponseDTO(DateCourseBookmark dateCourseBookmark) {
         return DateResponseDTO.DateCourseBookmark.builder()
-                .dateCourseId(dateCourseBookmark.getId())
+                .dateCourseId(dateCourseBookmark.getDateCourse().getId())
                 .build();
     }
 

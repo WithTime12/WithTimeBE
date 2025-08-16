@@ -123,8 +123,8 @@ public class DateConverter {
                 .roadNameAddress(datePlace.getRoadNameAddress())
                 .lotNumberAddress(datePlace.getLotNumberAddress())
                 .placeType(datePlace.getPlaceType())
-                .startTime(LocalTime.from(startTime))
-                .endTime(LocalTime.from(endTime))
+                .startTime(startTime != null ? LocalTime.from(startTime) : null)
+                .endTime(endTime != null ? LocalTime.from(endTime) : null)
                 .signatureDish(toSignatureDish(datePlace.getItems() == null || datePlace.getItems().isEmpty() ? null : datePlace.getItems().get(0)))
                 .placeCategoryResponseList(placeCategoryResponseList)
                 .build();

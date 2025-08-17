@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.withtime.be.withtimebe.domain.auth.service.command.TokenStorageCommandService;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenQueryService;
 import org.withtime.be.withtimebe.domain.auth.service.query.TokenStorageQueryService;
+import org.withtime.be.withtimebe.global.error.code.TokenErrorCode;
+import org.withtime.be.withtimebe.global.error.exception.TokenException;
 import org.withtime.be.withtimebe.global.security.constants.AuthenticationConstants;
 import org.withtime.be.withtimebe.global.util.CookieUtil;
 
@@ -39,9 +41,18 @@ public class CustomLogoutHandler {
     }
 
     private String getAccessToken(HttpServletRequest request) {
-        return CookieUtil.getCookie(request, AuthenticationConstants.ACCESS_TOKEN_NAME);
+        return this.getInCookie(request, AuthenticationConstants.ACCESS_TOKEN_NAME);
     }
 
     private String getRefreshToken(HttpServletRequest request) {
-        return CookieUtil.getCookie(request, AuthenticationConstants.REFRESH_TOKEN_NAME);
-    }}
+        return this.getInCookie(request, AuthenticationConstants.REFRESH_TOKEN_NAME);
+    }
+
+    private String getInCookie(HttpServletRequest request, String name) {
+        String cookieValue = CookieUtil.getCookie(request, name);
+        if (cookieValue == null) {
+            throw new TokenException(TokenErrorCode.NOT_EXISTS_TOKEN);
+        }
+        return cookieValue;
+    }
+}

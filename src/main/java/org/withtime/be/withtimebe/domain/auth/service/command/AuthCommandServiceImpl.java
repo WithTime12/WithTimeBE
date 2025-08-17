@@ -104,10 +104,18 @@ public class AuthCommandServiceImpl implements AuthCommandService {
     }
 
     private String getAccessToken(HttpServletRequest request) {
-        return CookieUtil.getCookie(request, AuthenticationConstants.ACCESS_TOKEN_NAME);
+        return this.getInCookie(request, AuthenticationConstants.ACCESS_TOKEN_NAME);
     }
 
     private String getRefreshToken(HttpServletRequest request) {
-        return CookieUtil.getCookie(request, AuthenticationConstants.REFRESH_TOKEN_NAME);
+        return this.getInCookie(request, AuthenticationConstants.REFRESH_TOKEN_NAME);
+    }
+
+    private String getInCookie(HttpServletRequest request, String name) {
+        String cookieValue = CookieUtil.getCookie(request, name);
+        if (cookieValue == null) {
+            throw new TokenException(TokenErrorCode.NOT_EXISTS_TOKEN);
+        }
+        return cookieValue;
     }
 }

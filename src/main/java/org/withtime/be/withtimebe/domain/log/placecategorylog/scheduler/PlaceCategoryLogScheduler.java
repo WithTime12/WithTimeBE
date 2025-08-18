@@ -42,7 +42,6 @@ public class PlaceCategoryLogScheduler {
 		cacheManager = "redisCacheManager",
 		beforeInvocation = false
 	)
-	@Scheduled(cron = "${scheduler.logs.place-category.sync-cron}") // 매 5분마다
 	public void syncUserPreferredKeywordsToDB() {
 
 		log.info("[PlaceCategoryLogScheduler] 동기화 스케쥴러 동작");

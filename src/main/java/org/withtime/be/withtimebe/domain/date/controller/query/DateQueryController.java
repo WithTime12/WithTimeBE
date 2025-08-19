@@ -28,6 +28,8 @@ import org.withtime.be.withtimebe.domain.member.entity.Member;
 import org.withtime.be.withtimebe.global.annotation.SwaggerPageable;
 import org.withtime.be.withtimebe.global.security.annotation.AuthenticatedMember;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/date-courses")
@@ -63,9 +65,15 @@ public class DateQueryController {
     @GetMapping
     public DefaultResponse<DateResponseDTO.DateCourseList> findDateCourses(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @ModelAttribute @ParameterObject DateRequestDTO.DateCourseSearchCond dateCourseSearchCond,
+            @RequestParam(required = false) DatePriceRange datePriceRange,
+            @RequestParam(required = false) List<String> datePlaces,
+            @RequestParam(required = false) DateTime dateDurationTime,
+            @RequestParam(required = false) List<MealType> mealTypes,
+            @RequestParam(required = false) Transportation transportation,
+            @RequestParam(required = false) List<String> userPreferredKeywords,
             @AuthenticatedMember Member member
             ) {
+        DateRequestDTO.DateCourseSearchCond dateCourseSearchCond = DateConverter.createSearchCondFromParam(datePriceRange, datePlaces, dateDurationTime, mealTypes, transportation, userPreferredKeywords);
         DateResponseDTO.DateCourseList response = dateQueryService.findDateCourses(dateCourseSearchCond, pageable, member);
         return DefaultResponse.ok(response);
     }
@@ -98,11 +106,17 @@ public class DateQueryController {
     @GetMapping("/bookmarks/search")
     public DefaultResponse<DateResponseDTO.DateCourseList> findDateCourseBookmark(
             @PageableDefault(page = 0, size = 10) Pageable pageable,
-            @ModelAttribute @ParameterObject DateRequestDTO.DateCourseSearchCond dateCourseSearchCond,
+            @RequestParam(required = false) DatePriceRange datePriceRange,
+            @RequestParam(required = false) List<String> datePlaces,
+            @RequestParam(required = false) DateTime dateDurationTime,
+            @RequestParam(required = false) List<MealType> mealTypes,
+            @RequestParam(required = false) Transportation transportation,
+            @RequestParam(required = false) List<String> userPreferredKeywords,
             @AuthenticatedMember Member member
     ){
+        DateRequestDTO.DateCourseSearchCond dateCourseSearchCond = DateConverter.createSearchCondFromParam(datePriceRange, datePlaces, dateDurationTime, mealTypes, transportation, userPreferredKeywords);
         Page<DateCourse> bookmarkedDateCourses = dateQueryService.findDateCourseBookmarks(dateCourseSearchCond, pageable, member);
-        DateResponseDTO.DateCourseList response = DateConverter.createDateCourseList(bookmarkedDateCourses, null, dateCourseSearchCond);
+        DateResponseDTO.DateCourseList response = DateConverter.createDateCourseList(bookmarkedDateCourses, null);
         return DefaultResponse.ok(response);
     }
 }

@@ -5,10 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.withtime.be.withtimebe.domain.date.converter.DateConverter;
 import org.withtime.be.withtimebe.domain.date.dto.request.DateRequestDTO;
-import org.withtime.be.withtimebe.domain.date.entity.DateCourse;
-import org.withtime.be.withtimebe.domain.date.entity.DateCourseBookmark;
-import org.withtime.be.withtimebe.domain.date.entity.DatePlace;
-import org.withtime.be.withtimebe.domain.date.entity.DatePlaceDateCourse;
+import org.withtime.be.withtimebe.domain.date.entity.*;
 import org.withtime.be.withtimebe.domain.date.entity.enums.BudgetLevel;
 import org.withtime.be.withtimebe.domain.date.entity.enums.KeywordForBudget;
 import org.withtime.be.withtimebe.domain.date.entity.enums.MealType;
@@ -18,6 +15,7 @@ import org.withtime.be.withtimebe.domain.date.entity.model.ScheduledDatePlace;
 import org.withtime.be.withtimebe.domain.date.repository.DateCourseBookmarkRepository;
 import org.withtime.be.withtimebe.domain.date.repository.DateCourseRepository;
 import org.withtime.be.withtimebe.domain.date.repository.DatePlaceRepository;
+import org.withtime.be.withtimebe.domain.date.repository.PlaceCategoryRepository;
 import org.withtime.be.withtimebe.domain.date.service.command.dto.RecommendedCourseResult;
 import org.withtime.be.withtimebe.domain.member.annotation.GetPoint;
 import org.withtime.be.withtimebe.domain.member.annotation.enums.PointAction;
@@ -38,6 +36,7 @@ public class DateCommandServiceImpl implements DateCommandService{
     private final DateCourseBookmarkRepository dateCourseBookmarkRepository;
     private final DateCourseRepository dateCourseRepository;
     private final DatePlaceRepository datePlaceRepository;
+    private final PlaceCategoryRepository placeCategoryRepository;
 
     /** 단일 코스 생성 (저장/북마크/attemptCount 없음, excludedCourseSignatures로 중복 제외) */
     @Transactional(readOnly = true)
@@ -296,10 +295,19 @@ public class DateCommandServiceImpl implements DateCommandService{
     ){
         DateCourse dateCourse = DateConverter.createDateCourse(request);
         List<DatePlace> datePlaces = datePlaceRepository.findAllById(request.datePlaceIds());
+        List<PlaceCategory> placeCategories = placeCategoryRepository.findAllByLabelIn(request.dateCourseSearchCond().userPreferredKeywords());
+
         List<DatePlaceDateCourse> datePlaceDateCourses = datePlaces.stream()
                 .map(datePlace -> DatePlaceDateCourse.builder().datePlace(datePlace).build())
                 .toList();
         dateCourse.addDatePlaceDateCourses(datePlaceDateCourses);
+
+        List<DateCoursePlaceCategory> dateCoursePlaceCategories = placeCategories.stream()
+                .map(dcpc -> DateCoursePlaceCategory.builder()
+                        .placeCategory(dcpc)
+                        .build())
+                .toList();
+        dateCourse.addDateCoursePlaceCategory(dateCoursePlaceCategories);
         dateCourseRepository.save(dateCourse);
 
         DateCourseBookmark dateCourseBookmark = DateConverter.createDateCourseBookmark(dateCourse, member);

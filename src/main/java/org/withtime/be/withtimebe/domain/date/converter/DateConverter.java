@@ -5,6 +5,10 @@ import org.springframework.data.domain.Page;
 import org.withtime.be.withtimebe.domain.date.dto.request.DateRequestDTO;
 import org.withtime.be.withtimebe.domain.date.dto.response.DateResponseDTO;
 import org.withtime.be.withtimebe.domain.date.entity.*;
+import org.withtime.be.withtimebe.domain.date.entity.enums.DatePriceRange;
+import org.withtime.be.withtimebe.domain.date.entity.enums.DateTime;
+import org.withtime.be.withtimebe.domain.date.entity.enums.MealType;
+import org.withtime.be.withtimebe.domain.date.entity.enums.Transportation;
 import org.withtime.be.withtimebe.domain.member.entity.Member;
 
 import java.time.LocalDateTime;
@@ -34,6 +38,11 @@ public class DateConverter {
     public static DateCourse createDateCourse(DateRequestDTO.SaveDateCourse dateCourse){
         return DateCourse.builder()
                 .name(dateCourse.name())
+                .datePriceRange(dateCourse.dateCourseSearchCond().datePriceRange())
+                .datePlaces(dateCourse.dateCourseSearchCond().datePlaces())
+                .dateTime(dateCourse.dateCourseSearchCond().dateDurationTime())
+                .mealTypes(dateCourse.dateCourseSearchCond().mealTypes())
+                .transportation(dateCourse.dateCourseSearchCond().transportation())
                 .build();
     }
 
@@ -68,7 +77,7 @@ public class DateConverter {
                 .dateDurationTime(request.dateDurationTime())   // 데이트 소요 시간
                 .mealTypes(request.mealPlan())                  // 식사 계획
                 .transportation(request.transportation())       // 교통 수단
-                .userPreferredKeywords(request.userPreferredKeywords()) // 키워드
+                .dateCoursePlaceCategories(request.userPreferredKeywords()) // 키워드
                 .build();
     }
 
@@ -132,10 +141,12 @@ public class DateConverter {
 
     // DateResponseDTO.DateCourse -> DateResponseDTO.DateCourse
     public static DateResponseDTO.DateCourse createDateCourse(DateCourse dateCourse,
-                                                              Set<Long> bookmarkedIds,
-                                                              DateRequestDTO.DateCourseSearchCond cond){
-        Boolean bookmarked = null;
-        if (bookmarkedIds != null && !bookmarkedIds.isEmpty()) bookmarked = bookmarkedIds.contains(dateCourse.getId());
+                                                              Set<Long> bookmarkedIds){
+        Boolean bookmarked = (bookmarkedIds == null)? null
+                : (dateCourse.getId() != null && bookmarkedIds.contains(dateCourse.getId()));
+        if (dateCourse.getId() != null) System.out.println("test1");
+        if (bookmarkedIds.contains(dateCourse.getId())) System.out.println("test2");
+
         List<DateResponseDTO.DatePlace> datePlaces = dateCourse.getDatePlaceDateCourses().stream()
                 .map(dc -> DateConverter.createDatePlace(dc.getDatePlace(), dc.getStartTime(), dc.getEndTime()))
                 .toList();
@@ -145,28 +156,31 @@ public class DateConverter {
                 .name(dateCourse.getName())
                 .datePlaces(datePlaces)
                 .isBookmarked(bookmarked)
-                .dateCourseSearchCondInfo(createSearchCond(cond))
+                .dateCourseSearchCondInfo(createSearchCond(dateCourse))
                 .build();
     }
 
-    public static DateResponseDTO.DateCourseSearchCondInfo createSearchCond(DateRequestDTO.DateCourseSearchCond cond){
+    public static DateResponseDTO.DateCourseSearchCondInfo createSearchCond(DateCourse dateCourse){
+        List<String> dateCoursePlaceCategories = dateCourse.getDateCoursePlaceCategories().stream()
+                .map(dcpc -> dcpc.getPlaceCategory().getLabel())
+                .toList();
+
         return DateResponseDTO.DateCourseSearchCondInfo.builder()
-                .budget(cond.datePriceRange())
-                .datePlaces(cond.datePlaces())
-                .mealTypes(cond.mealTypes())
-                .transportation(cond.transportation())
-                .dateDurationTime(cond.dateDurationTime())
-                .userPreferredKeywords(cond.userPreferredKeywords())
+                .budget(dateCourse.getDatePriceRange())
+                .datePlaces(dateCourse.getDatePlaces())
+                .mealTypes(dateCourse.getMealTypes())
+                .transportation(dateCourse.getTransportation())
+                .dateDurationTime(dateCourse.getDateTime())
+                .dateCoursePlaceCategories(dateCoursePlaceCategories)
                 .build();
     }
 
     // Page<DateCourse> -> DateRequestDTO.DateCourseList
-    public static DateResponseDTO.DateCourseList createDateCourseList(Page<DateCourse> dateCourses, Set<Long> bookmarkedIds,
-                                                                      DateRequestDTO.DateCourseSearchCond cond){
+    public static DateResponseDTO.DateCourseList createDateCourseList(Page<DateCourse> dateCourses, Set<Long> bookmarkedIds){
         List<DateResponseDTO.DateCourse> dateCourseList = dateCourses.stream()
                 .map(dc ->{
-                        if (bookmarkedIds != null) return createDateCourse(dc, bookmarkedIds, cond);
-                        return createDateCourse(dc, Collections.emptySet(), cond);
+                        if (bookmarkedIds != null) return createDateCourse(dc, bookmarkedIds);
+                        return createDateCourse(dc, Collections.emptySet());
                 })
                 .toList();
 
@@ -189,6 +203,24 @@ public class DateConverter {
                 .imageUrl(item.getImage())
                 .price(item.getPrice())
                 .name(item.getName())
+                .build();
+    }
+
+    public static DateRequestDTO.DateCourseSearchCond createSearchCondFromParam(
+            DatePriceRange datePriceRange,
+            List<String> datePlaces,
+            DateTime dateDurationTime,
+            List<MealType> mealTypes,
+            Transportation transportation,
+            List<String> userPreferredKeywords
+    ){
+        return DateRequestDTO.DateCourseSearchCond.builder()
+                .datePriceRange(datePriceRange)
+                .datePlaces(datePlaces)
+                .dateDurationTime(dateDurationTime)
+                .mealTypes(mealTypes)
+                .transportation(transportation)
+                .userPreferredKeywords(userPreferredKeywords)
                 .build();
     }
 

@@ -59,7 +59,7 @@ public class DateCourse extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "dateCourse", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DateCoursePlaceCategory> DateCoursePlaceCategory = new ArrayList<>();
+    private List<DateCoursePlaceCategory> dateCoursePlaceCategories = new ArrayList<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "dateCourse", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -73,4 +73,14 @@ public class DateCourse extends BaseEntity {
         }
         datePlaceDateCourses.addAll(datePlaceDateCourseList);
     }
+
+    public void addDateCoursePlaceCategory(List<DateCoursePlaceCategory> dateCoursePlaceCategoryList) {
+        if (dateCoursePlaceCategoryList == null || dateCoursePlaceCategoryList.isEmpty()) return;
+        for (DateCoursePlaceCategory dateCoursePlaceCategory : dateCoursePlaceCategoryList) {
+            dateCoursePlaceCategory.setDateCourse(this);
+        }
+        dateCoursePlaceCategories.addAll(dateCoursePlaceCategoryList);
+    }
+
+
 }

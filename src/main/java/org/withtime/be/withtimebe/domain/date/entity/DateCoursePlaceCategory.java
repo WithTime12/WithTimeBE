@@ -18,6 +18,7 @@ public class DateCoursePlaceCategory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "date_course_id", nullable = false)
+    @Setter
     private DateCourse dateCourse;
 
     @ManyToOne(fetch = FetchType.LAZY)

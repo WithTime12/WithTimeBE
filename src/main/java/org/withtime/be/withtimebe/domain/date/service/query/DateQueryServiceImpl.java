@@ -37,7 +37,7 @@ public class DateQueryServiceImpl implements DateQueryService {
                         ? new HashSet<>(dateCourseBookmarkRepository.findBookmarkedCourseIds(member.getId(), ids))
                         : java.util.Collections.emptySet();
 
-        return DateConverter.createDateCourseList(dateCourses, bookmarkedIds, dateCourseSearchCond);
+        return DateConverter.createDateCourseList(dateCourses, bookmarkedIds);
     }
   
     @LogPlaceCategory

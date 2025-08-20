@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import org.withtime.be.withtimebe.domain.date.entity.enums.DatePriceRange;
 import org.withtime.be.withtimebe.domain.date.entity.enums.DateTime;
 import org.withtime.be.withtimebe.domain.date.entity.enums.MealType;
@@ -60,9 +61,11 @@ public record DateRequestDTO() {
 
     public record SaveDateCourse(
         List<Long> datePlaceIds,
-        String name
+        String name,
+        DateCourseSearchCond dateCourseSearchCond
     ){}
 
+    @Builder
     public record DateCourseSearchCond(
             DatePriceRange datePriceRange,
             List<String> datePlaces,

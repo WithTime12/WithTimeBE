@@ -2,6 +2,7 @@ package org.withtime.be.withtimebe.domain.log.dateplacelog.service.query;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -23,6 +24,13 @@ public class DatePlaceLogQueryServiceImpl implements DatePlaceLogQueryService {
 	private final MongoTemplate mongoTemplate;
 
 	@Override
+	@Cacheable(
+		value = "date-place-log",
+		key = "T(java.time.LocalDate).now().getYear() + '-' + " +
+			"T(java.time.LocalDate).now().get(" + "T(java.time.temporal.WeekFields).ISO.weekOfYear()" + ") + '-' + " +
+			"T(java.time.LocalDate).now().getDayOfWeek().getValue()",
+		cacheManager = "redisCacheManager"
+	)
 	public List<DatePlaceLog> findMonthlyDatePlaceLogList() {
 
 		// 1. 추출할 필드 정의

@@ -24,13 +24,6 @@ public class DatePlaceLogQueryServiceImpl implements DatePlaceLogQueryService {
 	private final MongoTemplate mongoTemplate;
 
 	@Override
-	@Cacheable(
-		value = "date-place-log",
-		key = "T(java.time.LocalDate).now().getYear() + '-' + " +
-			"T(java.time.LocalDate).now().get(" + "T(java.time.temporal.WeekFields).ISO.weekOfYear()" + ") + '-' + " +
-			"T(java.time.LocalDate).now().getDayOfWeek().getValue()",
-		cacheManager = "redisCacheManager"
-	)
 	public List<DatePlaceLog> findMonthlyDatePlaceLogList() {
 
 		// 1. 추출할 필드 정의

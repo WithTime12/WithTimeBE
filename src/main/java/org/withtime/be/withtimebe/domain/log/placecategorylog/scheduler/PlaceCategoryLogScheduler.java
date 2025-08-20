@@ -35,10 +35,10 @@ public class PlaceCategoryLogScheduler {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final PlaceCategoryLogRepository placeCategoryLogRepository;
 
-	@Scheduled(cron = "${scheduler.logs.place-category.sync-cron}") // 매 5분마다
+	@Scheduled(cron = "${scheduler.logs.place-category.sync-cron}")
 	@CacheEvict(
 		value = "place-category-log",
-		key = "'weekly:' + T(java.time.LocalDate).now().getYear() + '-' + T(java.time.temporal.WeekFields).ISO.weekOfYear().getFrom(T(java.time.LocalDate).now())",
+		allEntries = true,
 		cacheManager = "redisCacheManager",
 		beforeInvocation = false
 	)

@@ -1,12 +1,10 @@
 package org.withtime.be.withtimebe.domain.log.placecategorylog.scheduler;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -15,10 +13,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.withtime.be.withtimebe.domain.date.entity.PlaceCategory;
-import org.withtime.be.withtimebe.domain.date.repository.PlaceCategoryRepository;
 import org.withtime.be.withtimebe.domain.log.placecategorylog.converter.PlaceCategoryLogConverter;
 import org.withtime.be.withtimebe.domain.log.placecategorylog.model.PlaceCategoryLog;
 import org.withtime.be.withtimebe.domain.log.placecategorylog.repository.PlaceCategoryLogRepository;
@@ -35,10 +32,11 @@ public class PlaceCategoryLogScheduler {
 	private final RedisTemplate<String, Object> redisTemplate;
 	private final PlaceCategoryLogRepository placeCategoryLogRepository;
 
-	@Scheduled(cron = "${scheduler.logs.place-category.sync-cron}") // 매 5분마다
+	@Async("logTaskExecutor")
+	@Scheduled(cron = "${scheduler.logs.place-category.sync-cron}")
 	@CacheEvict(
 		value = "place-category-log",
-		key = "'weekly:' + T(java.time.LocalDate).now().getYear() + '-' + T(java.time.temporal.WeekFields).ISO.weekOfYear().getFrom(T(java.time.LocalDate).now())",
+		allEntries = true,
 		cacheManager = "redisCacheManager",
 		beforeInvocation = false
 	)

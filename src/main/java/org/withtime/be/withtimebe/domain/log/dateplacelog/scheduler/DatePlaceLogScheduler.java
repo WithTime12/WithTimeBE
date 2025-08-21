@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,8 +26,15 @@ public class DatePlaceLogScheduler {
 	private final DatePlaceRepository datePlaceRepository;
 	private final DatePlaceLogRepository datePlaceLogRepository;
 
+	@Async("logTaskExecutor")
 	@Scheduled(cron = "${scheduler.logs.date-place.sync-cron}")
 	@Transactional(readOnly = true)
+	@CacheEvict(
+		value = "date-place-log",
+		allEntries = true,
+		cacheManager = "redisCacheManager",
+		beforeInvocation = false
+	)
 	public void syncPlaceCategoryLogsToDB() {
 
 		LocalDate now = LocalDate.from(LocalDateTime.now().minusMinutes(1));

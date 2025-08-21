@@ -27,7 +27,7 @@ public class LogPlaceCategoryAspect {
 
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	@Async
+	@Async("logTaskExecutor")
 	@AfterReturning("@annotation(org.withtime.be.withtimebe.domain.log.placecategorylog.annotation.LogPlaceCategory)")
 	public void logPlaceCategory(JoinPoint joinPoint) {
 
